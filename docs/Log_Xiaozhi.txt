@@ -1,0 +1,175 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x9 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x544
+load:0x403c8700,len:0xd14
+--- 0x403c8700: _stext at ??:?
+load:0x403cb700,len:0x2eb4
+entry 0x403c88f4
+--- 0x403c88f4: call_start_cpu0 at C:/esp/v6.1/esp-idf/components/bootloader/subproject/main/bootloader_start.c:27
+I (33) octal_psram: vendor id    : 0x0d (AP)
+I (34) octal_psram: dev id       : 0x02 (generation 3)
+I (34) octal_psram: density      : 0x03 (64 Mbit)
+I (36) octal_psram: good-die     : 0x01 (Pass)
+I (40) octal_psram: Latency      : 0x01 (Fixed)
+I (44) octal_psram: VCC          : 0x01 (3V)
+I (48) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (53) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (58) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (62) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (67) octal_psram: DriveStrength: 0x00 (1/1)
+I (71) MSPI Timing: Enter psram timing tuning
+I (76) esp_psram: Found 8MB PSRAM device
+I (79) esp_psram: Speed: 80MHz
+I (82) cpu_start: Multicore app
+I (96) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+I (96) cpu_start: Pro cpu start user code
+I (96) cpu_start: cpu freq: 240000000 Hz
+I (98) app_init: Application information:
+I (102) app_init: Project name:     xiaozhi
+I (106) app_init: App version:      2.5.0
+I (109) app_init: Compile time:     Sep 21 2026 17:16:53
+I (114) app_init: ELF file SHA256:  3d10413de...
+I (119) app_init: ESP-IDF:          v6.1
+I (122) efuse_init: Min chip rev:     v0.0
+I (126) efuse_init: Max chip rev:     v0.99
+I (130) efuse_init: Chip rev:         v0.2
+I (134) heap_init: Initializing. RAM available for dynamic allocation:
+I (140) heap_init: At 3FCAB030 len 0003E6E0 (249 KiB): RAM
+I (145) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (151) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (156) heap_init: At 600FE000 len 00001FD8 (7 KiB): RTCRAM
+I (161) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (168) spi_flash: detected chip: boya
+I (171) spi_flash: flash io: qio
+I (175) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (180) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (187) main_task: Started on CPU0
+I (207) esp_psram: Reserving pool of 100K of internal memory for DMA/internal allocations
+I (207) main_task: Calling app_main()
+I (217) Board: UUID=b40507c0-22db-43e4-87b9-9b17d3f94a0b SKU=smartmedivend-s3
+I (217) button: IoT Button Version: 4.2.1
+I (347) Display: Power management not supported
+I (447) LcdDisplay: Turning display on
+I (447) LcdDisplay: Initialize LVGL library
+I (447) LcdDisplay: Added 2560KB LVGL pool in PSRAM
+I (447) LcdDisplay: Use 2MB of PSRAM for image cache
+I (457) LcdDisplay: Initialize LVGL port
+I (457) LcdDisplay: Adding LCD display
+I (457) LVGL: Starting LVGL task
+I (467) SmartMediVend: Portrait ST7789 240x320, separate I2S mic/speaker
+I (467) Backlight: Set brightness to 75
+I (477) StateMachine: State: unknown -> starting
+I (547) NoAudioCodec: Simplex channels created
+I (547) AudioCodec: Audio codec started
+I (547) Application: After board/audio init
+I (547) SystemInfo: free sram: 217987 minimal sram: 116460
+I (547) MCP: Add tool: self.get_device_status
+I (557) MCP: Add tool: self.audio_speaker.set_volume
+I (557) MCP: Add tool: self.screen.set_brightness
+I (567) MCP: Add tool: self.screen.set_theme
+I (567) MCP: Add tool: self.get_system_info [user]
+I (567) MCP: Add tool: self.reboot [user]
+I (577) MCP: Add tool: self.upgrade_firmware [user]
+I (577) MCP: Add tool: self.screen.get_info [user]
+I (587) MCP: Add tool: self.screen.snapshot [user]
+I (587) MCP: Add tool: self.screen.preview_image [user]
+I (597) MCP: Add tool: self.assets.set_download_url [user]
+I (597) WifiManager: Initializing...
+I (607) pp: pp rom version: e7ae62f
+I (607) net80211: net80211 rom version: e7ae62f
+I (617) wifi:wifi driver task: 3fcdc55c, prio:23, stack:6656, core=0
+I (617) wifi:wifi firmware version: e12a754
+I (617) wifi:wifi certification version: v7.0
+I (627) wifi:config NVS flash: disabled
+I (627) wifi:config nano formatting: disabled
+I (627) wifi:Init data frame dynamic rx buffer num: 6
+I (637) wifi:Init dynamic rx mgmt buffer num: 5
+I (637) wifi:Init management short buffer num: 32
+I (647) wifi:Init dynamic tx buffer num: 32
+I (647) wifi:Init static tx FG buffer num: 2
+I (657) wifi:Init static rx buffer size: 1600
+I (657) wifi:Init static rx buffer num: 3
+I (657) wifi:Init dynamic rx buffer num: 6
+I (667) wifi_init: rx ba win: 3
+I (667) wifi_init: accept mbox: 6
+I (667) wifi_init: tcpip mbox: 16
+I (677) wifi_init: udp mbox: 6
+I (677) wifi_init: tcp mbox: 6
+I (677) wifi_init: tcp tx win: 5760
+I (677) wifi_init: tcp rx win: 5760
+I (687) wifi_init: tcp mss: 1440
+I (687) WifiManager: Initialized
+I (697) WifiBoard: Starting WiFi connection attempt
+I (697) WifiManager: Starting station
+I (697) WifiStation: Station DHCP hostname: Xiaozhi-E330
+I (707) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+I (747) phy_init: Saving new calibration data due to checksum failure or outdated calibration data, mode(0)
+I (807) wifi:mode : sta (3c:dc:75:63:e3:30)
+I (807) wifi:enable tsf
+I (807) WifiStation: Scanning saved channel 4
+I (807) WifiBoard: WiFi scanning
+I (927) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -46, Channel: 4, Authmode: 3
+I (927) WifiBoard: WiFi connecting to TINIHI
+W (927) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (987) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
+I (997) wifi:state: init -> auth (0xb0)
+I (997) wifi:state: auth -> assoc (0x0)
+I (1007) wifi:state: assoc -> run (0x10)
+I (1097) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:1(originator)
+I (1097) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:0(recipient)
+I (1097) wifi:[ADDBA]RX DELBA, reason:39, delete tid:7, initiator:1(originator)
+I (1107) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
+I (1107) wifi:security: WPA2-PSK, phy: bgn, rssi: -46, cipher(pairwise:0x3, group:0x3), pmf:0
+I (1117) wifi:pm start, type: 1
+
+I (1127) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
+I (1127) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
+I (1137) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (1187) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
+I (2327) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
+I (2327) WifiStation: Got IP: 192.168.1.18
+I (2327) WifiBoard: Connected to WiFi: TINIHI
+I (2327) Application: Network connected
+I (2327) StateMachine: State: starting -> activating
+I (2337) Assets: The storage free size is 22016 KB
+I (2337) Assets: The assets map size is 960 KB (partition 8192 KB)
+I (2397) Assets: The checksum calculation time is 53 ms
+I (2407) Assets: Refreshing display theme...
+I (2407) Ota: Current version: 2.5.0
+I (3787) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:0, winSize:64
+I (3837) wifi:<ba-del>idx:1, tid:5
+I (3847) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
+I (4457) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=2040
+E (4737) Dynamic Impl: mbedtls_ssl_fetch_input error=76
+E (4737) esp-tls-mbedtls: read error :-0x004C
+E (4737) EspSsl: SSL receive failed: -76
+I (4747) HttpClient: HTTP connection closed
+I (4747) Ota: Current is the latest version
+I (4747) Ota: Running partition: ota_0
+I (4757) MQTT: Connecting to endpoint api.tenclass.net:8883
+I (4757) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
+I (5517) MQTT: Connected to endpoint
+I (5517) Application: Activation done
+I (5517) SystemInfo: free sram: 163027 minimal sram: 59604
+I (5517) StateMachine: State: activating -> idle
+I (5527) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (5527) wifi:Set ps type: 2, coexist: 0
+
+E (5537) MODEL_LOADER: Can not find model in partition table
+W (5537) AFE_CONFIG: wakenet model not found. please load wakenet model...
+I (5547) AfeAudioEngine: Before AFE create: free=171635 min=59468 largest=98304
+I (5557) AFE: AFE Version: (1MIC_V251128)
+I (5557) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (5567) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
+I (5577) AFE: AFE Version: (1MIC_V251128)
+I (5577) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (5587) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
+I (5587) AfeAudioEngine: Initialized FD AFE, detector: none, NS: off, feed: 512, fetch: 512
+I (5597) AfeAudioEngine: After AFE create: free=169951 min=59468 largest=98304
+I (5607) AudioCodec: Set output enable to true
+I (5607) AudioService: Resampling audio from 16000 to 24000
+I (14547) SystemInfo: free sram: 169607 minimal sram: 59468
+I (22607) AudioCodec: Set output enable to false
