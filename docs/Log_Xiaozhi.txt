@@ -30,8 +30,8 @@ I (96) cpu_start: cpu freq: 240000000 Hz
 I (98) app_init: Application information:
 I (102) app_init: Project name:     xiaozhi
 I (106) app_init: App version:      2.5.0
-I (109) app_init: Compile time:     Sep 21 2026 17:16:53
-I (114) app_init: ELF file SHA256:  3d10413de...
+I (109) app_init: Compile time:     Sep 21 2026 19:08:17
+I (114) app_init: ELF file SHA256:  bc58159a5...
 I (119) app_init: ESP-IDF:          v6.1
 I (122) efuse_init: Min chip rev:     v0.0
 I (126) efuse_init: Max chip rev:     v0.99
@@ -65,7 +65,7 @@ I (477) StateMachine: State: unknown -> starting
 I (547) NoAudioCodec: Simplex channels created
 I (547) AudioCodec: Audio codec started
 I (547) Application: After board/audio init
-I (547) SystemInfo: free sram: 217987 minimal sram: 116460
+I (547) SystemInfo: free sram: 217863 minimal sram: 116336
 I (547) MCP: Add tool: self.get_device_status
 I (557) MCP: Add tool: self.audio_speaker.set_volume
 I (557) MCP: Add tool: self.screen.set_brightness
@@ -80,7 +80,7 @@ I (597) MCP: Add tool: self.assets.set_download_url [user]
 I (597) WifiManager: Initializing...
 I (607) pp: pp rom version: e7ae62f
 I (607) net80211: net80211 rom version: e7ae62f
-I (617) wifi:wifi driver task: 3fcdc55c, prio:23, stack:6656, core=0
+I (617) wifi:wifi driver task: 3fcdc5d8, prio:23, stack:6656, core=0
 I (617) wifi:wifi firmware version: e12a754
 I (617) wifi:wifi certification version: v7.0
 I (627) wifi:config NVS flash: disabled
@@ -106,70 +106,67 @@ I (697) WifiBoard: Starting WiFi connection attempt
 I (697) WifiManager: Starting station
 I (697) WifiStation: Station DHCP hostname: Xiaozhi-E330
 I (707) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
-I (747) phy_init: Saving new calibration data due to checksum failure or outdated calibration data, mode(0)
-I (807) wifi:mode : sta (3c:dc:75:63:e3:30)
-I (807) wifi:enable tsf
-I (807) WifiStation: Scanning saved channel 4
-I (807) WifiBoard: WiFi scanning
-I (927) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -46, Channel: 4, Authmode: 3
-I (927) WifiBoard: WiFi connecting to TINIHI
-W (927) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
-I (987) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
-I (997) wifi:state: init -> auth (0xb0)
-I (997) wifi:state: auth -> assoc (0x0)
-I (1007) wifi:state: assoc -> run (0x10)
-I (1097) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:1(originator)
-I (1097) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:0(recipient)
-I (1097) wifi:[ADDBA]RX DELBA, reason:39, delete tid:7, initiator:1(originator)
-I (1107) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
-I (1107) wifi:security: WPA2-PSK, phy: bgn, rssi: -46, cipher(pairwise:0x3, group:0x3), pmf:0
-I (1117) wifi:pm start, type: 1
+I (747) wifi:mode : sta (3c:dc:75:63:e3:30)
+I (747) wifi:enable tsf
+I (747) WifiStation: Scanning saved channel 4
+I (747) WifiBoard: WiFi scanning
+I (867) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -53, Channel: 4, Authmode: 3
+I (867) WifiBoard: WiFi connecting to TINIHI
+W (867) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (937) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
+I (937) wifi:state: init -> auth (0xb0)
+I (937) wifi:state: auth -> assoc (0x0)
+I (947) wifi:state: assoc -> run (0x10)
+I (1037) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:1(originator)
+I (1047) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:0(recipient)
+I (1047) wifi:[ADDBA]RX DELBA, reason:39, delete tid:7, initiator:1(originator)
+I (1057) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
+I (1057) wifi:security: WPA2-PSK, phy: bgn, rssi: -54, cipher(pairwise:0x3, group:0x3), pmf:0
+I (1067) wifi:pm start, type: 1
 
-I (1127) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
-I (1127) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
-I (1137) wifi:AP's beacon interval = 102400 us, DTIM period = 1
-I (1187) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
-I (2327) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
-I (2327) WifiStation: Got IP: 192.168.1.18
-I (2327) WifiBoard: Connected to WiFi: TINIHI
-I (2327) Application: Network connected
-I (2327) StateMachine: State: starting -> activating
-I (2337) Assets: The storage free size is 22016 KB
-I (2337) Assets: The assets map size is 960 KB (partition 8192 KB)
-I (2397) Assets: The checksum calculation time is 53 ms
-I (2407) Assets: Refreshing display theme...
-I (2407) Ota: Current version: 2.5.0
-I (3787) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:0, winSize:64
-I (3837) wifi:<ba-del>idx:1, tid:5
-I (3847) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
-I (4457) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=2040
-E (4737) Dynamic Impl: mbedtls_ssl_fetch_input error=76
-E (4737) esp-tls-mbedtls: read error :-0x004C
-E (4737) EspSsl: SSL receive failed: -76
-I (4747) HttpClient: HTTP connection closed
-I (4747) Ota: Current is the latest version
-I (4747) Ota: Running partition: ota_0
-I (4757) MQTT: Connecting to endpoint api.tenclass.net:8883
-I (4757) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
-I (5517) MQTT: Connected to endpoint
-I (5517) Application: Activation done
-I (5517) SystemInfo: free sram: 163027 minimal sram: 59604
-I (5517) StateMachine: State: activating -> idle
-I (5527) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
-I (5527) wifi:Set ps type: 2, coexist: 0
+I (1067) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
+I (1077) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
+I (1127) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (1157) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
+I (2337) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
+I (2337) WifiStation: Got IP: 192.168.1.18
+I (2337) WifiBoard: Connected to WiFi: TINIHI
+I (2337) Application: Network connected
+I (2337) StateMachine: State: starting -> activating
+I (2347) Assets: The storage free size is 22016 KB
+I (2347) Assets: The assets map size is 960 KB (partition 8192 KB)
+I (2407) Assets: The checksum calculation time is 53 ms
+I (2417) Assets: Refreshing display theme...
+I (2417) Ota: Current version: 2.5.0
+I (2437) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:1, winSize:64
+I (2487) wifi:<ba-del>idx:1, tid:5
+I (2487) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
+I (3117) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=690
+I (3487) HttpClient: HTTP connection closed
+I (3487) Ota: Current is the latest version
+I (3487) Ota: Running partition: ota_0
+I (3497) MQTT: Connecting to endpoint api.tenclass.net:8883
+I (3497) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
+I (4217) MQTT: Connected to endpoint
+I (4217) Application: Activation done
+I (4217) SystemInfo: free sram: 163263 minimal sram: 59632
+I (4217) StateMachine: State: activating -> idle
+I (4217) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (4227) wifi:Set ps type: 2, coexist: 0
 
-E (5537) MODEL_LOADER: Can not find model in partition table
-W (5537) AFE_CONFIG: wakenet model not found. please load wakenet model...
-I (5547) AfeAudioEngine: Before AFE create: free=171635 min=59468 largest=98304
-I (5557) AFE: AFE Version: (1MIC_V251128)
-I (5557) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (5567) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
-I (5577) AFE: AFE Version: (1MIC_V251128)
-I (5577) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (5587) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
-I (5587) AfeAudioEngine: Initialized FD AFE, detector: none, NS: off, feed: 512, fetch: 512
-I (5597) AfeAudioEngine: After AFE create: free=169951 min=59468 largest=98304
-I (5607) AudioCodec: Set output enable to true
-I (5607) AudioService: Resampling audio from 16000 to 24000
-I (14547) SystemInfo: free sram: 169607 minimal sram: 59468
-I (22607) AudioCodec: Set output enable to false
+E (4227) MODEL_LOADER: Can not find model in partition table
+W (4237) AFE_CONFIG: wakenet model not found. please load wakenet model...
+I (4237) AfeAudioEngine: Before AFE create: free=171683 min=59516 largest=98304
+I (4247) AFE: AFE Version: (1MIC_V251128)
+I (4247) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4257) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
+I (4267) AFE: AFE Version: (1MIC_V251128)
+I (4267) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4277) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
+I (4287) AfeAudioEngine: Initialized FD AFE, detector: none, NS: off, feed: 512, fetch: 512
+I (4287) AfeAudioEngine: After AFE create: free=170023 min=59516 largest=98304
+I (4307) AudioCodec: Set output enable to true
+I (4307) AudioService: Resampling audio from 16000 to 24000
+I (13547) SystemInfo: free sram: 169623 minimal sram: 59516
+I (21307) AudioCodec: Set output enable to false
+I (23547) SystemInfo: free sram: 169659 minimal sram: 59516

@@ -85,6 +85,14 @@ private:
         talk_button_.OnClick([this]() {
             if (!long_pressed_.load()) Application::GetInstance().ToggleChatState();
         });
+        talk_button_.OnDoubleClick([this]() {
+            if (long_pressed_.load()) return;
+            // Button callbacks run outside the LVGL task. Use the established
+            // application dispatcher; the display method acquires its own lock.
+            Application::GetInstance().Schedule([this]() {
+                if (display_) display_->ToggleStatusPage();
+            });
+        });
     }
 
     void InitializeSpiAndPanel() {
