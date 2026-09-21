@@ -161,23 +161,26 @@ private:
                                                    smv::kPharmacistReviewJson);
         auto& mcp = McpServer::GetInstance();
         mcp.AddTool("self.medical.get_intake_schema",
-            "SmartMediVend: call at the start of every health intake. Use the returned "
-            "field/enum schema, local symptom descriptions and one-question screening. "
-            "or an authorization to dispense medicine. Do not infer negative answers.",
+            "At the start of health intake, get SHORT enum labels and fields. Do not read "
+            "the schema aloud. Next screening question comes from evaluate_symptoms.",
             PropertyList(), [](const PropertyList&) -> ReturnValue {
                 return advisor.IntakeSchema();
             });
+        mcp.AddTool("self.medical.get_symptom_guide",
+            "Optional SHORT guide for ONE already-reported symptom enum; use only if "
+            "classification is ambiguous. This is NOT a drug recommendation. Never read "
+            "all screening questions aloud; ask only evaluate_symptoms.next_question_vi.",
+            PropertyList({Property("symptom_enum", kPropertyTypeString).SetMaxLength(64)}),
+            [](const PropertyList& properties) -> ReturnValue {
+                return advisor.SymptomGuide(properties["symptom_enum"].value<std::string>());
+            });
         mcp.AddTool("self.medical.evaluate_symptoms",
-            "SmartMediVend: submit complete JSON snapshot of user-REPORTED facts after "
-            "each turn. Call get_intake_schema first. Ask ONLY next_question_vi, ONE "
-            "short question per reply, and repeat if not explicitly answered. Never "
-            "merge unrelated yes/no replies into multiple negatives. JSON keys: session_id, turn_id, "
-            "age_years, weight_kg, pregnancy_or_breastfeeding, symptoms, duration_hours, "
-            "danger_signs, conditions, current_medicines, drug_allergies, screening_answers. Do not insert "
-            "unknown=false or unknown=[]. NEVER send sku, channel, relay, vend, quantity. "
-            "If status is NEED_MORE_INFO ask for missing; REFER/DENY refer to medical "
-            "professional. PROVISIONAL_OPTIONS are illustrative ONLY, stock is unverified, "
-            "no actual dispensing, diagnosis or dosing. Never invent an alternative.",
+            "Submit JSON snapshot of explicitly reported facts after EACH reply; omit unknown "
+            "fields. Use ONLY next_question_vi, with no second question or long preface. "
+            "If reply is unclear or unrelated, repeat same pending question. Never infer "
+            "negatives. screening_answers only for the one explicitly answered question. "
+            "NEED_MORE_INFO: ask; REFER/DENY: stop. PROVISIONAL_OPTIONS: unverified "
+            "information only. No diagnosis, SKU, channel, relay, dose or vending.",
             PropertyList({Property("payload_json", kPropertyTypeString).SetMaxLength(4096)}),
             [](const PropertyList& properties) -> ReturnValue {
                 return advisor.Evaluate(properties["payload_json"].value<std::string>());

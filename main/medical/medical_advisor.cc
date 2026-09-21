@@ -155,44 +155,91 @@ MedicalAdvisor::MedicalAdvisor(const char* rules, const char* catalog, const cha
     : rules_(rules ? rules : ""), catalog_(catalog ? catalog : ""), review_(review ? review : "") {}
 
 std::string MedicalAdvisor::IntakeSchema() const {
+    // The legacy response copied every screening question, 13 long drug guides,
+    // and dozens of flags into a single MQTT PUBLISH. Only expose the concise
+    // intake contract here; Evaluate() reads all authoritative local rules and
+    // returns exactly ONE applicable question on each call.
+    const auto rules = Parse(rules_);
+    const auto catalog = Parse(catalog_);
+    if (!rules || !catalog || !cJSON_IsObject(Get(rules.get(), "interview")) ||
+        !cJSON_IsObject(Get(Get(rules.get(), "interview"), "symptom_checks")) ||
+        !cJSON_IsArray(Get(rules.get(), "global_required_fields")))
+        return Error("DENY", "LOCAL_DATA_UNAVAILABLE");
+
+    auto out = Make();
+    Put(out.get(), "purpose", "INTAKE_ONLY_NO_DIAGNOSIS_NO_VEND");
+    Put(out.get(), "instruction", "Describe the user's symptoms without assuming mildness or a diagnosis. Call evaluate_symptoms after EACH user reply using only facts explicitly stated. Ask only next_question_vi, with no preface or extra question. Unclear, incomplete or unrelated reply: repeat the pending question without adding an answer. Unknown fields are OMITTED, never false or []. Never suggest a medicine before a device result.");
+    cJSON* fields = cJSON_Duplicate(Get(rules.get(), "global_required_fields"), 1);
+    if (!fields) return Error("DENY", "LOCAL_DATA_UNAVAILABLE");
+    cJSON_AddItemToObject(out.get(), "required_fields", fields);
+
+    // Brief symptom-to-enum hints, NOT medicine names and NOT clinical approval.
+    // The local symptom checks and exclusion rules remain in medical_rules.json.
+    static constexpr struct { const char* id; const char* vi; } kLabels[] = {
+        {"fever", "sốt đo nhiệt độ"}, {"mild_headache", "đau đầu nhẹ; chưa rõ mức độ thì hỏi lại"},
+        {"mild_body_ache", "đau mỏi nhẹ"}, {"mild_inflammatory_pain", "đau cơ hay khớp nhẹ"},
+        {"allergic_rhinitis", "hắt hơi, ngứa mũi/mắt do dị ứng"},
+        {"dry_cough", "ho không đờm"}, {"productive_cough", "ho có đờm"},
+        {"mild_sore_throat", "đau rát họng nhẹ"}, {"gas_bloating", "đầy hơi, ợ hơi"},
+        {"acid_indigestion", "ợ nóng, khó tiêu acid"}, {"short_term_reflux", "ợ chua, trào ngược"},
+        {"acute_watery_diarrhoea", "tiêu chảy phân nước"},
+        {"short_term_constipation", "táo bón ngắn hạn"},
+        {"motion_sickness", "buồn nôn chỉ khi đi tàu xe"},
+        {"digestive_support", "hỗ trợ tiêu chảy; không dùng cho đau bụng đơn độc"}
+    };
+    const auto supported = AllowedSymptoms(rules.get());
+    auto* groups = cJSON_CreateObject();
+    if (!groups) return Error("DENY", "LOCAL_DATA_UNAVAILABLE");
+    cJSON_AddItemToObject(out.get(), "symptom_labels_vi", groups);
+    for (const auto& item : kLabels) {
+        if (supported.count(item.id)) Put(groups, item.id, item.vi);
+    }
+    if (cJSON_GetArraySize(groups) != static_cast<int>(supported.size()))
+        return Error("DENY", "UNMAPPED_SYMPTOM");
+    Put(out.get(), "unknown_semantics", "Omit unknowns. [] only after explicitly asked and denied; 'no' answers ONLY the one pending question.");
+    Put(out.get(), "stock_semantics", "Initial catalog stock unverified; dispensing disabled.");
+    cJSON_AddBoolToObject(out.get(), "vend_allowed", false);
+    const std::string response = Serialize(out.get());
+    // Bound the *text* result as well as the transport. Fail closed if someone
+    // later grows this bootstrap schema into another oversized MQTT message.
+    return response.size() <= 3200 ? response : Error("DENY", "INTAKE_SCHEMA_TOO_LARGE");
+}
+
+
+std::string MedicalAdvisor::SymptomGuide(const std::string& symptom_enum) const {
+    // Detailed guidance is fetched for ONE symptom only, not bundled into a
+    // 13-medicine schema response. This tool cannot issue any drug authorization.
+    if (symptom_enum.empty() || symptom_enum.size() > 64)
+        return Error("DENY", "INVALID_SYMPTOM_ENUM");
     const auto rules = Parse(rules_);
     const auto catalog = Parse(catalog_);
     if (!rules || !catalog) return Error("DENY", "LOCAL_DATA_UNAVAILABLE");
+    const auto supported = AllowedSymptoms(rules.get());
+    if (!supported.count(symptom_enum)) return Error("DENY", "UNKNOWN_SYMPTOM");
+    const auto* checks = Get(Get(Get(rules.get(), "interview"), "symptom_checks"), symptom_enum.c_str());
+    if (!cJSON_IsArray(checks) || !cJSON_GetArraySize(checks))
+        return Error("DENY", "INVALID_INTERVIEW_CONFIG");
     auto out = Make();
-    Put(out.get(), "purpose", "INTAKE_ONLY_NO_DIAGNOSIS_NO_VEND");
-    Put(out.get(), "instruction", "Ask EXACTLY ONE SHORT question per turn, preferring next_question_vi returned by evaluate_symptoms. Do not ask a second question or add a list. If reply is absent, garbled, ambiguous, or unrelated repeat the SAME pending question or ask for clarification, without changing that field. Submit a full snapshot every turn. Unanswered keys MUST BE OMITTED, never default to false or []. screening_answers must contain only explicit yes/no answers to the matching question_id. Never invent negatives or name medicines before device response.");
-    const cJSON* interview = Get(rules.get(), "interview");
-    if (!cJSON_IsObject(interview)) return Error("DENY", "INTERVIEW_CONFIG_UNAVAILABLE");
-    auto* check_copy = cJSON_Duplicate(interview, 1);
-    if (check_copy) cJSON_AddItemToObject(out.get(), "interview", check_copy);
-    auto* guides = cJSON_AddArrayToObject(out.get(), "symptom_guides");
+    Put(out.get(), "symptom_enum", symptom_enum.c_str());
+    auto* questions = cJSON_Duplicate(checks, 1);
+    if (!questions) return Error("DENY", "LOCAL_DATA_UNAVAILABLE");
+    cJSON_AddItemToObject(out.get(), "checks_reference_only", questions);
+    const cJSON* rule = nullptr;
     const cJSON* slot = nullptr;
-    cJSON_ArrayForEach(slot, Get(catalog.get(), "slots")) {
-        if (cJSON_IsNumber(Get(slot, "backup_of_channel"))) continue;
-        auto* guide = cJSON_CreateObject();
-        const char* id = Str(Get(slot, "canonical_id"));
-        const char* group = Str(Get(slot, "symptom_group"));
-        const char* caution = Str(Get(slot, "differentiate_and_escalate"));
-        if (!id || !group || !caution) { cJSON_Delete(guide); return Error("DENY", "INVALID_SYMPTOM_GUIDE"); }
-        Put(guide, "canonical_id", id); Put(guide, "symptom_cues_vi", group);
-        Put(guide, "do_not_confuse_with_vi", caution);
-        cJSON_AddItemToArray(guides, guide);
+    cJSON_ArrayForEach(rule, Get(rules.get(), "medicine_rules")) {
+        const char* canonical = Str(Get(rule, "canonical_id"));
+        if (!canonical || !HasAny(std::set<std::string>{symptom_enum}, Get(rule, "symptoms"))) continue;
+        slot = FindSlot(catalog.get(), canonical, false);
+        if (slot) break;
     }
-    cJSON* fields = cJSON_Duplicate(Get(rules.get(), "global_required_fields"), 1);
-    if (fields) cJSON_AddItemToObject(out.get(), "required_fields", fields);
-    cJSON* danger = cJSON_Duplicate(Get(rules.get(), "global_danger_signs"), 1);
-    if (danger) cJSON_AddItemToObject(out.get(), "danger_sign_enums", danger);
-    auto symptoms = AllowedSymptoms(rules.get());
-    auto flags = AllowedFlags(rules.get());
-    auto a = cJSON_AddArrayToObject(out.get(), "symptom_enums");
-    for (const auto& s : symptoms) AddText(a, s);
-    a = cJSON_AddArrayToObject(out.get(), "conditions_and_medicine_flags");
-    for (const auto& s : flags) AddText(a, s);
-    Put(out.get(), "array_semantics", "[] requires explicit negative answer; unknown must be omitted");
-    Put(out.get(), "allergy_semantics", "Any reported drug allergy requires professional review; [] only after explicit no-allergy answer");
-    Put(out.get(), "stock_semantics", "Catalog initial_stock is NOT verified current stock; no dispensing enabled");
+    if (!slot) return Error("DENY", "NO_SYMPTOM_GUIDE");
+    if (const char* cue = Str(Get(slot, "symptom_group"))) Put(out.get(), "symptom_cues_vi", cue);
+    if (const char* caution = Str(Get(slot, "differentiate_and_escalate")))
+        Put(out.get(), "do_not_confuse_with_vi", caution);
+    Put(out.get(), "instruction", "Use to clarify symptom classification only; do not read all checks in one turn. Actual next question and any provisional option MUST come from evaluate_symptoms.");
     cJSON_AddBoolToObject(out.get(), "vend_allowed", false);
-    return Serialize(out.get());
+    const std::string response = Serialize(out.get());
+    return response.size() <= 2400 ? response : Error("DENY", "SYMPTOM_GUIDE_TOO_LARGE");
 }
 
 std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {

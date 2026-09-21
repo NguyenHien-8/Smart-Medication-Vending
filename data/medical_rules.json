@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "rules_version": "rules-2026-09-22-interview-pilot",
+  "rules_version": "rules-2026-09-22-interview-pilot-v2",
   "status": "PHARMACIST_REVIEW_REQUIRED",
   "scope": {
     "minimum_age_years": 16,
@@ -321,6 +321,12 @@
           "question_vi": "Bạn có cứng cổ khi bị đau đầu không?",
           "expected": false,
           "on_mismatch": "REFER"
+        },
+        {
+          "id": "headache_mild",
+          "question_vi": "Cơn đau đầu có ở mức nhẹ không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
         }
       ],
       "mild_body_ache": [

@@ -16,7 +16,7 @@ std::string Field(const std::string& s, const char* key) {
     return cJSON_IsString(field) ? field->valuestring : "";
 }
 std::string Snapshot(const std::string& extra) {
-    return std::string("{\"session_id\":\"host-test\",\"turn_id\":1,\"age_years\":30,\"weight_kg\":65,\"pregnancy_or_breastfeeding\":false,\"symptoms\":[\"mild_headache\"],\"duration_hours\":3,\"danger_signs\":[],\"conditions\":[],\"current_medicines\":[],\"drug_allergies\":[],\"screening_answers\":{\"redflag_breathing\":false,\"redflag_neurologic\":false,\"redflag_weakness\":false,\"redflag_bleeding\":false,\"redflag_black_stool\":false,\"redflag_other\":false,\"headache_sudden\":false,\"headache_vomit\":false,\"headache_stiff\":false}") + extra + "}";
+    return std::string("{\"session_id\":\"host-test\",\"turn_id\":1,\"age_years\":30,\"weight_kg\":65,\"pregnancy_or_breastfeeding\":false,\"symptoms\":[\"mild_headache\"],\"duration_hours\":3,\"danger_signs\":[],\"conditions\":[],\"current_medicines\":[],\"drug_allergies\":[],\"screening_answers\":{\"redflag_breathing\":false,\"redflag_neurologic\":false,\"redflag_weakness\":false,\"redflag_bleeding\":false,\"redflag_black_stool\":false,\"redflag_other\":false,\"headache_sudden\":false,\"headache_vomit\":false,\"headache_stiff\":false,\"headache_mild\":true}") + extra + "}";
 }
 void Expect(const smv::MedicalAdvisor& advisor, const std::string& json, const char* status, const char* reason = nullptr) {
     std::string result=advisor.Evaluate(json);
@@ -57,8 +57,22 @@ int main(int argc, char** argv) {
         test(std::string(4200,'x'), "DENY", "INPUT_TOO_LARGE");
         test("{\"session_id\":\"x\",\"turn_id\":0}", "DENY", "INVALID_SESSION_OR_TURN");
         test("{\"session_id\":\"x\",\"turn_id\":1,\"danger_signs\":[\"chest_pain\"]}", "REFER", "POSSIBLE_DANGER_SIGN");
-        test("{\"session_id\":\"x\",\"turn_id\":1,\"age_years\":20,\"pregnancy_or_breastfeeding\":false,\"symptoms\":[\"mild_headache\"],\"duration_hours\":3,\"weight_kg\":65,\"danger_signs\":[],\"conditions\":[],\"current_medicines\":[],\"drug_allergies\":[\"penicillin\"],\"screening_answers\":{\"redflag_breathing\":false,\"redflag_neurologic\":false,\"redflag_weakness\":false,\"redflag_bleeding\":false,\"redflag_black_stool\":false,\"redflag_other\":false,\"headache_sudden\":false,\"headache_vomit\":false,\"headache_stiff\":false}}","REFER", "UNREVIEWED_CONDITION_MEDICINE_OR_ALLERGY");
-        test("{\"session_id\":\"x\",\"turn_id\":1,\"age_years\":20,\"pregnancy_or_breastfeeding\":false,\"symptoms\":[\"mild_headache\"],\"duration_hours\":3,\"weight_kg\":65,\"danger_signs\":[],\"conditions\":[\"unknown_condition\"],\"current_medicines\":[],\"drug_allergies\":[],\"screening_answers\":{\"redflag_breathing\":false,\"redflag_neurologic\":false,\"redflag_weakness\":false,\"redflag_bleeding\":false,\"redflag_black_stool\":false,\"redflag_other\":false,\"headache_sudden\":false,\"headache_vomit\":false,\"headache_stiff\":false}}","REFER", "UNREVIEWED_CONDITION_MEDICINE_OR_ALLERGY");
+        test("{\"session_id\":\"x\",\"turn_id\":1,\"age_years\":20,\"pregnancy_or_breastfeeding\":false,\"symptoms\":[\"mild_headache\"],\"duration_hours\":3,\"weight_kg\":65,\"danger_signs\":[],\"conditions\":[],\"current_medicines\":[],\"drug_allergies\":[\"penicillin\"],\"screening_answers\":{\"redflag_breathing\":false,\"redflag_neurologic\":false,\"redflag_weakness\":false,\"redflag_bleeding\":false,\"redflag_black_stool\":false,\"redflag_other\":false,\"headache_sudden\":false,\"headache_vomit\":false,\"headache_stiff\":false,\"headache_mild\":true}}","REFER", "UNREVIEWED_CONDITION_MEDICINE_OR_ALLERGY");
+        test("{\"session_id\":\"x\",\"turn_id\":1,\"age_years\":20,\"pregnancy_or_breastfeeding\":false,\"symptoms\":[\"mild_headache\"],\"duration_hours\":3,\"weight_kg\":65,\"danger_signs\":[],\"conditions\":[\"unknown_condition\"],\"current_medicines\":[],\"drug_allergies\":[],\"screening_answers\":{\"redflag_breathing\":false,\"redflag_neurologic\":false,\"redflag_weakness\":false,\"redflag_bleeding\":false,\"redflag_black_stool\":false,\"redflag_other\":false,\"headache_sudden\":false,\"headache_vomit\":false,\"headache_stiff\":false,\"headache_mild\":true}}","REFER", "UNREVIEWED_CONDITION_MEDICINE_OR_ALLERGY");
+        // A generic "headache" transcript never proves MILD severity. Missing
+        // severity must force another brief question before any option appears.
+        {
+            std::string incomplete = Snapshot("");
+            const std::string marker = ",\"headache_mild\":true";
+            const auto pos = incomplete.find(marker);
+            if (pos == std::string::npos) throw std::runtime_error("severity test fixture absent");
+            incomplete.erase(pos, marker.size());
+            const auto reply = a.Evaluate(incomplete);
+            if (Field(reply, "status") != "NEED_MORE_INFO" ||
+                Field(reply, "next_question_id") != "headache_mild")
+                throw std::runtime_error("missing headache severity was not re-asked");
+            ++n;
+        }
         auto ReplaceOnce = [](std::string s, const std::string& from, const std::string& to) {
             auto pos = s.find(from);
             if (pos == std::string::npos) throw std::runtime_error("test setup failed");
@@ -87,7 +101,21 @@ int main(int argc, char** argv) {
         unreviewed_catalog.replace(stock_idx, std::string("\"initial_stock\": 5").size(), "\"initial_stock\": 0");
         smv::MedicalAdvisor no_catalog_stock(rules.c_str(), unreviewed_catalog.c_str(), review.c_str());
         Expect(no_catalog_stock, Snapshot(""), "REFER", "NO_REVIEWABLE_OPTION_IN_CATALOG"); ++n;
-        if (Field(a.IntakeSchema(), "purpose") != "INTAKE_ONLY_NO_DIAGNOSIS_NO_VEND") throw std::runtime_error("schema invalid");
+        const std::string schema = a.IntakeSchema();
+        if (Field(schema, "purpose") != "INTAKE_ONLY_NO_DIAGNOSIS_NO_VEND" ||
+            schema.size() > 3200 || schema.find("\"interview\"") != std::string::npos ||
+            schema.find("\"symptom_guides\"") != std::string::npos)
+            throw std::runtime_error("intake schema is too large or leaks full rules");
+        std::cout << "HOST_INTAKE_SCHEMA_BYTES=" << schema.size() << "\n";
+        ++n;
+        auto guide = a.SymptomGuide("mild_headache");
+        if (Field(guide, "symptom_enum") != "mild_headache" || guide.size() > 2400 ||
+            guide.find("headache_sudden") == std::string::npos)
+            throw std::runtime_error("on-demand symptom guide failed");
+        std::cout << "HOST_HEADACHE_GUIDE_BYTES=" << guide.size() << "\n";
+        ++n;
+        if (Field(a.SymptomGuide("bad_input"), "status") != "DENY")
+            throw std::runtime_error("unrecognized symptom guide accepted");
         ++n;
         // Exercise every symptom profile, not only the headache happy path. Each
         // is guarded by exactly one next_question; skipped answers never pass.
@@ -99,6 +127,12 @@ int main(int argc, char** argv) {
         const cJSON* profile = nullptr;
         cJSON_ArrayForEach(profile, profiles) {
             if (!profile->string) throw std::runtime_error("profile has no enum");
+            const std::string per_symptom_guide = a.SymptomGuide(profile->string);
+            if (Field(per_symptom_guide, "symptom_enum") != profile->string ||
+                per_symptom_guide.size() > 2400 ||
+                Field(per_symptom_guide, "status") == "DENY")
+                throw std::runtime_error(std::string("guide failed for: ") + profile->string);
+            ++n;
             const std::string baseline = Snapshot("");
             auto doc = std::unique_ptr<cJSON, decltype(&cJSON_Delete)>(cJSON_ParseWithLength(baseline.c_str(), baseline.size()), &cJSON_Delete);
             cJSON_DeleteItemFromObjectCaseSensitive(doc.get(), "symptoms");

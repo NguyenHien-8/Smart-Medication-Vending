@@ -14,319 +14,212 @@ I (34) octal_psram: dev id       : 0x02 (generation 3)
 I (34) octal_psram: density      : 0x03 (64 Mbit)
 I (36) octal_psram: good-die     : 0x01 (Pass)
 I (40) octal_psram: Latency      : 0x01 (Fixed)
-I (44) octal_psram: VCC          : 0x01 (3V)
-I (48) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (45) octal_psram: VCC          : 0x01 (3V)
+I (49) octal_psram: SRF          : 0x01 (Fast Refresh)
 I (53) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
 I (58) octal_psram: BurstLen     : 0x01 (32 Byte)
-I (62) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
-I (67) octal_psram: DriveStrength: 0x00 (1/1)
-I (71) MSPI Timing: Enter psram timing tuning
-I (76) esp_psram: Found 8MB PSRAM device
-I (79) esp_psram: Speed: 80MHz
+I (63) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (68) octal_psram: DriveStrength: 0x00 (1/1)
+I (72) MSPI Timing: Enter psram timing tuning
+I (77) esp_psram: Found 8MB PSRAM device
+I (80) esp_psram: Speed: 80MHz
 I (82) cpu_start: Multicore app
-I (96) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
-I (96) cpu_start: Pro cpu start user code
-I (96) cpu_start: cpu freq: 240000000 Hz
-I (98) app_init: Application information:
+I (97) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+I (97) cpu_start: Pro cpu start user code
+I (97) cpu_start: cpu freq: 240000000 Hz
+I (99) app_init: Application information:
 I (102) app_init: Project name:     xiaozhi
 I (106) app_init: App version:      2.5.0
-I (109) app_init: Compile time:     Sep 21 2026 23:40:17
-I (115) app_init: ELF file SHA256:  2a5699ad5...
+I (110) app_init: Compile time:     Sep 22 2026 02:16:22
+I (115) app_init: ELF file SHA256:  ffb7d3721...
 I (119) app_init: ESP-IDF:          v6.1
-I (122) efuse_init: Min chip rev:     v0.0
-I (126) efuse_init: Max chip rev:     v0.99
-I (130) efuse_init: Chip rev:         v0.2
-I (134) heap_init: Initializing. RAM available for dynamic allocation:
-I (140) heap_init: At 3FCAC7F0 len 0003CF20 (243 KiB): RAM
+I (123) efuse_init: Min chip rev:     v0.0
+I (127) efuse_init: Max chip rev:     v0.99
+I (131) efuse_init: Chip rev:         v0.2
+I (135) heap_init: Initializing. RAM available for dynamic allocation:
+I (141) heap_init: At 3FCAC880 len 0003CE90 (243 KiB): RAM
 I (146) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
 I (151) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
 I (156) heap_init: At 600FE000 len 00001FD8 (7 KiB): RTCRAM
-I (161) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
-I (168) spi_flash: detected chip: boya
-I (171) spi_flash: flash io: qio
+I (162) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (169) spi_flash: detected chip: boya
+I (172) spi_flash: flash io: qio
 I (175) sleep_gpio: Configure to isolate all GPIO pins in sleep state
-I (180) sleep_gpio: Enable automatic switching of GPIO sleep configuration
-I (187) main_task: Started on CPU0
-I (207) esp_psram: Reserving pool of 100K of internal memory for DMA/internal allocations
-I (207) main_task: Calling app_main()
-I (217) Board: UUID=b40507c0-22db-43e4-87b9-9b17d3f94a0b SKU=smartmedivend-s3
-I (217) button: IoT Button Version: 4.2.1
-I (347) Display: Power management not supported
-I (447) LcdDisplay: Turning display on
-I (447) LcdDisplay: Initialize LVGL library
-I (447) LcdDisplay: Added 2560KB LVGL pool in PSRAM
-I (447) LcdDisplay: Use 2MB of PSRAM for image cache
-I (457) LcdDisplay: Initialize LVGL port
-I (457) LcdDisplay: Adding LCD display
-I (457) LVGL: Starting LVGL task
-I (467) SmartMediVend: Portrait ST7789 240x320, separate I2S mic/speaker
-I (467) Backlight: Set brightness to 75
-I (477) StateMachine: State: unknown -> starting
-I (547) NoAudioCodec: Simplex channels created
-I (547) AudioCodec: Audio codec started
-I (547) Application: After board/audio init
-I (547) SystemInfo: free sram: 211695 minimal sram: 110168
-I (547) MCP: Add tool: self.get_device_status
-I (557) MCP: Add tool: self.audio_speaker.set_volume
-I (557) MCP: Add tool: self.screen.set_brightness
-I (567) MCP: Add tool: self.screen.set_theme
-I (567) MCP: Add tool: self.get_system_info [user]
-I (577) MCP: Add tool: self.reboot [user]
-I (577) MCP: Add tool: self.upgrade_firmware [user]
-I (577) MCP: Add tool: self.screen.get_info [user]
-I (587) MCP: Add tool: self.screen.snapshot [user]
-I (587) MCP: Add tool: self.screen.preview_image [user]
-I (597) MCP: Add tool: self.assets.set_download_url [user]
-I (597) WifiManager: Initializing...
-I (607) pp: pp rom version: e7ae62f
-I (607) net80211: net80211 rom version: e7ae62f
-I (617) wifi:wifi driver task: 3fcdddf0, prio:23, stack:6656, core=0
-I (617) wifi:wifi firmware version: e12a754
-I (617) wifi:wifi certification version: v7.0
-I (627) wifi:config NVS flash: disabled
-I (627) wifi:config nano formatting: disabled
-I (637) wifi:Init data frame dynamic rx buffer num: 6
-I (637) wifi:Init dynamic rx mgmt buffer num: 5
-I (637) wifi:Init management short buffer num: 32
-I (647) wifi:Init dynamic tx buffer num: 32
-I (647) wifi:Init static tx FG buffer num: 2
-I (657) wifi:Init static rx buffer size: 1600
-I (657) wifi:Init static rx buffer num: 3
-I (657) wifi:Init dynamic rx buffer num: 6
-I (667) wifi_init: rx ba win: 3
-I (667) wifi_init: accept mbox: 6
-I (667) wifi_init: tcpip mbox: 16
-I (677) wifi_init: udp mbox: 6
-I (677) wifi_init: tcp mbox: 6
-I (677) wifi_init: tcp tx win: 5760
-I (687) wifi_init: tcp rx win: 5760
-I (687) wifi_init: tcp mss: 1440
-I (687) WifiManager: Initialized
-I (697) WifiBoard: Starting WiFi connection attempt
-I (697) WifiManager: Starting station
-I (697) WifiStation: Station DHCP hostname: Xiaozhi-E330
-I (707) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
-I (747) wifi:mode : sta (3c:dc:75:63:e3:30)
-I (747) wifi:enable tsf
-I (747) WifiStation: Scanning saved channel 4
-I (747) WifiBoard: WiFi scanning
-I (867) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -52, Channel: 4, Authmode: 3
-I (867) WifiBoard: WiFi connecting to TINIHI
-W (867) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
-I (937) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
-I (937) wifi:state: init -> auth (0xb0)
-I (937) wifi:state: auth -> assoc (0x0)
-I (947) wifi:state: assoc -> run (0x10)
-I (1047) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
-I (1047) wifi:security: WPA2-PSK, phy: bgn, rssi: -51, cipher(pairwise:0x3, group:0x3), pmf:0
-I (1057) wifi:pm start, type: 1
+I (181) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (188) main_task: Started on CPU0
+I (208) esp_psram: Reserving pool of 100K of internal memory for DMA/internal allocations
+I (208) main_task: Calling app_main()
+I (218) Board: UUID=b40507c0-22db-43e4-87b9-9b17d3f94a0b SKU=smartmedivend-s3
+I (218) button: IoT Button Version: 4.2.1
+I (348) Display: Power management not supported
+I (448) LcdDisplay: Turning display on
+I (448) LcdDisplay: Initialize LVGL library
+I (448) LcdDisplay: Added 2560KB LVGL pool in PSRAM
+I (448) LcdDisplay: Use 2MB of PSRAM for image cache
+I (458) LcdDisplay: Initialize LVGL port
+I (458) LcdDisplay: Adding LCD display
+I (458) LVGL: Starting LVGL task
+I (468) SmartMediVend: Portrait ST7789 240x320, separate I2S mic/speaker
+I (468) MCP: Add tool: self.medical.get_intake_schema
+I (478) MCP: Add tool: self.medical.evaluate_symptoms
+I (478) Backlight: Set brightness to 75
+I (488) StateMachine: State: unknown -> starting
+I (548) NoAudioCodec: Simplex channels created
+I (548) AudioCodec: Audio codec started
+I (548) Application: After board/audio init
+I (548) SystemInfo: free sram: 209951 minimal sram: 108424
+I (548) MCP: Add tool: self.get_device_status
+I (558) MCP: Add tool: self.audio_speaker.set_volume
+I (558) MCP: Add tool: self.screen.set_brightness
+I (568) MCP: Add tool: self.screen.set_theme
+I (568) MCP: Add tool: self.get_system_info [user]
+I (578) MCP: Add tool: self.reboot [user]
+I (578) MCP: Add tool: self.upgrade_firmware [user]
+I (578) MCP: Add tool: self.screen.get_info [user]
+I (588) MCP: Add tool: self.screen.snapshot [user]
+I (588) MCP: Add tool: self.screen.preview_image [user]
+I (598) MCP: Add tool: self.assets.set_download_url [user]
+I (598) WifiManager: Initializing...
+I (608) pp: pp rom version: e7ae62f
+I (608) net80211: net80211 rom version: e7ae62f
+I (618) wifi:wifi driver task: 3fcde4dc, prio:23, stack:6656, core=0
+I (618) wifi:wifi firmware version: e12a754
+I (618) wifi:wifi certification version: v7.0
+I (628) wifi:config NVS flash: disabled
+I (628) wifi:config nano formatting: disabled
+I (638) wifi:Init data frame dynamic rx buffer num: 6
+I (638) wifi:Init dynamic rx mgmt buffer num: 5
+I (648) wifi:Init management short buffer num: 32
+I (648) wifi:Init dynamic tx buffer num: 32
+I (648) wifi:Init static tx FG buffer num: 2
+I (658) wifi:Init static rx buffer size: 1600
+I (658) wifi:Init static rx buffer num: 3
+I (668) wifi:Init dynamic rx buffer num: 6
+I (668) wifi_init: rx ba win: 3
+I (668) wifi_init: accept mbox: 6
+I (668) wifi_init: tcpip mbox: 16
+I (678) wifi_init: udp mbox: 6
+I (678) wifi_init: tcp mbox: 6
+I (678) wifi_init: tcp tx win: 5760
+I (688) wifi_init: tcp rx win: 5760
+I (688) wifi_init: tcp mss: 1440
+I (688) WifiManager: Initialized
+I (698) WifiBoard: Starting WiFi connection attempt
+I (698) WifiManager: Starting station
+I (698) WifiStation: Station DHCP hostname: Xiaozhi-E330
+I (708) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+I (748) wifi:mode : sta (3c:dc:75:63:e3:30)
+I (748) wifi:enable tsf
+I (748) WifiStation: Scanning saved channel 4
+I (748) WifiBoard: WiFi scanning
+I (868) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -55, Channel: 4, Authmode: 3
+I (868) WifiBoard: WiFi connecting to TINIHI
+W (868) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (938) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
+I (938) wifi:state: init -> auth (0xb0)
+I (938) wifi:state: auth -> assoc (0x0)
+I (948) wifi:state: assoc -> run (0x10)
+I (1048) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
+I (1048) wifi:security: WPA2-PSK, phy: bgn, rssi: -53, cipher(pairwise:0x3, group:0x3), pmf:0
+I (1058) wifi:pm start, type: 1
 
-I (1057) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
-I (1067) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
-I (1097) wifi:AP's beacon interval = 102400 us, DTIM period = 1
-I (1117) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
-I (2307) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
-I (2307) WifiStation: Got IP: 192.168.1.18
-I (2307) WifiBoard: Connected to WiFi: TINIHI
-I (2307) Application: Network connected
-I (2307) StateMachine: State: starting -> activating
-I (2317) Assets: The storage free size is 21824 KB
-I (2317) Assets: The assets map size is 960 KB (partition 8192 KB)
-I (2377) Assets: The checksum calculation time is 53 ms
-I (2387) Assets: Refreshing display theme...
-I (2387) Ota: Current version: 2.5.0
-I (2747) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:0, winSize:64
-I (2797) wifi:<ba-del>idx:1, tid:5
-I (2797) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
-I (3507) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=1120
-I (3677) HttpClient: HTTP connection closed
-I (3687) Ota: Current is the latest version
-I (3687) Ota: Running partition: ota_0
-I (3687) MQTT: Connecting to endpoint api.tenclass.net:8883
-I (3687) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
-I (4477) MQTT: Connected to endpoint
-I (4477) Application: Activation done
-I (4477) SystemInfo: free sram: 156487 minimal sram: 53472
-I (4477) StateMachine: State: activating -> idle
-I (4477) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
-I (4487) wifi:Set ps type: 2, coexist: 0
+I (1058) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
+I (1068) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
+I (1088) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (1198) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:2, winSize:64
+I (2238) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
+I (2238) WifiStation: Got IP: 192.168.1.18
+I (2238) WifiBoard: Connected to WiFi: TINIHI
+I (2238) Application: Network connected
+I (2238) StateMachine: State: starting -> activating
+I (2248) Assets: The storage free size is 21824 KB
+I (2248) Assets: The assets map size is 960 KB (partition 8192 KB)
+I (2308) Assets: The checksum calculation time is 53 ms
+I (2318) Assets: Refreshing display theme...
+I (2318) Ota: Current version: 2.5.0
+I (2358) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:1, winSize:64
+I (2408) wifi:<ba-del>idx:1, tid:5
+I (2408) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
+I (3078) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=760
+I (3348) HttpClient: HTTP connection closed
+I (3348) Ota: Current is the latest version
+I (3348) Ota: Running partition: ota_0
+I (3348) MQTT: Connecting to endpoint api.tenclass.net:8883
+I (3358) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
+I (4078) MQTT: Connected to endpoint
+I (4078) Application: Activation done
+I (4078) SystemInfo: free sram: 154015 minimal sram: 51168
+I (4078) StateMachine: State: activating -> idle
+I (4088) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (4088) wifi:Set ps type: 2, coexist: 0
 
-E (4487) MODEL_LOADER: Can not find model in partition table
-W (4497) AFE_CONFIG: wakenet model not found. please load wakenet model...
-I (4497) AfeAudioEngine: Before AFE create: free=164839 min=52540 largest=98304
-W (4507) AFE_CONFIG: Noise Supression may reduce the accuracy of speech recognition. It is not recommended to turn it on.
-WebRtcNs_Create: self=0x3c64e804 size:23632
-I (4527) AFE: AFE Version: (1MIC_V251128)
-I (4527) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (4537) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
-I (4547) AFE: AFE Version: (1MIC_V251128)
-I (4547) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (4557) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
-I (4567) AfeAudioEngine: Initialized FD AFE, detector: none, NS: on, AGC: on, VAD silence: 700 ms, feed: 160, fetch: 512
-I (4577) AfeAudioEngine: After AFE create: free=162911 min=52540 largest=98304
-I (4587) AudioCodec: Set output enable to true
-I (4587) AudioService: Resampling audio from 16000 to 24000
-I (8427) StateMachine: State: idle -> connecting
-I (8427) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
-I (8427) wifi:Set ps type: 0, coexist: 0
+E (4098) MODEL_LOADER: Can not find model in partition table
+W (4098) AFE_CONFIG: wakenet model not found. please load wakenet model...
+I (4108) AfeAudioEngine: Before AFE create: free=163115 min=51168 largest=98304
+W (4118) AFE_CONFIG: Noise Supression may reduce the accuracy of speech recognition. It is not recommended to turn it on.
+WebRtcNs_Create: self=0x3c6555d4 size:23632
+I (4128) AFE: AFE Version: (1MIC_V251128)
+I (4128) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4138) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4148) AFE: AFE Version: (1MIC_V251128)
+I (4148) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4158) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4168) AfeAudioEngine: Initialized FD AFE, detector: none, NS: on, AGC: on, VAD silence: 700 ms, feed: 160, fetch: 512
+I (4178) AfeAudioEngine: After AFE create: free=161163 min=51168 largest=98304
+I (4188) AudioCodec: Set output enable to true
+I (4188) AudioService: Resampling audio from 16000 to 24000
+I (6088) StateMachine: State: idle -> connecting
+I (6098) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (6098) wifi:Set ps type: 0, coexist: 0
 
-I (8577) MQTT: Session ID: 67f8953b
-I (8577) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
-I (8577) wifi:Set ps type: 0, coexist: 0
+I (6258) MQTT: Session ID: dd6d4d18
+I (6258) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (6258) wifi:Set ps type: 0, coexist: 0
 
-I (8577) StateMachine: State: connecting -> listening
-I (8707) AudioCodec: Set input enable to true
-I (11017) Application: Local VAD endpoint: 700 ms silence
-I (11207) Application: >> Xin chào.
-I (11227) StateMachine: State: listening -> speaking
-I (11947) Application: << Xin chào! Dạo này thế nào rồi?
-I (14497) Application: << Có chuyện gì muốn chia sẻ không?
-I (16657) StateMachine: State: speaking -> listening
-I (16667) SMV-MIC: pcm_mean=30 pcm_peak=67 input_clip=0 slow_reads=0 errors=0 samples=37280
-I (19457) Application: Local VAD endpoint: 700 ms silence
-I (19657) Application: >> Giờ này tôi bị cảm.
-I (19657) StateMachine: State: listening -> speaking
-I (20247) Application: << Ôi không, cảm hả? Có sốt không,
-I (22887) Application: << hay chỉ là ho và sổ mũi? Cần tôi giúp gì không?
-I (26557) StateMachine: State: speaking -> listening
-I (26567) SMV-MIC: pcm_mean=13 pcm_peak=44 input_clip=0 slow_reads=0 errors=0 samples=45920
-I (29587) SMV-MIC: pcm_mean=11 pcm_peak=38 input_clip=0 slow_reads=0 errors=0 samples=49120
-I (30067) Application: Local VAD endpoint: 700 ms silence
-I (30277) Application: >> Cả 3 luôn vừa sốt, vừa ho, vừa xỉ nổi
-I (30277) StateMachine: State: listening -> speaking
-I (31067) Application: << Ôi nghe nặng thế! Em đoán chắc là "
-I (33757) Application: << xổ mũi" chứ phải không? Chị có đo nhiệt độ chưa, hay uống thuốc gì chưa?
-I (38897) Application: << Cần em tìm hiểu xem giờ này có chỗ nào mở không hay chị cần gì khác?
-I (39547) SystemInfo: free sram: 157895 minimal sram: 52540
-I (42857) StateMachine: State: speaking -> listening
-I (42867) SMV-MIC: pcm_mean=9 pcm_peak=35 input_clip=0 slow_reads=0 errors=0 samples=8000
-I (45877) SMV-MIC: pcm_mean=34 pcm_peak=211 input_clip=0 slow_reads=0 errors=0 samples=49120
-I (48887) SMV-MIC: pcm_mean=22 pcm_peak=50 input_clip=0 slow_reads=0 errors=0 samples=48160
-I (49457) Application: >> Bạn hãy cho tôi hỏi, khi bị suy nổi,
-I (49457) StateMachine: State: listening -> speaking
-I (49997) Application: << Em đoán chắc là "sổ mũi"
-I (51547) Application: << chứ phải không? Khi bị sổ mũi thì nên uống nhiều nước ấm, nghỉ ngơi nhiều,
-I (56727) Application: << có thể dùng thuốc giảm đau hạ sốt nếu cần.
-I (58557) SystemInfo: free sram: 156447 minimal sram: 52540
-I (59307) Application: << Chị đang muốn hỏi gì cụ thể hơn không?
-I (61827) StateMachine: State: speaking -> listening
-I (61837) SMV-MIC: pcm_mean=10 pcm_peak=42 input_clip=0 slow_reads=0 errors=0 samples=9280
-I (61957) Application: Local VAD endpoint: 700 ms silence
-I (71547) SystemInfo: free sram: 157911 minimal sram: 52540
-I (77707) AudioCodec: Set output enable to false
-I (77707) AudioCodec: Set input enable to false
-I (81547) SystemInfo: free sram: 157911 minimal sram: 52540
-I (91547) SystemInfo: free sram: 157911 minimal sram: 52540
-I (101547) SystemInfo: free sram: 157911 minimal sram: 52540
-I (111547) SystemInfo: free sram: 157911 minimal sram: 52540
-I (121547) SystemInfo: free sram: 157931 minimal sram: 52540
-I (121777) MQTT: Received goodbye message, session_id: 67f8953b
-I (121777) MQTT: Closing audio channel, send_goodbye: 0
-I (121777) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
-I (121777) wifi:Set ps type: 2, coexist: 0
-
-I (121787) StateMachine: State: listening -> idle
-I (131557) SystemInfo: free sram: 161531 minimal sram: 52540
-I (141557) SystemInfo: free sram: 161531 minimal sram: 52540
-I (144287) StateMachine: State: idle -> connecting
-I (144287) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
-I (144287) wifi:Set ps type: 0, coexist: 0
-
-I (144437) MQTT: Session ID: a42bf05e
-I (144437) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
-I (144437) wifi:Set ps type: 0, coexist: 0
-
-I (144437) StateMachine: State: connecting -> listening
-I (144567) AudioCodec: Set input enable to true
-I (144577) SMV-MIC: pcm_mean=26 pcm_peak=484 input_clip=0 slow_reads=0 errors=0 samples=3200
-I (147577) SMV-MIC: pcm_mean=7177 pcm_peak=32768 input_clip=125 slow_reads=0 errors=0 samples=48000
-I (147697) Application: >> Hãy đăng ký kênh để nhận thêm nhiều video mới nhé.
-I (147737) StateMachine: State: listening -> speaking
-I (148417) Application: << Cảm ơn bạn đã ghé thăm nhé!
-I (148437) AudioCodec: Set output enable to true
-I (150027) Application: << Tôi là trợ lý ảo, không có kênh YouTube hay mạng xã hội đâu.
-I (153627) Application: << Nhưng tôi luôn ở đây để trò chuyện và giúp đỡ bạn bất cứ lúc nào! Có chuyện gì muốn chia sẻ không?
-I (157547) SystemInfo: free sram: 155559 minimal sram: 51356
-I (159347) StateMachine: State: speaking -> listening
-I (159417) SMV-MIC: pcm_mean=20470 pcm_peak=27463 input_clip=309 slow_reads=0 errors=0 samples=2720
-I (161217) Application: Local VAD endpoint: 700 ms silence
-I (162277) Application: >> Cá.
-I (162277) StateMachine: State: listening -> speaking
-I (162877) Application: << Cá á?
-I (163807) Application: << Bạn thích ăn cá hay đang định nấu món gì với cá vậy? Kể tôi nghe thêm đi!
-I (168767) StateMachine: State: speaking -> listening
-I (168777) SMV-MIC: pcm_mean=38 pcm_peak=70 input_clip=0 slow_reads=0 errors=0 samples=29920
-I (171787) SMV-MIC: pcm_mean=21 pcm_peak=57 input_clip=0 slow_reads=0 errors=0 samples=49120
-I (171817) Application: Local VAD endpoint: 700 ms silence
-I (172907) Application: >> Giờ này tôi bị bệnh.
-I (172907) StateMachine: State: listening -> speaking
-I (173477) Application: << Ôi không, bạn bị bệnh sao?
-I (175417) Application: << Có chỗ nào đau hay khó chịu không? Cần tôi giúp gì không?
-I (179597) StateMachine: State: speaking -> listening
-I (179607) SMV-MIC: pcm_mean=47 pcm_peak=97 input_clip=0 slow_reads=0 errors=0 samples=800
-I (181377) Application: Local VAD endpoint: 700 ms silence
-I (182787) Application: >> Tôi bị nhức đào.
-I (182797) StateMachine: State: listening -> speaking
-I (183417) Application: << Ôi, nhức đầu hả?
-I (184917) Application: << Bạn có uống thuốc chưa hay muốn tôi giúp gì không? Cố nghỉ ngơi một chút nhé!
-I (189357) StateMachine: State: speaking -> listening
-I (189367) SMV-MIC: pcm_mean=32 pcm_peak=72 input_clip=0 slow_reads=0 errors=0 samples=29600
-I (192367) SMV-MIC: pcm_mean=15 pcm_peak=53 input_clip=0 slow_reads=0 errors=0 samples=48960
-I (192547) Application: Local VAD endpoint: 700 ms silence
-I (196677) Application: >> Hiện tại chờ tối rồi, không có...
-I (196677) StateMachine: State: listening -> speaking
-I (197207) Application: << Hiểu rồi, giờ tối rồi không có thuốc phải không?
-I (199917) Application: << Bạn thử nằm nghỉ một chút, uống chút nước ấm xem có đỡ hơn không nhé. Cần tôi giúp gì nữa không?
-I (206047) StateMachine: State: speaking -> listening
-I (206067) SMV-MIC: pcm_mean=65 pcm_peak=107 input_clip=0 slow_reads=0 errors=0 samples=3040
-I (209077) SMV-MIC: pcm_mean=20 pcm_peak=46 input_clip=262 slow_reads=0 errors=0 samples=49120
-I (211867) Application: Local VAD endpoint: 700 ms silence
-I (214817) Application: >> Ngoài bị sốt ra thì tôi còn bị...
-I (214827) StateMachine: State: listening -> speaking
-I (215387) Application: << Sốt nữa hả?
-I (216427) Application: << Bạn còn bị thêm triệu chứng nào nữa không? Kể tôi nghe để tôi biết nhé!
-I (220767) StateMachine: State: speaking -> listening
-I (220787) SMV-MIC: pcm_mean=11 pcm_peak=47 input_clip=0 slow_reads=0 errors=0 samples=44960
-I (223797) SMV-MIC: pcm_mean=65 pcm_peak=101 input_clip=0 slow_reads=0 errors=0 samples=49120
-I (224347) Application: Local VAD endpoint: 700 ms silence
-I (227597) Application: >> bị sốt và đau bụng
-I (227597) StateMachine: State: listening -> speaking
-I (228147) Application: << Ôi không,
-I (228907) Application: << vừa sốt vừa đau bụng thế này thì mệt mỏi lắm rồi! Bạn có uống nước nhiều không?
-I (234387) Application: << Cần tôi giúp gì không, ví dụ tìm thông tin bệnh viện gần đó hay gì đó?
-I (237547) SystemInfo: free sram: 157595 minimal sram: 51356
-I (239207) StateMachine: State: speaking -> listening
-I (239217) SMV-MIC: pcm_mean=32 pcm_peak=66 input_clip=0 slow_reads=0 errors=0 samples=9120
-I (242227) SMV-MIC: pcm_mean=51 pcm_peak=184 input_clip=0 slow_reads=0 errors=0 samples=49120
-I (244617) Application: Local VAD endpoint: 700 ms silence
-I (246397) Application: >> Có, tôi có uống nước rất nhiều nhưng mà vẫn không hạ sốt.
-I (246397) StateMachine: State: listening -> speaking
-I (246907) Application: << Uống nhiều nước mà vẫn không hạ sốt thế này thì nên đi khám bác sĩ sớm nhé!
-I (251037) Application: << Bạn có muốn tôi tìm thông tin bệnh viện gần khu vực của bạn không?
-I (254797) StateMachine: State: speaking -> listening
-I (254807) SMV-MIC: pcm_mean=13 pcm_peak=36 input_clip=0 slow_reads=0 errors=0 samples=38560
-I (257817) SMV-MIC: pcm_mean=49 pcm_peak=149 input_clip=0 slow_reads=0 errors=0 samples=49120
-I (259177) Application: Local VAD endpoint: 700 ms silence
-I (260277) Application: >> Trời tối rồi, không có bệnh viện nào mở hết.
-I (260277) StateMachine: State: listening -> speaking
-I (260807) Application: << Hiểu rồi, giờ tối rồi nhiều nơi đóng cửa rồi.
-I (263767) Application: << Bạn có ai ở nhà có thể giúp không? Hoặc thử chườm ấm xem có đỡ hơn không?
-I (268367) Application: << Cần tôi hỗ trợ gì nữa không?
-I (269547) SystemInfo: free sram: 157595 minimal sram: 51356
-I (270407) StateMachine: State: speaking -> listening
-I (270407) SMV-MIC: pcm_mean=30 pcm_peak=64 input_clip=0 slow_reads=0 errors=0 samples=22080
-I (273327) Application: Local VAD endpoint: 700 ms silence
-I (279547) SystemInfo: free sram: 158563 minimal sram: 51356
-I (285437) AudioCodec: Set output enable to false
-I (288437) AudioCodec: Set input enable to false
-I (289547) SystemInfo: free sram: 158563 minimal sram: 51356
-I (299547) SystemInfo: free sram: 158563 minimal sram: 51356
-I (309547) SystemInfo: free sram: 158563 minimal sram: 51356
-I (319547) SystemInfo: free sram: 158563 minimal sram: 51356
-I (329547) SystemInfo: free sram: 158563 minimal sram: 51356
-I (333117) MQTT: Received goodbye message, session_id: a42bf05e
-I (333127) MQTT: Closing audio channel, send_goodbye: 0
-I (333127) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
-I (333127) wifi:Set ps type: 2, coexist: 0
-
-I (333137) StateMachine: State: listening -> idle
+I (6258) StateMachine: State: connecting -> listening
+I (6388) AudioCodec: Set input enable to true
+I (8128) Application: Local VAD endpoint: 700 ms silence
+W (13548) Application: Local VAD stop had no server response; resuming auto listening
+I (13558) SMV-MIC: pcm_mean=141 pcm_peak=173 input_clip=2 slow_reads=0 errors=0 samples=28000
+I (15558) SystemInfo: free sram: 156495 minimal sram: 51168
+I (16558) SMV-MIC: pcm_mean=200 pcm_peak=237 input_clip=5 slow_reads=0 errors=0 samples=48960
+I (19568) SMV-MIC: pcm_mean=478 pcm_peak=32767 input_clip=9 slow_reads=0 errors=0 samples=48160
+I (20368) Application: >> Xin chào!
+I (20388) AudioCodec: Set output enable to false
+I (20388) StateMachine: State: listening -> speaking
+I (21298) Application: << Chào bạn! Dạo này thế nào rồi?
+I (21308) AudioCodec: Set output enable to true
+I (23828) Application: << Có gì tôi có thể giúp không?
+I (25608) StateMachine: State: speaking -> listening
+I (25668) SMV-MIC: pcm_mean=231 pcm_peak=268 input_clip=6 slow_reads=0 errors=0 samples=13600
+I (26438) Application: Local VAD endpoint: 700 ms silence
+W (31548) Application: Local VAD stop had no server response; resuming auto listening
+I (31558) SMV-MIC: pcm_mean=198 pcm_peak=233 input_clip=2 slow_reads=0 errors=0 samples=13600
+I (34568) SMV-MIC: pcm_mean=424 pcm_peak=3082 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (35558) SystemInfo: free sram: 155839 minimal sram: 50568
+I (35968) Application: >> Tôi đang bị nhức đầu.
+I (35968) StateMachine: State: listening -> speaking
+I (36728) Application: << Ôi, nghe không khỏe chút nào. Để tôi hỏi thêm nhé,
+I (40378) Application: << bạn bị nhức đầu bao lâu rồi?
+I (42438) StateMachine: State: speaking -> listening
+I (42448) SMV-MIC: pcm_mean=186 pcm_peak=213 input_clip=0 slow_reads=0 errors=0 samples=22720
+I (45448) SMV-MIC: pcm_mean=189 pcm_peak=714 input_clip=2 slow_reads=0 errors=0 samples=48960
+I (46378) Application: Local VAD endpoint: 700 ms silence
+I (46578) Application: >> Thu nhất đội trong một ngày.
+I (46578) StateMachine: State: listening -> speaking
+I (47098) Application: << Được rồi, để tôi bắt đầu tư vấn nhé!
+I (49688) Application: << % self.medical.get_intake_schema...
+E (51138) transport_base: poll_write select error 104, errno = Connection reset by peer, fd = 54
+W (51138) transport_base: Poll timeout or error, errno=I/O error, fd=54, timeout_ms=10000
+E (51148) mqtt_client: Writing failed: errno=5
+I (51148) esp_mqtt: MQTT error occurred: ESP_OK
+I (51158) MQTT: MQTT disconnected, schedule reconnect in 60 seconds
+W (51158) mqtt_client: Publish: Losing qos0 data when client not connected
+E (51168) MQTT: Failed to publish message: {"session_id":"dd6d4d18","type":"mcp","payload":{"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\"purpose\":\"INTAKE_ONLY_NO_DIAGNOSIS_NO_VEND\",\"instruction\":\"Ask EXACTLY ONE SHORT question per turn, preferring next_question_vi returned by evaluate_symptoms. Do not ask a second question or add a list. If reply is absent, garbled, ambiguous, or unrelated repeat the SAME pending question or ask for clarification, without changing that field. Submit a full snapshot every turn. Unanswered keys MUST BE OMITTED, never default to false or []. screening_answers must contain only explicit yes/no answers to the matching question_id. Never invent negatives or name medicines before device response.\",\"interview\":{\"version\":1,\"global_checks\":[{\"id\":\"redflag_breathing\",\"question_vi\":\"Bạn có khó thở hoặc đau ngực không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"redflag_neurologic\",\"question_vi\":\"Bạn có bị ngất hoặc co giật không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"redflag_weakness\",\"question_vi\":\"Bạn có bị yếu tay chân hoặc nói khó không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"redflag_bleeding\",\"question_vi\":\"Bạn có ho ra máu hoặc nôn ra máu không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"redflag_black_stool\",\"question_vi\":\"Bạn có đi ngoài ra máu hoặc phân đen không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"redflag_other\",\"question_vi\":\"Bạn có đau dữ dội hoặc triệu chứng nặng nhanh không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"symptom_checks\":{\"fever\":[{\"id\":\"fever_measured\",\"question_vi\":\"Bạn có đo nhiệt độ và xác nhận bị sốt không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"fever_stiff_neck\",\"question_vi\":\"Bạn có bị cứng cổ hoặc đau đầu dữ dội không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"mild_headache\":[{\"id\":\"headache_sudden\",\"question_vi\":\"Cơn đau đầu có đến đột ngột và rất dữ dội không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"headache_vomit\",\"question_vi\":\"Bạn có nôn hoặc nhìn mờ khi đau đầu không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"headache_stiff\",\"question_vi\":\"Bạn có cứng cổ khi bị đau đầu không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"mild_body_ache\":[{\"id\":\"ache_mild\",\"question_vi\":\"Cơn đau mỏi có ở mức nhẹ không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"ache_trauma\",\"question_vi\":\"Bạn có bị đau sau chấn thương nghiêm trọng không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"mild_inflammatory_pain\":[{\"id\":\"inflammatory_local\",\"question_vi\":\"Bạn bị đau cơ hay khớp mức nhẹ phải không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"inflammatory_redness\",\"question_vi\":\"Vùng đau có sưng nóng đỏ kèm sốt không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"allergic_rhinitis\":[{\"id\":\"rhinitis_itch\",\"question_vi\":\"Bạn có hắt hơi hoặc ngứa mũi, ngứa mắt không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"rhinitis_fever\",\"question_vi\":\"Bạn có sốt hoặc đau mặt dữ dội không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"dry_cough\":[{\"id\":\"dry_has_phlegm\",\"question_vi\":\"Khi ho, bạn có khạc ra đờm không?\",\"expected\":false,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"dry_cough_blood\",\"question_vi\":\"Bạn có ho ra máu hoặc khó thở không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"productive_cough\":[{\"id\":\"productive_has_phlegm\",\"question_vi\":\"Khi ho, bạn có khạc ra đờm không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"productive_cough_blood\",\"question_vi\":\"Bạn có ho ra máu hoặc khó thở không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"mild_sore_throat\":[{\"id\":\"throat_swallow\",\"question_vi\":\"Bạn có khó nuốt nước bọt hoặc khó thở không?\",\"expected\":false,\"on_mismatch\":\"REFER\"},{\"id\":\"throat_mild\",\"question_vi\":\"Bạn chỉ bị đau rát họng mức nhẹ phải không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"}],\"gas_bloating\":[{\"id\":\"bloat_gas\",\"question_vi\":\"Bạn có cảm giác đầy hơi hoặc ợ hơi nhiều không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"bloat_pain\",\"question_vi\":\"Bạn có đau bụng dữ dội hoặc nôn liên tục không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"acid_indigestion\":[{\"id\":\"acid_burning\",\"question_vi\":\"Bạn có cảm giác nóng rát vùng ngực sau ăn không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"acid_chest\",\"question_vi\":\"Bạn có đau tức ngực hoặc khó thở không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"short_term_reflux\":[{\"id\":\"reflux_sour\",\"question_vi\":\"Bạn có bị ợ chua hoặc thức ăn trào lên miệng không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"reflux_swallow\",\"question_vi\":\"Bạn có khó nuốt hoặc sụt cân không rõ nguyên nhân không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"acute_watery_diarrhoea\":[{\"id\":\"diarrhea_watery\",\"question_vi\":\"Phân có lỏng như nước không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"diarrhea_blood\",\"question_vi\":\"Bạn có sốt hoặc đi ngoài ra máu không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"short_term_constipation\":[{\"id\":\"constipation_hard\",\"question_vi\":\"Bạn có đi ngoài khó hoặc phân khô cứng không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"constipation_pain\",\"question_vi\":\"Bạn có đau bụng nhiều hoặc đang nôn không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"motion_sickness\":[{\"id\":\"motion_trigger\",\"question_vi\":\"Buồn nôn có xuất hiện khi đi xe hoặc tàu không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"motion_unexplained\",\"question_vi\":\"Bạn có buồn nôn cả khi không di chuyển không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}],\"digestive_support\":[{\"id\":\"digestive_watery\",\"question_vi\":\"Bạn có tiêu chảy hoặc phân lỏng không?\",\"expected\":true,\"on_mismatch\":\"CLARIFY\"},{\"id\":\"digestive_dehydrated\",\"question_vi\":\"Bạn có khát dữ dội, tiểu rất ít hoặc không uống được nước không?\",\"expected\":false,\"on_mismatch\":\"REFER\"}]},\"protocol\":\"Each question must be asked separately. Each answer must be explicitly confirmed. Missing and unclear are UNKNOWN; never convert silence or unrelated text into false. If user reports new red flag REFER immediately; do not wait for remaining questions.\"},\"symptom_guides\":[{\"canonical_id\":\"PARACETAMOL_500\",\"symptom_cues_vi\":\"Sốt đã xác nhận bằng đo nhiệt độ; đau đầu nhẹ không đột ngột, không dữ dội; đau mỏi cơ thể nhẹ. Không suy ra sốt chỉ từ cảm giác nóng.\",\"do_not_confuse_with_vi\":\"Đau đầu dữ dội đột ngột, nôn, cứng cổ, rối loạn thần kinh; bệnh gan/thận; có thuốc chứa paracetamol.\"},{\"canonical_id\":\"IBUPROFEN_200\",\"symptom_cues_vi\":\"Đau viêm cơ hoặc khớp nhẹ có thể mô tả được vị trí, thời gian, mức độ; không coi mọi đau bụng hay đau ngực là đau viêm nhẹ.\",\"do_not_confuse_with_vi\":\"Loét hoặc xuất huyết dạ dày; bệnh tim, thận, gan; dị ứng NSAID; mất nước hoặc đang dùng NSAID/chống đông.\"},{\"canonical_id\":\"LORATADINE_10\",\"symptom_cues_vi\":\"Viêm mũi dị ứng: hắt hơi nhiều, ngứa mũi, ngứa mắt, chảy nước mũi trong liên quan tác nhân dị ứng. Không mặc định sổ mũi do cảm lạnh là dị ứng.\",\"do_not_confuse_with_vi\":\"Sốt, đau mặt nhiều hoặc triệu chứng nhiễm trùng; dùng thuốc kháng histamine khác, bệnh gan.\"},{\"canonical_id\":\"DEXTROMETHORPHAN_15\",\"symptom_cues_vi\":\"Ho khan, không khạc đờm; hỏi rõ có đờm hay không và thời gian ho. Không dùng nhóm ho khan nếu có đờm.\",\"do_not_confuse_with_vi\":\"Ho ra máu, khó thở, ho kéo dài, bệnh hen/COPD, đang dùng MAOI hoặc thuốc an thần.\"},{\"canonical_id\":\"AMBROXOL_30\",\"symptom_cues_vi\":\"Ho có đờm: ho khạc chất nhầy/đờm, cần phân biệt với ho khan. Hỏi thời gian, có sốt hoặc khó thở không.\",\"do_not_confuse_with_vi\":\"Ho ra máu, khó thở, triệu chứng nặng; tiền sử phản ứng da/niêm mạc nghiêm trọng.\"},{\"canonical_id\":\"DEQUALINIUM_025\",\"symptom_cues_vi\":\"Đau hoặc rát họng mức nhẹ, có thể khô và đau nhẹ khi nuốt nhưng vẫn nuốt được nước bọt.\",\"do_not_confuse_with_vi\":\"Khó thở, không nuốt được, chảy dãi, thở rít, sốt cao hoặc diễn tiến nhanh.\"},{\"canonical_id\":\"SIMETHICONE_80\",\"symptom_cues_vi\":\"Đầy hơi: căng tức, chướng bụng do hơi, ợ hơi hoặc trung tiện; không đồng nhất đau bụng chưa rõ nguyên nhân với đầy hơi.\",\"do_not_confuse_with_vi\":\"Đau bụng dữ dội, bụng chướng tăng nhanh, nôn liên tục, không đi ngoài hay trung tiện được.\"},{\"canonical_id\":\"ANTACID_200_200\",\"symptom_cues_vi\":\"Ợ nóng từng đợt, nóng rát sau ăn, khó tiêu liên quan acid; không coi mọi đau bụng hoặc đau ngực là ợ nóng.\",\"do_not_confuse_with_vi\":\"Đau ngực khó thở, phân đen, nôn ra máu, khó nuốt, sụt cân; tương tác thuốc và bệnh thận.\"},{\"canonical_id\":\"OMEPRAZOLE_10\",\"symptom_cues_vi\":\"Ợ chua/trào ngược ngắn hạn: nóng rát sau ăn, vị chua trong miệng, thức ăn hoặc dịch trào lên; hỏi triệu chứng kéo dài/tái diễn.\",\"do_not_confuse_with_vi\":\"Khó nuốt, sụt cân không chủ ý, xuất huyết tiêu hóa, đau ngực; clopidogrel và tương tác PPI.\"},{\"canonical_id\":\"LOPERAMIDE_2\",\"symptom_cues_vi\":\"Tiêu chảy cấp phân lỏng như nước, hỏi số lần, thời gian, có sốt, máu, đau bụng hay dấu hiệu mất nước không.\",\"do_not_confuse_with_vi\":\"Sốt, phân máu, mất nước, bụng chướng, tiêu chảy sau kháng sinh, kéo dài quá 48 giờ.\"},{\"canonical_id\":\"BISACODYL_5\",\"symptom_cues_vi\":\"Táo bón ngắn hạn: đi ngoài ít hơn thường lệ, phân khô cứng, khó rặn; không đồng nhất đau bụng với táo bón.\",\"do_not_confuse_with_vi\":\"Đau bụng rõ, nôn, mất nước, bí trung tiện/tắc ruột; chưa đủ 18 tuổi.\"},{\"canonical_id\":\"DIMENHYDRINATE_50\",\"symptom_cues_vi\":\"Say tàu xe: buồn nôn, chóng mặt xuất hiện trong khi đi xe/tàu; không áp dụng buồn nôn không rõ nguyên nhân.\",\"do_not_confuse_with_vi\":\"Buồn nôn ngay cả khi không đi xe, bệnh mắt tăng nhãn áp, khó tiểu; uống rượu, thuốc an thần hoặc lái xe.\"},{\"canonical_id\":\"S_BOULARDII_250\",\"symptom_cues_vi\":\"Hỗ trợ tiêu chảy/rối loạn tiêu hóa được mô tả rõ, ưu tiên đánh giá lượng nước uống và dấu hiệu mất nước; không coi đau bụng đơn độc là chỉ định.\",\"do_not_confuse_with_vi\":\"Suy giảm miễn dịch, bệnh nặng, catheter tĩnh mạch trung tâm, dị ứng nấm men; sốt, phân có máu hoặc mất nước.\"}],\"required_fields\":[\"age_years\",\"weight_kg\",\"pregnancy_or_breastfeeding\",\"symptoms\",\"duration_hours\",\"danger_signs\",\"conditions\",\"current_medicines\",\"drug_allergies\"],\"danger_sign_enums\":[\"difficulty_breathing\",\"chest_pain\",\"confusion\",\"fainting\",\"seizure\",\"weakness_or_speech_problem\",\"sudden_severe_headache\",\"stiff_neck\",\"coughing_blood\",\"vomiting_blood\",\"bloody_or_black_stool\",\"severe_abdominal_pain\",\"dehydration\",\"cannot_keep_fluids\",\"difficulty_swallowing\",\"drooling\",\"stridor\",\"unintentional_weight_loss\",\"rapidly_worsening\"],\"symptom_enums\":[\"acid_indigestion\",\"acute_watery_diarrhoea\",\"allergic_rhinitis\",\"digestive_support\",\"dry_cough\",\"fever\",\"gas_bloating\",\"mild_body_ache\",\"mild_headache\",\"mild_inflammatory_pain\",\"mild_sore_throat\",\"motion_sickness\",\"productive_cough\",\"short_term_constipation\",\"short_term_reflux\"],\"conditions_and_medicine_flags\":[\"abdominal_pain\",\"abdominal_swelling\",\"age_16_or_17\",\"alarm_symptom\",\"alcohol\",\"antibiotic_associated_diarrhoea\",\"anticoagulant\",\"asthma_or_copd\",\"bloody_or_black_stool\",\"bloody_stool\",\"bowel_obstruction\",\"cannot_keep_fluids\",\"central_venous_catheter\",\"chest_pain\",\"chronic_cough\",\"chronic_respiratory_disease\",\"clopidogrel\",\"confusion\",\"constipation\",\"contains_paracetamol\",\"coughing_blood\",\"critically_ill\",\"current_medicine_requires_spacing\",\"dehydration\",\"dextromethorphan_selected\",\"difficulty_breathing\",\"difficulty_swallowing\",\"driving_or_operating_machinery\",\"drooling\",\"dry_cough_only\",\"duration_over_48_hours\",\"fainting\",\"fever\",\"gastrointestinal_bleeding\",\"glaucoma\",\"heart_disease\",\"heavy_alcohol_use\",\"high_fever\",\"ibd_flare\",\"immunocompromised\",\"important_ppi_interaction\",\"inflammatory_bowel_disease\",\"kidney_disease\",\"levothyroxine\",\"liver_disease\",\"maoi_within_14_days\",\"nsaid_allergy\",\"nsaid_asthma\",\"omeprazole_selected\",\"other_antihistamine\",\"other_nsaid\",\"peptic_ulcer\",\"productive_cough\",\"rapidly_worsening\",\"recent_antacid\",\"sedative\",\"seizure\",\"serious_skin_or_mucosal_reaction\",\"severe_abdominal_pain\",\"sodium_restriction\",\"stiff_neck\",\"stridor\",\"sudden_severe_headache\",\"systemic_steroid\",\"thyroid_treatment\",\"unexplained_nausea\",\"unintentional_weight_loss\",\"urination_difficulty\",\"vomiting\",\"vomiting_blood\",\"weakness_or_speech_problem\",\"weight_below_50kg\",\"yeast_allergy\"],\"array_semantics\":\"[] requires explicit negative answer; unknown must be omitted\",\"allergy_semantics\":\"Any reported drug allergy requires professional review; [] only after explicit no-allergy answer\",\"stock_semantics\":\"Catalog initial_stock is NOT verified current stock; no dispensing enabled\",\"vend_allowed\":false}"}],"isError":false}}}
+I (52438) StateMachine: State: speaking -> idle
+W (52448) Application: Alert [cancel] Lỗi: Gửi thất bại, vui lòng kiểm tra mạng
+I (52458) AudioService: Resampling audio from 16000 to 24000
+I (61558) SystemInfo: free sram: 156579 minimal sram: 39812
+I (62308) AudioCodec: Set input enable to false
+I (69308) AudioCodec: Set output enable to false
+I (71558) SystemInfo: free sram: 156743 minimal sram: 39812

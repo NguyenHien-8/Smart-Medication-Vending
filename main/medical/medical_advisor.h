@@ -9,6 +9,7 @@ class MedicalAdvisor {
 public:
     MedicalAdvisor(const char* rules_json, const char* catalog_json, const char* review_json);
     std::string IntakeSchema() const;
+    std::string SymptomGuide(const std::string& symptom_enum) const;
     std::string Evaluate(const std::string& untrusted_json) const;
 private:
     std::string rules_;

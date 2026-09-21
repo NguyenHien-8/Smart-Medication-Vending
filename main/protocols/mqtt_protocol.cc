@@ -116,7 +116,7 @@ bool MqttProtocol::StartMqttClient(bool report_error) {
     mqtt_->OnMessage([this](const std::string& topic, const std::string& payload) {
         cJSON* root = cJSON_Parse(payload.c_str());
         if (root == nullptr) {
-            ESP_LOGE(TAG, "Failed to parse json message %s", payload.c_str());
+            ESP_LOGE(TAG, "Failed to parse MQTT JSON (bytes=%zu)", payload.size());
             return;
         }
         cJSON* type = cJSON_GetObjectItem(root, "type");
@@ -194,7 +194,7 @@ bool MqttProtocol::SendText(const std::string& text) {
         return false;
     }
     if (!mqtt_->Publish(publish_topic_, text)) {
-        ESP_LOGE(TAG, "Failed to publish message: %s", text.c_str());
+        ESP_LOGE(TAG, "Failed to publish MQTT message (bytes=%zu)", text.size());
         SetError(Lang::Strings::SERVER_ERROR);
         return false;
     }

@@ -1,109 +1,307 @@
-WebRtcNs_Create: self=0x3c650c94 size:23632
-I (4517) AFE: AFE Version: (1MIC_V251128)
-I (4527) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (4527) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
-I (4537) AFE: AFE Version: (1MIC_V251128)
-I (4547) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (4557) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
-I (4557) AfeAudioEngine: Initialized FD AFE, detector: none, NS: on, AGC: on, VAD silence: 700 ms, feed: 160, fetch: 512
-I (4567) AfeAudioEngine: After AFE create: free=161279 min=51276 largest=98304
-I (4587) AudioCodec: Set output enable to true
-I (4587) AudioService: Resampling audio from 16000 to 24000
-I (9537) StateMachine: State: idle -> connecting
-I (9537) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
-I (9537) wifi:Set ps type: 0, coexist: 0
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x9 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x544
+load:0x403c8700,len:0xd14
+--- 0x403c8700: _stext at ??:?
+load:0x403cb700,len:0x2eb4
+entry 0x403c88f4
+--- 0x403c88f4: call_start_cpu0 at C:/esp/v6.1/esp-idf/components/bootloader/subproject/main/bootloader_start.c:27
+I (34) octal_psram: vendor id    : 0x0d (AP)
+I (34) octal_psram: dev id       : 0x02 (generation 3)
+I (34) octal_psram: density      : 0x03 (64 Mbit)
+I (36) octal_psram: good-die     : 0x01 (Pass)
+I (40) octal_psram: Latency      : 0x01 (Fixed)
+I (44) octal_psram: VCC          : 0x01 (3V)
+I (48) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (53) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (58) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (62) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (67) octal_psram: DriveStrength: 0x00 (1/1)
+I (71) MSPI Timing: Enter psram timing tuning
+I (76) esp_psram: Found 8MB PSRAM device
+I (79) esp_psram: Speed: 80MHz
+I (82) cpu_start: Multicore app
+I (96) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+I (96) cpu_start: Pro cpu start user code
+I (96) cpu_start: cpu freq: 240000000 Hz
+I (98) app_init: Application information:
+I (102) app_init: Project name:     xiaozhi
+I (106) app_init: App version:      2.5.0
+I (109) app_init: Compile time:     Sep 22 2026 02:48:30
+I (115) app_init: ELF file SHA256:  6ee6abb92...
+I (119) app_init: ESP-IDF:          v6.1
+I (123) efuse_init: Min chip rev:     v0.0
+I (126) efuse_init: Max chip rev:     v0.99
+I (130) efuse_init: Chip rev:         v0.2
+I (134) heap_init: Initializing. RAM available for dynamic allocation:
+I (140) heap_init: At 3FCAC880 len 0003CE90 (243 KiB): RAM
+I (146) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (151) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (156) heap_init: At 600FE000 len 00001FD8 (7 KiB): RTCRAM
+I (161) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (168) spi_flash: detected chip: boya
+I (171) spi_flash: flash io: qio
+I (175) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (181) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (187) main_task: Started on CPU0
+I (207) esp_psram: Reserving pool of 100K of internal memory for DMA/internal allocations
+I (207) main_task: Calling app_main()
+I (217) Board: UUID=b40507c0-22db-43e4-87b9-9b17d3f94a0b SKU=smartmedivend-s3
+I (217) button: IoT Button Version: 4.2.1
+I (347) Display: Power management not supported
+I (447) LcdDisplay: Turning display on
+I (447) LcdDisplay: Initialize LVGL library
+I (447) LcdDisplay: Added 2560KB LVGL pool in PSRAM
+I (447) LcdDisplay: Use 2MB of PSRAM for image cache
+I (457) LcdDisplay: Initialize LVGL port
+I (457) LcdDisplay: Adding LCD display
+I (457) LVGL: Starting LVGL task
+I (467) SmartMediVend: Portrait ST7789 240x320, separate I2S mic/speaker
+I (467) MCP: Add tool: self.medical.get_intake_schema
+I (477) MCP: Add tool: self.medical.get_symptom_guide
+I (477) MCP: Add tool: self.medical.evaluate_symptoms
+I (487) Backlight: Set brightness to 75
+I (487) StateMachine: State: unknown -> starting
+I (547) NoAudioCodec: Simplex channels created
+I (547) AudioCodec: Audio codec started
+I (547) Application: After board/audio init
+I (547) SystemInfo: free sram: 209899 minimal sram: 108372
+I (547) MCP: Add tool: self.get_device_status
+I (557) MCP: Add tool: self.audio_speaker.set_volume
+I (557) MCP: Add tool: self.screen.set_brightness
+I (567) MCP: Add tool: self.screen.set_theme
+I (567) MCP: Add tool: self.get_system_info [user]
+I (577) MCP: Add tool: self.reboot [user]
+I (577) MCP: Add tool: self.upgrade_firmware [user]
+I (577) MCP: Add tool: self.screen.get_info [user]
+I (587) MCP: Add tool: self.screen.snapshot [user]
+I (587) MCP: Add tool: self.screen.preview_image [user]
+I (597) MCP: Add tool: self.assets.set_download_url [user]
+I (597) WifiManager: Initializing...
+I (607) pp: pp rom version: e7ae62f
+I (607) net80211: net80211 rom version: e7ae62f
+I (617) wifi:wifi driver task: 3fcde510, prio:23, stack:6656, core=0
+I (617) wifi:wifi firmware version: e12a754
+I (617) wifi:wifi certification version: v7.0
+I (627) wifi:config NVS flash: disabled
+I (627) wifi:config nano formatting: disabled
+I (637) wifi:Init data frame dynamic rx buffer num: 6
+I (637) wifi:Init dynamic rx mgmt buffer num: 5
+I (647) wifi:Init management short buffer num: 32
+I (647) wifi:Init dynamic tx buffer num: 32
+I (647) wifi:Init static tx FG buffer num: 2
+I (657) wifi:Init static rx buffer size: 1600
+I (657) wifi:Init static rx buffer num: 3
+I (667) wifi:Init dynamic rx buffer num: 6
+I (667) wifi_init: rx ba win: 3
+I (667) wifi_init: accept mbox: 6
+I (677) wifi_init: tcpip mbox: 16
+I (677) wifi_init: udp mbox: 6
+I (677) wifi_init: tcp mbox: 6
+I (677) wifi_init: tcp tx win: 5760
+I (687) wifi_init: tcp rx win: 5760
+I (687) wifi_init: tcp mss: 1440
+I (687) WifiManager: Initialized
+I (697) WifiBoard: Starting WiFi connection attempt
+I (697) WifiManager: Starting station
+I (697) WifiStation: Station DHCP hostname: Xiaozhi-E330
+I (707) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+I (747) wifi:mode : sta (3c:dc:75:63:e3:30)
+I (747) wifi:enable tsf
+I (747) WifiStation: Scanning saved channel 4
+I (747) WifiBoard: WiFi scanning
+I (867) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -50, Channel: 4, Authmode: 3
+I (867) WifiBoard: WiFi connecting to TINIHI
+W (867) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (937) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
+I (937) wifi:state: init -> auth (0xb0)
+I (937) wifi:state: auth -> assoc (0x0)
+I (947) wifi:state: assoc -> run (0x10)
+I (1147) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
+I (1157) wifi:security: WPA2-PSK, phy: bgn, rssi: -50, cipher(pairwise:0x3, group:0x3), pmf:0
+I (1157) wifi:pm start, type: 1
 
-I (9697) MQTT: Session ID: e8cff24d
-I (9697) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
-I (9697) wifi:Set ps type: 0, coexist: 0
+I (1157) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
+I (1167) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
+I (1217) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
+I (1237) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (2377) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
+I (2377) WifiStation: Got IP: 192.168.1.18
+I (2377) WifiBoard: Connected to WiFi: TINIHI
+I (2377) Application: Network connected
+I (2377) StateMachine: State: starting -> activating
+I (2387) Assets: The storage free size is 21824 KB
+I (2387) Assets: The assets map size is 960 KB (partition 8192 KB)
+I (2447) Assets: The checksum calculation time is 53 ms
+I (2467) Assets: Refreshing display theme...
+I (2467) Ota: Current version: 2.5.0
+I (2487) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:1, winSize:64
+I (2527) wifi:<ba-del>idx:1, tid:5
+I (2527) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
+I (3227) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=760
+I (3517) HttpClient: HTTP connection closed
+I (3517) Ota: Current is the latest version
+I (3517) Ota: Running partition: ota_0
+I (3527) MQTT: Connecting to endpoint api.tenclass.net:8883
+I (3527) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
+I (4307) MQTT: Connected to endpoint
+I (4307) Application: Activation done
+I (4307) SystemInfo: free sram: 155299 minimal sram: 51688
+I (4307) StateMachine: State: activating -> idle
+I (4307) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (4317) wifi:Set ps type: 2, coexist: 0
 
-I (9697) StateMachine: State: connecting -> listening
-I (9827) AudioCodec: Set input enable to true
-I (12347) Application: >> Xin chào
-I (12377) StateMachine: State: listening -> speaking
-I (12967) Application: << Xin chào! Dạo này thế nào rồi?
-I (15737) Application: << Có chuyện gì muốn chia sẻ với tôi không?
-I (18397) StateMachine: State: speaking -> listening
-I (18407) SMV-MIC: pcm_mean=581 pcm_peak=729 input_clip=16 slow_reads=0 errors=0 samples=41120
-I (19397) Application: Local VAD endpoint: 700 ms silence
-W (24547) Application: Local VAD stop had no server response; resuming auto listening
-I (24557) SMV-MIC: pcm_mean=180 pcm_peak=208 input_clip=1 slow_reads=0 errors=0 samples=16960
-I (27557) SystemInfo: free sram: 156587 minimal sram: 51276
-I (27567) SMV-MIC: pcm_mean=1232 pcm_peak=3466 input_clip=4 slow_reads=0 errors=0 samples=49120
-I (29957) Application: >> Tôi đang bị nhức đầu.
-I (29957) StateMachine: State: listening -> speaking
-I (30467) Application: << Ôi, nghe có vẻ mệt mỏi nè.
-I (32547) Application: << Bạn bị đau đầu bao lâu rồi vậy? Có kèm theo triệu chứng nào khác không như buồn nôn hay chóng mặt gì không?
-I (38567) StateMachine: State: speaking -> listening
-I (38577) SMV-MIC: pcm_mean=109 pcm_peak=141 input_clip=0 slow_reads=0 errors=0 samples=38560
-I (41577) SMV-MIC: pcm_mean=547 pcm_peak=1584 input_clip=11 slow_reads=0 errors=0 samples=48960
-I (44577) SMV-MIC: pcm_mean=64 pcm_peak=94 input_clip=30 slow_reads=0 errors=0 samples=48000
-I (45167) Application: Local VAD endpoint: 700 ms silence
-I (45477) Application: >> Tôi đau đầu trong một ngày rồi, không có buồn đâu.
-I (45477) StateMachine: State: listening -> speaking
-I (46017) Application: << Đau đầu một ngày rồi à, hiểu rồi.
-I (48597) Application: << Bạn có dùng thuốc gì chưa? Hay có tiền sử bệnh gì không nhỉ?
-I (52437) StateMachine: State: speaking -> listening
-I (52447) SMV-MIC: pcm_mean=30 pcm_peak=63 input_clip=0 slow_reads=0 errors=0 samples=9760
-I (55457) SMV-MIC: pcm_mean=59 pcm_peak=142 input_clip=8 slow_reads=0 errors=0 samples=49120
-I (56867) Application: Local VAD endpoint: 700 ms silence
-I (57217) Application: >> Tôi vẫn chưa dùng thuốc nào và cũng không có tiền sử.
-I (57217) StateMachine: State: listening -> speaking
-I (57957) Application: << OK rồi, để tôi hỏi thêm một chút nhé.
-I (60607) Application: << Bạn bao nhiêu tuổi vậy? Cân nặng của bạn là bao nhiêu?
-I (64217) StateMachine: State: speaking -> listening
-I (64227) SMV-MIC: pcm_mean=142 pcm_peak=187 input_clip=4 slow_reads=0 errors=0 samples=22880
-I (67227) SMV-MIC: pcm_mean=215 pcm_peak=584 input_clip=3 slow_reads=0 errors=0 samples=48960
-I (70107) Application: Local VAD endpoint: 700 ms silence
-I (70617) Application: >> Tôi 21 tuổi và cân nặng là 68 kg.
-I (70617) StateMachine: State: listening -> speaking
-I (71207) Application: << 21 tuổi, 68 kg,
-I (74627) Application: << tôi đã ghi lại rồi. Bạn có đang mang thai hoặc cho con bú không?
-I (78767) StateMachine: State: speaking -> listening
-I (78777) SMV-MIC: pcm_mean=14 pcm_peak=53 input_clip=1 slow_reads=0 errors=0 samples=46560
-I (80397) Application: Local VAD endpoint: 700 ms silence
-W (85547) Application: Local VAD stop had no server response; resuming auto listening
-I (85557) SMV-MIC: pcm_mean=250 pcm_peak=298 input_clip=3 slow_reads=0 errors=0 samples=27200
-I (88487) Application: >> Không có.
-I (88487) StateMachine: State: listening -> speaking
-I (88957) Application: << OK rồi. Bạn có bị dị ứng với thuốc nào không?
-I (92057) Application: << Hoặc đang dùng thuốc gì khác không?
-I (94097) StateMachine: State: speaking -> listening
-I (94107) SMV-MIC: pcm_mean=66 pcm_peak=104 input_clip=0 slow_reads=0 errors=0 samples=48160
-I (96357) Application: Local VAD endpoint: 700 ms silence
-I (96707) Application: >> Không có.
-I (96707) StateMachine: State: listening -> speaking
-I (96987) Application: << % self.medical.get_intake_schema...
-I (97897) Application: << Tôi hiểu rồi.
-I (99037) Application: << Bạn có cảm thấy đau đầu dữ dội đột ngột, cứng cổ, hoặc có dấu hiệu nguy hiểm nào khác như khó thở,
-I (105237) Application: << đau ngực, hay lú lẫn không?
-I (106557) SystemInfo: free sram: 156931 minimal sram: 39812
-I (107337) StateMachine: State: speaking -> listening
-I (107347) SMV-MIC: pcm_mean=235 pcm_peak=284 input_clip=6 slow_reads=0 errors=0 samples=37440
-I (108377) Application: Local VAD endpoint: 700 ms silence
-W (113547) Application: Local VAD stop had no server response; resuming auto listening
-I (113557) SMV-MIC: pcm_mean=82 pcm_peak=113 input_clip=1 slow_reads=0 errors=0 samples=17760
-I (116557) SystemInfo: free sram: 156607 minimal sram: 39812
-I (116567) SMV-MIC: pcm_mean=11 pcm_peak=42 input_clip=9 slow_reads=0 errors=0 samples=49120
-I (117547) Application: >> cứng cổ và cũng không có nguy hiểm nào khác
-I (117547) StateMachine: State: listening -> speaking
-I (118797) Application: << % self.medical.evaluate_symptoms...
-I (119437) Application: << Dựa trên thông tin bạn chia sẻ,
-I (121317) Application: << có một lựa chọn tạm thời là Paracetamol 500mg. Nhưng bạn lưu ý nhé, đây chỉ là thông tin tham khảo,
-I (126557) SystemInfo: free sram: 155775 minimal sram: 39812
-I (128237) Application: << cần dược sĩ xem xét và kiểm tra kho trước. Bạn có muốn tôi tìm thêm thông tin gì không?
-I (132827) AudioCodec: Set input enable to false
-I (133617) StateMachine: State: speaking -> listening
-I (133747) AudioCodec: Set input enable to true
-I (133757) SMV-MIC: pcm_mean=61 pcm_peak=1018 input_clip=0 slow_reads=0 errors=0 samples=16000
-I (134587) Application: Local VAD endpoint: 700 ms silence
-W (140547) Application: Local VAD stop had no server response; resuming auto listening
-I (140557) SMV-MIC: pcm_mean=215 pcm_peak=246 input_clip=0 slow_reads=0 errors=0 samples=13440
-I (143557) SystemInfo: free sram: 156095 minimal sram: 39812
-I (143557) SMV-MIC: pcm_mean=106 pcm_peak=211 input_clip=7 slow_reads=0 errors=0 samples=48960
-I (145127) Application: >> Không có
-I (145127) StateMachine: State: listening -> speaking
-I (145637) Application: << OK rồi! Bạn nhớ nghỉ ngơi nhiều nhé, uống đủ nước.
-I (149177) Application: << Nếu đau đầu kéo dài hoặc nặng hơn thì nên đi khám bác sĩ nè. Có gì cần tôi giúp cứ nói nhé!
-I (154557) SystemInfo: free sram: 155339 minimal sram: 39812
-I (154857) StateMachine: State: speaking -> listening
+E (4317) MODEL_LOADER: Can not find model in partition table
+W (4327) AFE_CONFIG: wakenet model not found. please load wakenet model...
+I (4327) AfeAudioEngine: Before AFE create: free=162867 min=51168 largest=98304
+W (4337) AFE_CONFIG: Noise Supression may reduce the accuracy of speech recognition. It is not recommended to turn it on.
+WebRtcNs_Create: self=0x3c6556d4 size:23632
+I (4357) AFE: AFE Version: (1MIC_V251128)
+I (4357) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4367) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4377) AFE: AFE Version: (1MIC_V251128)
+I (4377) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4387) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4397) AfeAudioEngine: Initialized FD AFE, detector: none, NS: on, AGC: on, VAD silence: 700 ms, feed: 160, fetch: 512
+I (4407) AfeAudioEngine: After AFE create: free=161099 min=51168 largest=98304
+I (4417) AudioCodec: Set output enable to true
+I (4417) AudioService: Resampling audio from 16000 to 24000
+I (7447) StateMachine: State: idle -> connecting
+I (7447) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (7447) wifi:Set ps type: 0, coexist: 0
+
+I (7597) MQTT: Session ID: b44ac040
+I (7597) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (7607) wifi:Set ps type: 0, coexist: 0
+
+I (7607) StateMachine: State: connecting -> listening
+I (7737) AudioCodec: Set input enable to true
+I (10767) SMV-MIC: pcm_mean=178 pcm_peak=765 input_clip=33 slow_reads=0 errors=0 samples=48320
+I (11577) Application: Local VAD endpoint: 700 ms silence
+I (11787) Application: >> Xin chào.
+I (11797) StateMachine: State: listening -> speaking
+I (12687) Application: << Chào bạn! Dạo này thế nào rồi?
+I (15007) Application: << Có chuyện gì muốn chia sẻ không?
+I (17147) StateMachine: State: speaking -> listening
+I (17157) SMV-MIC: pcm_mean=444 pcm_peak=32767 input_clip=1 slow_reads=0 errors=0 samples=13440
+I (17907) Application: Local VAD endpoint: 700 ms silence
+W (23547) Application: Local VAD stop had no server response; resuming auto listening
+I (23557) SMV-MIC: pcm_mean=210 pcm_peak=234 input_clip=0 slow_reads=0 errors=0 samples=13280
+I (26557) SystemInfo: free sram: 156451 minimal sram: 51168
+I (26557) SMV-MIC: pcm_mean=16 pcm_peak=52 input_clip=14 slow_reads=0 errors=0 samples=48960
+I (27267) Application: >> Tôi cảm thấy nhức đạo.
+I (27267) StateMachine: State: listening -> speaking
+I (27767) Application: << Ôi, nhức đầu hả? Bạn có thể nói rõ hơn không,
+I (31307) Application: << nhức đầu kiểu gì vậy, đau nhói hay âm ỉ, ở đâu đầu bạn?
+I (35867) Application: << % self.medical.get_intake_schema...
+I (36507) Application: << Bạn bao nhiêu tuổi rồi?
+I (36577) SystemInfo: free sram: 155759 minimal sram: 39812
+I (38247) StateMachine: State: speaking -> listening
+I (38257) SMV-MIC: pcm_mean=54 pcm_peak=90 input_clip=0 slow_reads=0 errors=0 samples=11680
+I (39877) Application: Local VAD endpoint: 700 ms silence
+W (45547) Application: Local VAD stop had no server response; resuming auto listening
+I (45557) SMV-MIC: pcm_mean=206 pcm_peak=236 input_clip=18 slow_reads=0 errors=0 samples=27200
+I (47557) SystemInfo: free sram: 156451 minimal sram: 39812
+I (48567) SMV-MIC: pcm_mean=216 pcm_peak=263 input_clip=41 slow_reads=0 errors=0 samples=49120
+I (51567) SMV-MIC: pcm_mean=202 pcm_peak=237 input_clip=90 slow_reads=0 errors=0 samples=48000
+I (53737) AudioCodec: Set output enable to false
+I (54577) SMV-MIC: pcm_mean=194 pcm_peak=229 input_clip=14 slow_reads=0 errors=0 samples=48160
+I (57457) Application: >> Tôi đào đào âm ỉ.
+I (57467) StateMachine: State: listening -> speaking
+I (58057) Application: << Bạn bao nhiêu tuổi rồi?
+I (58067) AudioCodec: Set output enable to true
+I (59557) StateMachine: State: speaking -> listening
+I (59627) SMV-MIC: pcm_mean=35 pcm_peak=75 input_clip=0 slow_reads=0 errors=0 samples=46400
+W (59637) AudioService: Encode queue is full, dropping oldest frame (dropped 1 so far)
+I (60907) Application: Local VAD endpoint: 700 ms silence
+W (66547) Application: Local VAD stop had no server response; resuming auto listening
+I (66557) SMV-MIC: pcm_mean=16 pcm_peak=42 input_clip=0 slow_reads=0 errors=0 samples=21760
+I (69557) SystemInfo: free sram: 154963 minimal sram: 39812
+I (69567) SMV-MIC: pcm_mean=11 pcm_peak=43 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (70847) Application: >> Tôi 21 tuổi.
+I (70857) StateMachine: State: listening -> speaking
+I (71307) Application: << Bạn nặng bao nhiêu ki-lô-gam?
+I (73657) StateMachine: State: speaking -> listening
+I (73667) SMV-MIC: pcm_mean=34 pcm_peak=63 input_clip=0 slow_reads=0 errors=0 samples=20800
+I (76677) SMV-MIC: pcm_mean=359 pcm_peak=710 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (78367) Application: >> 78 kg
+I (78377) StateMachine: State: listening -> speaking
+I (78847) Application: << Bạn đang mang thai hoặc cho con bú không?
+I (81227) StateMachine: State: speaking -> listening
+I (81237) SMV-MIC: pcm_mean=41 pcm_peak=72 input_clip=0 slow_reads=0 errors=0 samples=27520
+I (83187) Application: Local VAD endpoint: 700 ms silence
+I (83387) Application: >> Không có.
+I (83387) StateMachine: State: listening -> speaking
+I (83927) Application: << Bạn bị đau đầu âm ỉ bao lâu rồi?
+I (86307) StateMachine: State: speaking -> listening
+I (86317) SMV-MIC: pcm_mean=40 pcm_peak=72 input_clip=0 slow_reads=0 errors=0 samples=32480
+I (89317) SMV-MIC: pcm_mean=95 pcm_peak=342 input_clip=0 slow_reads=0 errors=0 samples=48960
+I (90027) Application: >> cũng một ngày rồi
+I (90037) StateMachine: State: listening -> speaking
+I (90507) Application: << Bạn có sốt không? Có đo nhiệt độ chưa?
+I (93547) StateMachine: State: speaking -> listening
+I (93557) SMV-MIC: pcm_mean=39 pcm_peak=81 input_clip=0 slow_reads=0 errors=0 samples=11680
+I (93957) Application: Local VAD endpoint: 700 ms silence
+W (99547) Application: Local VAD stop had no server response; resuming auto listening
+I (99557) SMV-MIC: pcm_mean=532 pcm_peak=3251 input_clip=0 slow_reads=0 errors=0 samples=7680
+I (102557) SystemInfo: free sram: 156451 minimal sram: 39812
+I (102567) SMV-MIC: pcm_mean=61 pcm_peak=95 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (105567) SMV-MIC: pcm_mean=144 pcm_peak=179 input_clip=2 slow_reads=0 errors=0 samples=48000
+I (106157) Application: >> Không có số
+I (106157) StateMachine: State: listening -> speaking
+I (106707) Application: << Bạn có thấy chóng mặt, buồn nôn,
+I (109047) Application: << mờ mắt hay đau đầu dữ dội không?
+I (111247) StateMachine: State: speaking -> listening
+I (111257) SMV-MIC: pcm_mean=69 pcm_peak=107 input_clip=0 slow_reads=0 errors=0 samples=9760
+I (114267) SMV-MIC: pcm_mean=247 pcm_peak=639 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (115677) Application: Local VAD endpoint: 700 ms silence
+I (115967) Application: >> Tôi cảm thấy chống mặt và không có bột nôn.
+I (115967) StateMachine: State: listening -> speaking
+I (116897) Application: << % self.medical.evaluate_symptoms...
+I (117517) Application: << Bạn có bệnh nền nào không như huyết áp,
+I (119517) Application: << tiểu đường hay bệnh gì khác?
+I (121357) StateMachine: State: speaking -> listening
+I (121367) SMV-MIC: pcm_mean=13 pcm_peak=54 input_clip=0 slow_reads=0 errors=0 samples=22880
+I (124377) SMV-MIC: pcm_mean=277 pcm_peak=916 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (127377) SMV-MIC: pcm_mean=30 pcm_peak=69 input_clip=0 slow_reads=0 errors=0 samples=48000
+I (127387) Application: Local VAD endpoint: 700 ms silence
+I (127617) Application: >> Tôi không có đa huyết áp và cũng không có bị bệnh khác.
+I (127617) StateMachine: State: listening -> speaking
+I (128057) Application: << Bạn đang uống thuốc gì không?
+I (129917) StateMachine: State: speaking -> listening
+I (130377) SMV-MIC: pcm_mean=36 pcm_peak=73 input_clip=0 slow_reads=0 errors=0 samples=8640
+I (131817) Application: Local VAD endpoint: 700 ms silence
+I (132007) Application: >> Không có.
+I (132017) StateMachine: State: listening -> speaking
+I (132557) Application: << Bạn bị dị ứng thuốc gì không?
+I (134637) Application: << % self.medical.evaluate_symptoms...
+I (135167) Application: << Bạn có dị ứng thuốc gì không?
+I (137127) StateMachine: State: speaking -> listening
+I (137137) SMV-MIC: pcm_mean=27 pcm_peak=62 input_clip=0 slow_reads=0 errors=0 samples=23200
+I (139197) Application: Local VAD endpoint: 700 ms silence
+I (139387) Application: >> Không có.
+I (139397) StateMachine: State: listening -> speaking
+I (140497) Application: << % self.medical.evaluate_symptoms...
+I (141097) Application: << Bạn có dị ứng thuốc gì không?
+I (143017) StateMachine: State: speaking -> listening
+I (143027) SMV-MIC: pcm_mean=16 pcm_peak=48 input_clip=0 slow_reads=0 errors=0 samples=34080
+I (145177) Application: Local VAD endpoint: 700 ms silence
+I (145377) Application: >> Không có.
+I (145377) StateMachine: State: listening -> speaking
+I (146337) Application: << % self.medical.evaluate_symptoms...
+I (146837) Application: << Bạn có dị ứng thuốc gì không?
+I (148637) StateMachine: State: speaking -> listening
+I (148657) SMV-MIC: pcm_mean=60 pcm_peak=92 input_clip=0 slow_reads=0 errors=0 samples=35840
+I (150577) Application: Local VAD endpoint: 700 ms silence
+I (150777) Application: >> Không.
+I (150777) StateMachine: State: listening -> speaking
+I (151647) Application: << % self.medical.evaluate_symptoms...
+I (152177) Application: << Bạn có dị ứng thuốc gì không?
+I (154077) StateMachine: State: speaking -> listening
+I (154097) SMV-MIC: pcm_mean=70 pcm_peak=105 input_clip=0 slow_reads=0 errors=0 samples=32160
+I (156247) Application: Local VAD endpoint: 700 ms silence
+I (156447) Application: >> Không.
+I (156457) StateMachine: State: listening -> speaking
