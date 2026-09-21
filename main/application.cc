@@ -83,7 +83,10 @@ void Application::Initialize() {
         xEventGroupSetBits(event_group_, MAIN_EVENT_WAKE_WORD_DETECTED);
     };
     callbacks.on_vad_change = [this](bool speaking) {
-        Schedule([this, speaking]() { HandleVadChange(speaking); });
+        // Do not allow a queued VAD event from the previous TTS/listening turn
+        // to stop the microphone in a newly opened listening turn.
+        const uint32_t generation = listening_generation_.load(std::memory_order_relaxed);
+        Schedule([this, speaking, generation]() { HandleVadChange(speaking, generation); });
     };
     callbacks.on_playback_drained = [this]() {
         xEventGroupSetBits(event_group_, MAIN_EVENT_PLAYBACK_DRAINED);
@@ -265,6 +268,22 @@ void Application::Run() {
         }
 
         if (bits & MAIN_EVENT_CLOCK_TICK) {
+#if defined(CONFIG_USE_LOCAL_VAD_ENDPOINT) && CONFIG_USE_LOCAL_VAD_ENDPOINT
+            // If an endpoint generated neither STT nor TTS, restore capture
+            // before the 15-second audio power-save timeout. Remain on the
+            // existing channel: reopening MQTT/UDP is not necessary here.
+            if (local_endpoint_recovery_.AwaitingResponse() &&
+                local_endpoint_recovery_.RecoverIfStalled(LocalEndpointRecovery::Clock::now())) {
+                if (GetDeviceState() == kDeviceStateListening && protocol_ &&
+                    protocol_->IsAudioChannelOpened() &&
+                    listening_mode_ == kListeningModeAutoStop &&
+                    !audio_service_.IsAudioProcessorRunning()) {
+                    ESP_LOGW(TAG, "Local VAD stop had no server response; resuming auto listening");
+                    vad_endpoint_.Reset();
+                    StartListeningAudio();
+                }
+            }
+#endif
             clock_ticks_++;
             auto display = Board::GetInstance().GetDisplay();
             display->UpdateStatusBar();
@@ -279,8 +298,10 @@ void Application::Run() {
     }
 }
 
-void Application::HandleVadChange(bool speaking) {
-    if (GetDeviceState() != kDeviceStateListening) {
+void Application::HandleVadChange(bool speaking, uint32_t generation) {
+    if (generation != listening_generation_.load(std::memory_order_relaxed) ||
+        GetDeviceState() != kDeviceStateListening ||
+        !audio_service_.IsAudioProcessorRunning()) {
         return;
     }
 
@@ -288,9 +309,12 @@ void Application::HandleVadChange(bool speaking) {
     led->OnStateChanged();
 
 #if defined(CONFIG_USE_LOCAL_VAD_ENDPOINT) && CONFIG_USE_LOCAL_VAD_ENDPOINT
-    if (listening_mode_ == kListeningModeAutoStop && vad_endpoint_.OnVadState(speaking)) {
-        ESP_LOGI(TAG, "Local VAD endpoint: %d ms silence", CONFIG_LOCAL_VAD_SILENCE_MS);
+    if (listening_mode_ == kListeningModeAutoStop &&
+        local_endpoint_recovery_.CanSendLocalStop() &&
+        vad_endpoint_.OnVadState(speaking)) {
         if (protocol_ && protocol_->IsAudioChannelOpened()) {
+            ESP_LOGI(TAG, "Local VAD endpoint: %d ms silence", CONFIG_LOCAL_VAD_SILENCE_MS);
+            local_endpoint_recovery_.OnLocalStopSent(LocalEndpointRecovery::Clock::now());
             protocol_->SendStopListening();
             audio_service_.EnableVoiceProcessing(false);
         }
@@ -635,6 +659,7 @@ void Application::InitializeProtocol() {
             }
             if (strcmp(state->valuestring, "start") == 0) {
                 Schedule([this]() {
+                    local_endpoint_recovery_.OnServerResponse();
                     aborted_ = false;
                     SetDeviceState(kDeviceStateSpeaking);
                 });
@@ -673,8 +698,9 @@ void Application::InitializeProtocol() {
                     glyphs.clear();
                 }
                 ESP_LOGI(TAG, ">> %s", text->valuestring);
-                Schedule([display, message = std::string(text->valuestring),
+                Schedule([this, display, message = std::string(text->valuestring),
                           glyphs = std::move(glyphs), bpp]() {
+                    local_endpoint_recovery_.OnServerResponse();
                     display->AddTextGlyphs(glyphs, bpp);
                     display->SetChatMessage("user", message.c_str());
                 });
@@ -1006,6 +1032,10 @@ void Application::ContinueWakeWordInvoke(const std::string& wake_word) {
 
 void Application::HandleStateChangedEvent() {
     DeviceState new_state = state_machine_.GetState();
+    // AFE callbacks are scheduled from another task. Invalidate any pending
+    // event from the old state before arming VAD for the new listening turn.
+    listening_generation_.fetch_add(1, std::memory_order_relaxed);
+    local_endpoint_recovery_.Reset();
     clock_ticks_ = 0;
     // Any state change invalidates a pending deferred listening start;
     // the Listening case below re-arms it when needed.

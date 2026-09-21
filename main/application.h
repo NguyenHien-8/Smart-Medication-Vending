@@ -12,12 +12,14 @@
 #include <memory>
 #include <functional>
 #include <cstdint>
+#include <atomic>
 #include <vector>
 
 #include "protocol.h"
 #include "ota.h"
 #include "audio_service.h"
 #include "vad_endpoint.h"
+#include "audio/local_endpoint_recovery.h"
 #include "device_state.h"
 #include "device_state_machine.h"
 #include "notify/notify_player.h"
@@ -141,6 +143,8 @@ private:
     std::string last_error_message_;
     AudioService audio_service_;
     VadEndpoint vad_endpoint_;
+    LocalEndpointRecovery local_endpoint_recovery_;
+    std::atomic<uint32_t> listening_generation_{0};
     NotifyPlayer notify_player_;
     uint32_t notification_playback_id_ = 0;
     std::unique_ptr<Ota> ota_;
@@ -165,7 +169,7 @@ private:
     void HandleNetworkDisconnectedEvent();
     void HandleActivationDoneEvent();
     void HandleWakeWordDetectedEvent();
-    void HandleVadChange(bool speaking);
+    void HandleVadChange(bool speaking, uint32_t generation);
     void ContinueOpenAudioChannel(ListeningMode mode);
     void BeginWakeWordInvoke(const std::string& wake_word);
     void ContinueWakeWordInvoke(const std::string& wake_word);
