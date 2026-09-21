@@ -1,0 +1,10 @@
+{
+    "type": "smartmedivend-s3",
+    "target": "esp32s3",
+    "builds": [
+        {
+            "name": "smartmedivend-s3",
+            "sdkconfig_append": []
+        }
+    ]
+}
