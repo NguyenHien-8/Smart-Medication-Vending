@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "rules_version": "rules-2026-09-17",
+  "rules_version": "rules-2026-09-22-interview-pilot",
   "status": "PHARMACIST_REVIEW_REQUIRED",
   "scope": {
     "minimum_age_years": 16,
@@ -10,22 +10,228 @@
     "maximum_blisters_per_medicine": 1,
     "diagnosis_claims_allowed": false
   },
-  "global_required_fields": ["age_years", "weight_kg", "pregnancy_or_breastfeeding", "symptoms", "duration_hours", "danger_signs", "conditions", "current_medicines", "drug_allergies"],
-  "global_danger_signs": ["difficulty_breathing", "chest_pain", "confusion", "fainting", "seizure", "weakness_or_speech_problem", "sudden_severe_headache", "stiff_neck", "coughing_blood", "vomiting_blood", "bloody_or_black_stool", "severe_abdominal_pain", "dehydration", "cannot_keep_fluids", "difficulty_swallowing", "drooling", "stridor", "unintentional_weight_loss", "rapidly_worsening"],
+  "global_required_fields": [
+    "age_years",
+    "weight_kg",
+    "pregnancy_or_breastfeeding",
+    "symptoms",
+    "duration_hours",
+    "danger_signs",
+    "conditions",
+    "current_medicines",
+    "drug_allergies"
+  ],
+  "global_danger_signs": [
+    "difficulty_breathing",
+    "chest_pain",
+    "confusion",
+    "fainting",
+    "seizure",
+    "weakness_or_speech_problem",
+    "sudden_severe_headache",
+    "stiff_neck",
+    "coughing_blood",
+    "vomiting_blood",
+    "bloody_or_black_stool",
+    "severe_abdominal_pain",
+    "dehydration",
+    "cannot_keep_fluids",
+    "difficulty_swallowing",
+    "drooling",
+    "stridor",
+    "unintentional_weight_loss",
+    "rapidly_worsening"
+  ],
   "medicine_rules": [
-    {"canonical_id": "PARACETAMOL_500", "symptoms": ["fever", "mild_headache", "mild_body_ache"], "refer_if": ["weight_below_50kg"], "exclude_if": ["liver_disease", "kidney_disease", "heavy_alcohol_use", "contains_paracetamol"]},
-    {"canonical_id": "IBUPROFEN_200", "symptoms": ["mild_inflammatory_pain"], "exclude_if": ["peptic_ulcer", "gastrointestinal_bleeding", "kidney_disease", "heart_disease", "liver_disease", "dehydration", "nsaid_allergy", "nsaid_asthma", "anticoagulant", "systemic_steroid", "other_nsaid"]},
-    {"canonical_id": "LORATADINE_10", "symptoms": ["allergic_rhinitis"], "refer_if": ["liver_disease"], "exclude_if": ["other_antihistamine"]},
-    {"canonical_id": "DEXTROMETHORPHAN_15", "symptoms": ["dry_cough"], "exclude_if": ["productive_cough", "chronic_cough", "asthma_or_copd", "maoi_within_14_days", "sedative"]},
-    {"canonical_id": "AMBROXOL_30", "symptoms": ["productive_cough"], "exclude_if": ["dry_cough_only", "dextromethorphan_selected", "serious_skin_or_mucosal_reaction"]},
-    {"canonical_id": "DEQUALINIUM_025", "symptoms": ["mild_sore_throat"], "exclude_if": ["difficulty_breathing", "difficulty_swallowing", "drooling", "stridor", "high_fever", "rapidly_worsening"]},
-    {"canonical_id": "SIMETHICONE_80", "symptoms": ["gas_bloating"], "refer_if": ["thyroid_treatment", "levothyroxine"]},
-    {"canonical_id": "ANTACID_200_200", "symptoms": ["acid_indigestion"], "refer_if": ["kidney_disease", "liver_disease", "heart_disease", "sodium_restriction", "current_medicine_requires_spacing"], "exclude_if": ["omeprazole_selected"]},
-    {"canonical_id": "OMEPRAZOLE_10", "minimum_age_years": 18, "symptoms": ["short_term_reflux"], "refer_if": ["age_16_or_17"], "exclude_if": ["alarm_symptom", "clopidogrel", "important_ppi_interaction"]},
-    {"canonical_id": "LOPERAMIDE_2", "symptoms": ["acute_watery_diarrhoea"], "exclude_if": ["fever", "dehydration", "bloody_stool", "antibiotic_associated_diarrhoea", "ibd_flare", "constipation", "abdominal_swelling", "duration_over_48_hours"]},
-    {"canonical_id": "BISACODYL_5", "minimum_age_years": 18, "symptoms": ["short_term_constipation"], "refer_if": ["age_16_or_17"], "exclude_if": ["dehydration", "abdominal_pain", "vomiting", "bowel_obstruction", "inflammatory_bowel_disease", "recent_antacid"]},
-    {"canonical_id": "DIMENHYDRINATE_50", "symptoms": ["motion_sickness"], "exclude_if": ["unexplained_nausea", "glaucoma", "chronic_respiratory_disease", "urination_difficulty", "alcohol", "sedative", "driving_or_operating_machinery"]},
-    {"canonical_id": "S_BOULARDII_250", "symptoms": ["digestive_support", "acute_watery_diarrhoea"], "exclude_if": ["immunocompromised", "critically_ill", "central_venous_catheter", "yeast_allergy"]}
+    {
+      "canonical_id": "PARACETAMOL_500",
+      "symptoms": [
+        "fever",
+        "mild_headache",
+        "mild_body_ache"
+      ],
+      "refer_if": [
+        "weight_below_50kg"
+      ],
+      "exclude_if": [
+        "liver_disease",
+        "kidney_disease",
+        "heavy_alcohol_use",
+        "contains_paracetamol"
+      ]
+    },
+    {
+      "canonical_id": "IBUPROFEN_200",
+      "symptoms": [
+        "mild_inflammatory_pain"
+      ],
+      "exclude_if": [
+        "peptic_ulcer",
+        "gastrointestinal_bleeding",
+        "kidney_disease",
+        "heart_disease",
+        "liver_disease",
+        "dehydration",
+        "nsaid_allergy",
+        "nsaid_asthma",
+        "anticoagulant",
+        "systemic_steroid",
+        "other_nsaid"
+      ]
+    },
+    {
+      "canonical_id": "LORATADINE_10",
+      "symptoms": [
+        "allergic_rhinitis"
+      ],
+      "refer_if": [
+        "liver_disease"
+      ],
+      "exclude_if": [
+        "other_antihistamine"
+      ]
+    },
+    {
+      "canonical_id": "DEXTROMETHORPHAN_15",
+      "symptoms": [
+        "dry_cough"
+      ],
+      "exclude_if": [
+        "productive_cough",
+        "chronic_cough",
+        "asthma_or_copd",
+        "maoi_within_14_days",
+        "sedative"
+      ]
+    },
+    {
+      "canonical_id": "AMBROXOL_30",
+      "symptoms": [
+        "productive_cough"
+      ],
+      "exclude_if": [
+        "dry_cough_only",
+        "dextromethorphan_selected",
+        "serious_skin_or_mucosal_reaction"
+      ]
+    },
+    {
+      "canonical_id": "DEQUALINIUM_025",
+      "symptoms": [
+        "mild_sore_throat"
+      ],
+      "exclude_if": [
+        "difficulty_breathing",
+        "difficulty_swallowing",
+        "drooling",
+        "stridor",
+        "high_fever",
+        "rapidly_worsening"
+      ]
+    },
+    {
+      "canonical_id": "SIMETHICONE_80",
+      "symptoms": [
+        "gas_bloating"
+      ],
+      "refer_if": [
+        "thyroid_treatment",
+        "levothyroxine"
+      ]
+    },
+    {
+      "canonical_id": "ANTACID_200_200",
+      "symptoms": [
+        "acid_indigestion"
+      ],
+      "refer_if": [
+        "kidney_disease",
+        "liver_disease",
+        "heart_disease",
+        "sodium_restriction",
+        "current_medicine_requires_spacing"
+      ],
+      "exclude_if": [
+        "omeprazole_selected"
+      ]
+    },
+    {
+      "canonical_id": "OMEPRAZOLE_10",
+      "minimum_age_years": 18,
+      "symptoms": [
+        "short_term_reflux"
+      ],
+      "refer_if": [
+        "age_16_or_17"
+      ],
+      "exclude_if": [
+        "alarm_symptom",
+        "clopidogrel",
+        "important_ppi_interaction"
+      ]
+    },
+    {
+      "canonical_id": "LOPERAMIDE_2",
+      "symptoms": [
+        "acute_watery_diarrhoea"
+      ],
+      "exclude_if": [
+        "fever",
+        "dehydration",
+        "bloody_stool",
+        "antibiotic_associated_diarrhoea",
+        "ibd_flare",
+        "constipation",
+        "abdominal_swelling",
+        "duration_over_48_hours"
+      ]
+    },
+    {
+      "canonical_id": "BISACODYL_5",
+      "minimum_age_years": 18,
+      "symptoms": [
+        "short_term_constipation"
+      ],
+      "refer_if": [
+        "age_16_or_17"
+      ],
+      "exclude_if": [
+        "dehydration",
+        "abdominal_pain",
+        "vomiting",
+        "bowel_obstruction",
+        "inflammatory_bowel_disease",
+        "recent_antacid"
+      ]
+    },
+    {
+      "canonical_id": "DIMENHYDRINATE_50",
+      "symptoms": [
+        "motion_sickness"
+      ],
+      "exclude_if": [
+        "unexplained_nausea",
+        "glaucoma",
+        "chronic_respiratory_disease",
+        "urination_difficulty",
+        "alcohol",
+        "sedative",
+        "driving_or_operating_machinery"
+      ]
+    },
+    {
+      "canonical_id": "S_BOULARDII_250",
+      "symptoms": [
+        "digestive_support",
+        "acute_watery_diarrhoea"
+      ],
+      "exclude_if": [
+        "immunocompromised",
+        "critically_ill",
+        "central_venous_catheter",
+        "yeast_allergy"
+      ]
+    }
   ],
   "sources": [
     "https://www.nhs.uk/medicines/paracetamol-for-adults/",
@@ -41,5 +247,265 @@
     "https://www.nhs.uk/medicines/bisacodyl/",
     "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=3fd4a96f-8f69-42bf-b777-6e3a2bfea275",
     "https://www.ema.europa.eu/en/documents/psusa/saccharomyces-boulardii-cmdh-scientific-conclusions-and-grounds-variation-amendments-product-information-and-timetable-implementation-psusa00009284201702_en.pdf"
-  ]
+  ],
+  "interview": {
+    "version": 1,
+    "global_checks": [
+      {
+        "id": "redflag_breathing",
+        "question_vi": "Bạn có khó thở hoặc đau ngực không?",
+        "expected": false,
+        "on_mismatch": "REFER"
+      },
+      {
+        "id": "redflag_neurologic",
+        "question_vi": "Bạn có bị ngất hoặc co giật không?",
+        "expected": false,
+        "on_mismatch": "REFER"
+      },
+      {
+        "id": "redflag_weakness",
+        "question_vi": "Bạn có bị yếu tay chân hoặc nói khó không?",
+        "expected": false,
+        "on_mismatch": "REFER"
+      },
+      {
+        "id": "redflag_bleeding",
+        "question_vi": "Bạn có ho ra máu hoặc nôn ra máu không?",
+        "expected": false,
+        "on_mismatch": "REFER"
+      },
+      {
+        "id": "redflag_black_stool",
+        "question_vi": "Bạn có đi ngoài ra máu hoặc phân đen không?",
+        "expected": false,
+        "on_mismatch": "REFER"
+      },
+      {
+        "id": "redflag_other",
+        "question_vi": "Bạn có đau dữ dội hoặc triệu chứng nặng nhanh không?",
+        "expected": false,
+        "on_mismatch": "REFER"
+      }
+    ],
+    "symptom_checks": {
+      "fever": [
+        {
+          "id": "fever_measured",
+          "question_vi": "Bạn có đo nhiệt độ và xác nhận bị sốt không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "fever_stiff_neck",
+          "question_vi": "Bạn có bị cứng cổ hoặc đau đầu dữ dội không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "mild_headache": [
+        {
+          "id": "headache_sudden",
+          "question_vi": "Cơn đau đầu có đến đột ngột và rất dữ dội không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        },
+        {
+          "id": "headache_vomit",
+          "question_vi": "Bạn có nôn hoặc nhìn mờ khi đau đầu không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        },
+        {
+          "id": "headache_stiff",
+          "question_vi": "Bạn có cứng cổ khi bị đau đầu không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "mild_body_ache": [
+        {
+          "id": "ache_mild",
+          "question_vi": "Cơn đau mỏi có ở mức nhẹ không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "ache_trauma",
+          "question_vi": "Bạn có bị đau sau chấn thương nghiêm trọng không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "mild_inflammatory_pain": [
+        {
+          "id": "inflammatory_local",
+          "question_vi": "Bạn bị đau cơ hay khớp mức nhẹ phải không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "inflammatory_redness",
+          "question_vi": "Vùng đau có sưng nóng đỏ kèm sốt không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "allergic_rhinitis": [
+        {
+          "id": "rhinitis_itch",
+          "question_vi": "Bạn có hắt hơi hoặc ngứa mũi, ngứa mắt không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "rhinitis_fever",
+          "question_vi": "Bạn có sốt hoặc đau mặt dữ dội không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "dry_cough": [
+        {
+          "id": "dry_has_phlegm",
+          "question_vi": "Khi ho, bạn có khạc ra đờm không?",
+          "expected": false,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "dry_cough_blood",
+          "question_vi": "Bạn có ho ra máu hoặc khó thở không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "productive_cough": [
+        {
+          "id": "productive_has_phlegm",
+          "question_vi": "Khi ho, bạn có khạc ra đờm không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "productive_cough_blood",
+          "question_vi": "Bạn có ho ra máu hoặc khó thở không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "mild_sore_throat": [
+        {
+          "id": "throat_swallow",
+          "question_vi": "Bạn có khó nuốt nước bọt hoặc khó thở không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        },
+        {
+          "id": "throat_mild",
+          "question_vi": "Bạn chỉ bị đau rát họng mức nhẹ phải không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        }
+      ],
+      "gas_bloating": [
+        {
+          "id": "bloat_gas",
+          "question_vi": "Bạn có cảm giác đầy hơi hoặc ợ hơi nhiều không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "bloat_pain",
+          "question_vi": "Bạn có đau bụng dữ dội hoặc nôn liên tục không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "acid_indigestion": [
+        {
+          "id": "acid_burning",
+          "question_vi": "Bạn có cảm giác nóng rát vùng ngực sau ăn không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "acid_chest",
+          "question_vi": "Bạn có đau tức ngực hoặc khó thở không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "short_term_reflux": [
+        {
+          "id": "reflux_sour",
+          "question_vi": "Bạn có bị ợ chua hoặc thức ăn trào lên miệng không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "reflux_swallow",
+          "question_vi": "Bạn có khó nuốt hoặc sụt cân không rõ nguyên nhân không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "acute_watery_diarrhoea": [
+        {
+          "id": "diarrhea_watery",
+          "question_vi": "Phân có lỏng như nước không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "diarrhea_blood",
+          "question_vi": "Bạn có sốt hoặc đi ngoài ra máu không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "short_term_constipation": [
+        {
+          "id": "constipation_hard",
+          "question_vi": "Bạn có đi ngoài khó hoặc phân khô cứng không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "constipation_pain",
+          "question_vi": "Bạn có đau bụng nhiều hoặc đang nôn không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "motion_sickness": [
+        {
+          "id": "motion_trigger",
+          "question_vi": "Buồn nôn có xuất hiện khi đi xe hoặc tàu không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "motion_unexplained",
+          "question_vi": "Bạn có buồn nôn cả khi không di chuyển không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ],
+      "digestive_support": [
+        {
+          "id": "digestive_watery",
+          "question_vi": "Bạn có tiêu chảy hoặc phân lỏng không?",
+          "expected": true,
+          "on_mismatch": "CLARIFY"
+        },
+        {
+          "id": "digestive_dehydrated",
+          "question_vi": "Bạn có khát dữ dội, tiểu rất ít hoặc không uống được nước không?",
+          "expected": false,
+          "on_mismatch": "REFER"
+        }
+      ]
+    },
+    "protocol": "Each question must be asked separately. Each answer must be explicitly confirmed. Missing and unclear are UNKNOWN; never convert silence or unrelated text into false. If user reports new red flag REFER immediately; do not wait for remaining questions."
+  }
 }

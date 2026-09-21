@@ -29,6 +29,7 @@ cJSON* cJSON_AddBoolToObject(cJSON*, const char*, int);
 int cJSON_AddItemToArray(cJSON*, cJSON*);
 int cJSON_AddItemToObject(cJSON*, const char*, cJSON*);
 int cJSON_GetArraySize(const cJSON*);
+cJSON* cJSON_GetArrayItem(const cJSON*, int);
 char* cJSON_PrintUnformatted(const cJSON*);
 void cJSON_free(void*);
 int cJSON_IsString(const cJSON*);

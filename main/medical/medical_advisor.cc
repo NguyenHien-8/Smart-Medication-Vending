@@ -61,6 +61,62 @@ std::string Error(const char* status, const char* reason) {
     cJSON_AddBoolToObject(o.get(), "vend_allowed", false);
     return Serialize(o.get());
 }
+// The device chooses ONE short question from the authoritative rule set.
+// No answer is inferred from silence, unrelated utterances or a cloud guess.
+void NextQuestion(cJSON* out, const cJSON* check) {
+    const char* id = Str(Get(check, "id"));
+    const char* question = Str(Get(check, "question_vi"));
+    if (id && question) {
+        Put(out, "next_question_id", id);
+        Put(out, "next_question_vi", question);
+    }
+}
+void NextField(cJSON* out, const char* field) {
+    struct FieldQuestion { const char* key; const char* question; };
+    static const FieldQuestion kQuestions[] = {
+        {"symptoms", "Bạn đang khó chịu ở đâu?"},
+        {"danger_signs", "Bạn có dấu hiệu nguy hiểm nào khác không?"},
+        {"age_years", "Bạn bao nhiêu tuổi?"},
+        {"duration_hours", "Triệu chứng bắt đầu từ khi nào?"},
+        {"weight_kg", "Bạn nặng bao nhiêu kilôgam?"},
+        {"pregnancy_or_breastfeeding", "Bạn có đang mang thai hoặc cho con bú không?"},
+        {"conditions", "Bạn có bệnh nền nào không?"},
+        {"current_medicines", "Bạn đang sử dụng những thuốc gì?"},
+        {"drug_allergies", "Bạn có dị ứng với thuốc nào không?"},
+    };
+    for (const auto& q : kQuestions) if (std::strcmp(field, q.key) == 0) {
+        Put(out, "next_question_id", field);
+        Put(out, "next_question_vi", q.question);
+        return;
+    }
+}
+const cJSON* FindCheck(const cJSON* interview, const char* id) {
+    const cJSON* check = nullptr;
+    cJSON_ArrayForEach(check, Get(interview, "global_checks")) {
+        if (const char* key = Str(Get(check, "id")); key && std::strcmp(id,key)==0) return check;
+    }
+    const cJSON* profiles = Get(interview, "symptom_checks");
+    const cJSON* profile = nullptr;
+    cJSON_ArrayForEach(profile, profiles) {
+        cJSON_ArrayForEach(check, profile) {
+            if (const char* key = Str(Get(check, "id")); key && std::strcmp(id,key)==0) return check;
+        }
+    }
+    return nullptr;
+}
+// A single positive danger answer must stop the workflow, even when other fields are missing.
+bool IsPositiveDanger(const cJSON* interview, const cJSON* answers) {
+    if (!cJSON_IsObject(answers)) return false;
+    const cJSON* a = nullptr;
+    cJSON_ArrayForEach(a, answers) {
+        const cJSON* check = a->string ? FindCheck(interview, a->string) : nullptr;
+        if (check && cJSON_IsTrue(a) && cJSON_IsBool(Get(check, "expected")) && !cJSON_IsTrue(Get(check, "expected")) &&
+            std::strcmp(Str(Get(check, "on_mismatch")) ? Str(Get(check, "on_mismatch")) : "", "REFER") == 0)
+            return true;
+    }
+    return false;
+}
+
 std::set<std::string> AllowedSymptoms(const cJSON* rules) {
     std::set<std::string> result;
     const cJSON* r = nullptr;
@@ -104,7 +160,24 @@ std::string MedicalAdvisor::IntakeSchema() const {
     if (!rules || !catalog) return Error("DENY", "LOCAL_DATA_UNAVAILABLE");
     auto out = Make();
     Put(out.get(), "purpose", "INTAKE_ONLY_NO_DIAGNOSIS_NO_VEND");
-    Put(out.get(), "instruction", "Ask one or two questions per turn; retain only explicitly answered facts. Submit a complete snapshot each turn to self.medical.evaluate_symptoms. Empty arrays mean explicitly screened none, NOT unanswered. Never invent negatives or name a medicine before device response. For unknown information omit its key; do not insert default false or empty arrays.");
+    Put(out.get(), "instruction", "Ask EXACTLY ONE SHORT question per turn, preferring next_question_vi returned by evaluate_symptoms. Do not ask a second question or add a list. If reply is absent, garbled, ambiguous, or unrelated repeat the SAME pending question or ask for clarification, without changing that field. Submit a full snapshot every turn. Unanswered keys MUST BE OMITTED, never default to false or []. screening_answers must contain only explicit yes/no answers to the matching question_id. Never invent negatives or name medicines before device response.");
+    const cJSON* interview = Get(rules.get(), "interview");
+    if (!cJSON_IsObject(interview)) return Error("DENY", "INTERVIEW_CONFIG_UNAVAILABLE");
+    auto* check_copy = cJSON_Duplicate(interview, 1);
+    if (check_copy) cJSON_AddItemToObject(out.get(), "interview", check_copy);
+    auto* guides = cJSON_AddArrayToObject(out.get(), "symptom_guides");
+    const cJSON* slot = nullptr;
+    cJSON_ArrayForEach(slot, Get(catalog.get(), "slots")) {
+        if (cJSON_IsNumber(Get(slot, "backup_of_channel"))) continue;
+        auto* guide = cJSON_CreateObject();
+        const char* id = Str(Get(slot, "canonical_id"));
+        const char* group = Str(Get(slot, "symptom_group"));
+        const char* caution = Str(Get(slot, "differentiate_and_escalate"));
+        if (!id || !group || !caution) { cJSON_Delete(guide); return Error("DENY", "INVALID_SYMPTOM_GUIDE"); }
+        Put(guide, "canonical_id", id); Put(guide, "symptom_cues_vi", group);
+        Put(guide, "do_not_confuse_with_vi", caution);
+        cJSON_AddItemToArray(guides, guide);
+    }
     cJSON* fields = cJSON_Duplicate(Get(rules.get(), "global_required_fields"), 1);
     if (fields) cJSON_AddItemToObject(out.get(), "required_fields", fields);
     cJSON* danger = cJSON_Duplicate(Get(rules.get(), "global_danger_signs"), 1);
@@ -140,19 +213,35 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
     const auto* required = Get(rules.get(), "global_required_fields");
     if (!cJSON_IsNumber(min_age) || !cJSON_IsNumber(max_meds) || !rule_version ||
         !catalog_version || !cJSON_IsArray(required) || !cJSON_IsArray(Get(rules.get(), "medicine_rules")) ||
-        !cJSON_IsArray(Get(catalog.get(), "slots")) || !cJSON_IsArray(Get(rules.get(), "global_danger_signs")))
+        !cJSON_IsArray(Get(catalog.get(), "slots")) || !cJSON_IsArray(Get(rules.get(), "global_danger_signs")) ||
+        !cJSON_IsObject(Get(rules.get(), "interview")) ||
+        !cJSON_IsArray(Get(Get(rules.get(), "interview"), "global_checks")) ||
+        !cJSON_IsObject(Get(Get(rules.get(), "interview"), "symptom_checks")))
         return Error("DENY", "INVALID_LOCAL_CONFIGURATION");
     auto input = Parse(untrusted_json);
     if (!input || !cJSON_IsObject(input.get())) return Error("DENY", "INVALID_INPUT_JSON");
     // Never accept cloud-side authorization, channel, SKU, quantity, or a free-text prescription.
     static const std::set<std::string> kFields = {
         "session_id", "turn_id", "age_years", "weight_kg", "pregnancy_or_breastfeeding",
-        "symptoms", "duration_hours", "danger_signs", "conditions", "current_medicines", "drug_allergies"};
+        "symptoms", "duration_hours", "danger_signs", "conditions", "current_medicines", "drug_allergies", "screening_answers"};
     const cJSON* entry = nullptr;
     std::set<std::string> seen_fields;
     cJSON_ArrayForEach(entry, input.get()) {
         if (!entry->string || !kFields.count(entry->string)) return Error("DENY", "FORBIDDEN_OR_UNKNOWN_FIELD");
         if (!seen_fields.insert(entry->string).second) return Error("DENY", "DUPLICATE_FIELD");
+    }
+    const cJSON* interview = Get(rules.get(), "interview");
+    const cJSON* answers = Get(input.get(), "screening_answers");
+    if (answers) {
+        if (!cJSON_IsObject(answers) || cJSON_GetArraySize(answers) > 48)
+            return Error("DENY", "INVALID_SCREENING_ANSWERS");
+        std::set<std::string> answer_keys;
+        const cJSON* answer = nullptr;
+        cJSON_ArrayForEach(answer, answers) {
+            if (!answer->string || !answer_keys.insert(answer->string).second ||
+                !cJSON_IsBool(answer) || !FindCheck(interview, answer->string))
+                return Error("DENY", "INVALID_SCREENING_ANSWERS");
+        }
     }
     const char* session = Str(Get(input.get(), "session_id"));
     const auto* turn = Get(input.get(), "turn_id");
@@ -196,10 +285,38 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
     if (Get(input.get(), "current_medicines")) medicines = ReadEnumArray(Get(input.get(), "current_medicines"), valid);
     if (Get(input.get(), "drug_allergies")) allergies = ReadEnumArray(Get(input.get(), "drug_allergies"), valid);
     if (!valid) return Error("DENY", "INVALID_ARRAY_OR_DUPLICATE_FLAG");
+    if (IsPositiveDanger(interview, answers)) {
+        Put(out.get(), "status", "REFER");
+        Put(out.get(), "reason", "INTERVIEW_DANGER_OR_CONTRAINDICATION");
+        return Serialize(out.get());
+    }
     if (!danger.empty()) {
         Put(out.get(), "status", "REFER"); Put(out.get(), "reason", "POSSIBLE_DANGER_SIGN"); return Serialize(out.get());
     }
-    if (cJSON_GetArraySize(missing) > 0) return Serialize(out.get());
+    // Ask the main symptom first. Then screen urgent global signs one at a time.
+    if (!Get(input.get(), "symptoms") || symptoms.empty()) {
+        if (Get(input.get(), "symptoms")) Put(out.get(), "reason", "SYMPTOMS_NOT_SPECIFIED");
+        NextField(out.get(), "symptoms");
+        return Serialize(out.get());
+    }
+    const auto* global_checks = Get(interview, "global_checks");
+    const cJSON* check = nullptr;
+    cJSON_ArrayForEach(check, global_checks) {
+        const char* id = Str(Get(check, "id"));
+        if (!id || !Str(Get(check, "question_vi")) || !cJSON_IsBool(Get(check, "expected")))
+            return Error("DENY", "INVALID_INTERVIEW_CONFIG");
+        if (!Get(answers, id)) {
+            Put(out.get(), "reason", "UNANSWERED_SAFETY_QUESTION");
+            NextQuestion(out.get(), check);
+            return Serialize(out.get());
+        }
+    }
+    // A full snapshot from AI can omit known facts; always ask again rather than infer.
+    if (cJSON_GetArraySize(missing) > 0) {
+        const cJSON* first = cJSON_GetArrayItem(missing, 0);
+        if (const char* key = Str(first)) NextField(out.get(), key);
+        return Serialize(out.get());
+    }
     const auto* weight = Get(input.get(), "weight_kg");
     const auto* duration = Get(input.get(), "duration_hours");
     if (!cJSON_IsNumber(weight) || !std::isfinite(weight->valuedouble) ||
@@ -226,6 +343,40 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
     if (weight->valuedouble < 50) combined.insert("weight_below_50kg");
     if (age->valuedouble < 18) combined.insert("age_16_or_17");
     if (duration->valuedouble > 48) combined.insert("duration_over_48_hours");
+    // The interview questions are mandatory for every reported symptom. A classification
+    // mismatch requires symptom reclassification; a risk mismatch requires referral.
+    const cJSON* profiles = Get(interview, "symptom_checks");
+    for (const auto& symptom : symptoms) {
+        const cJSON* questions = Get(profiles, symptom.c_str());
+        if (!cJSON_IsArray(questions) || cJSON_GetArraySize(questions) == 0)
+            return Error("DENY", "MISSING_SYMPTOM_INTERVIEW_CONFIG");
+        const cJSON* detail = nullptr;
+        cJSON_ArrayForEach(detail, questions) {
+            const char* id = Str(Get(detail, "id"));
+            const char* question = Str(Get(detail, "question_vi"));
+            const cJSON* expected = Get(detail, "expected");
+            const char* action = Str(Get(detail, "on_mismatch"));
+            if (!id || !question || !cJSON_IsBool(expected) ||
+                !action || (std::strcmp(action,"REFER") != 0 && std::strcmp(action,"CLARIFY") != 0))
+                return Error("DENY", "INVALID_INTERVIEW_CONFIG");
+            const cJSON* answer = Get(answers, id);
+            if (!answer) {
+                Put(out.get(), "reason", "UNANSWERED_SYMPTOM_QUESTION");
+                NextQuestion(out.get(), detail);
+                return Serialize(out.get());
+            }
+            if (cJSON_IsTrue(answer) != cJSON_IsTrue(expected)) {
+                if (std::strcmp(action,"REFER") == 0) {
+                    Put(out.get(), "status", "REFER");
+                    Put(out.get(), "reason", "SYMPTOM_DANGER_OR_CONTRAINDICATION");
+                } else {
+                    Put(out.get(), "reason", "SYMPTOM_CLASSIFICATION_CONFLICT");
+                    NextField(out.get(), "symptoms");
+                }
+                return Serialize(out.get());
+            }
+        }
+    }
     // No pharmacist sign-off and no independent inventory reconciliation: advisory only.
     cJSON* options = cJSON_AddArrayToObject(out.get(), "provisional_options");
     int count = 0;

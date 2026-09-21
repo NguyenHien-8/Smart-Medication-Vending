@@ -35,8 +35,16 @@ a successful firmware build is not proof the cloud followed the workflow.
   `age_years` (integer 0–120), `weight_kg` (positive number at most 300),
   `pregnancy_or_breastfeeding` (boolean), `symptoms` (enum array), `duration_hours`
   (number), `danger_signs` (enum array), `conditions` (enum array),
-  `current_medicines` (enum array), `drug_allergies` (enum array).
+  `current_medicines` (enum array), `drug_allergies` (enum array),
+  `screening_answers` (object question_id -> explicitly answered boolean).
 
+Before any provisional option, `interview.global_checks` and the symptom-specific
+`interview.symptom_checks` require explicitly answered yes/no questions.
+The device returns ONE short `next_question_vi` and `next_question_id` on each
+`NEED_MORE_INFO`; resend the same snapshot without an answer and it repeats the
+same question. A positive warning sign stops with `REFER`; conflicting symptom
+classification returns `NEED_MORE_INFO` rather than guessing a SKU.
+The cloud role at `XIAOZHI_CLOUD_ROLE_STAGE1.md` must be updated MANUALLY.
 Unknown keys, duplicate keys, oversized/malformed inputs fail closed. Reported
 red flags and unsupported age/pregnancy are handled before missing-field checks.
 Unknown illness/medication flags and *any* reported drug allergy are referred for
@@ -53,10 +61,10 @@ currently available stock. An independently verified and persisted inventory
 manager, broader contraindication/interaction review, local user confirmation,
 pharmacist review and VendGuard are required before any future physical vending.
 
-### Example MCP `payload_json` (TEST DATA ONLY)
+### Example MCP `payload_json` (TEST DATA ONLY: negative answers require separate explicit user confirmation)
 
 ```json
-{"session_id":"demo-1","turn_id":1,"age_years":30,"weight_kg":65,"pregnancy_or_breastfeeding":false,"symptoms":["mild_headache"],"duration_hours":3,"danger_signs":[],"conditions":[],"current_medicines":[],"drug_allergies":[]}
+{"session_id":"demo-1","turn_id":1,"age_years":30,"weight_kg":65,"pregnancy_or_breastfeeding":false,"symptoms":["mild_headache"],"duration_hours":3,"danger_signs":[],"conditions":[],"current_medicines":[],"drug_allergies":[],"screening_answers":{"redflag_breathing":false,"redflag_neurologic":false,"redflag_weakness":false,"redflag_bleeding":false,"redflag_black_stool":false,"redflag_other":false,"headache_sudden":false,"headache_vomit":false,"headache_stiff":false}}
 ```
 
 ### Tests and deployment

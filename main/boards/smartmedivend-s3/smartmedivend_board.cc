@@ -162,17 +162,18 @@ private:
         auto& mcp = McpServer::GetInstance();
         mcp.AddTool("self.medical.get_intake_schema",
             "SmartMediVend: call at the start of every health intake. Use the returned "
-            "field/enum schema to ask missing safety questions. This is NOT a diagnosis "
+            "field/enum schema, local symptom descriptions and one-question screening. "
             "or an authorization to dispense medicine. Do not infer negative answers.",
             PropertyList(), [](const PropertyList&) -> ReturnValue {
                 return advisor.IntakeSchema();
             });
         mcp.AddTool("self.medical.evaluate_symptoms",
             "SmartMediVend: submit complete JSON snapshot of user-REPORTED facts after "
-            "each turn. Call get_intake_schema first. Ask about missing_fields and "
-            "danger signs before suggesting anything. JSON keys: session_id, turn_id, "
+            "each turn. Call get_intake_schema first. Ask ONLY next_question_vi, ONE "
+            "short question per reply, and repeat if not explicitly answered. Never "
+            "merge unrelated yes/no replies into multiple negatives. JSON keys: session_id, turn_id, "
             "age_years, weight_kg, pregnancy_or_breastfeeding, symptoms, duration_hours, "
-            "danger_signs, conditions, current_medicines, drug_allergies. Do not insert "
+            "danger_signs, conditions, current_medicines, drug_allergies, screening_answers. Do not insert "
             "unknown=false or unknown=[]. NEVER send sku, channel, relay, vend, quantity. "
             "If status is NEED_MORE_INFO ask for missing; REFER/DENY refer to medical "
             "professional. PROVISIONAL_OPTIONS are illustrative ONLY, stock is unverified, "
