@@ -1093,6 +1093,25 @@ if(CONFIG_BOARD_TYPE_ESP32_P4_FUNCTION_EV_BOARD)
         sdmmc
     )
 endif()
+# SmartMediVend advisory stage: compile only for this board, with JSON read from
+# the project data/ directory at CMake configure time (not a stale hard-coded copy).
+if(CONFIG_BOARD_TYPE_SMARTMEDIVEND_S3)
+    list(APPEND SOURCES "medical/medical_advisor.cc")
+    set(SMV_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/smv_medical_generated")
+    file(MAKE_DIRECTORY "${SMV_GENERATED_DIR}")
+    set(SMV_RULES_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../data/medical_rules.json")
+    set(SMV_CATALOG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../data/medicines.json")
+    set(SMV_REVIEW_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../data/pharmacist_review.json")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        "${SMV_RULES_FILE}" "${SMV_CATALOG_FILE}" "${SMV_REVIEW_FILE}")
+    file(READ "${SMV_RULES_FILE}" SMV_RULES_JSON)
+    file(READ "${SMV_CATALOG_FILE}" SMV_CATALOG_JSON)
+    file(READ "${SMV_REVIEW_FILE}" SMV_REVIEW_JSON)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/medical/medical_data_generated.h.in"
+                   "${SMV_GENERATED_DIR}/medical_data_generated.h" @ONLY)
+    list(APPEND INCLUDE_DIRS "${SMV_GENERATED_DIR}")
+endif()
+
 idf_component_register(SRCS ${SOURCES}
                     EMBED_FILES ${LANG_SOUNDS} ${COMMON_SOUNDS}
                     INCLUDE_DIRS ${INCLUDE_DIRS}

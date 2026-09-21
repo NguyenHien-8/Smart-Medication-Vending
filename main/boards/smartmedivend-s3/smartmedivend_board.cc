@@ -5,6 +5,9 @@
 #include "button.h"
 #include "config.h"
 #include "smartmedivend_mic_processor.h"
+#include "medical/medical_advisor.h"
+#include "medical_data_generated.h"
+#include "mcp_server.h"
 
 #include <driver/gpio.h>
 #include <driver/spi_common.h>
@@ -126,6 +129,7 @@ public:
         ESP_ERROR_CHECK(gpio_config(&hold_high));
         InitializeSpiAndPanel();
         InitializeButton();
+        InitializeMedicalTools();
         GetBacklight()->RestoreBrightness();
     }
 
@@ -148,6 +152,36 @@ private:
     Button talk_button_;
     std::atomic<bool> long_pressed_{false};
     SmartMediVendDisplay* display_ = nullptr;
+
+    void InitializeMedicalTools() {
+        // MCP is reachable by untrusted cloud AI. These two tools return
+        // explanations/provisional options only: they have NO vend/relay capability.
+        static const smv::MedicalAdvisor advisor(smv::kMedicalRulesJson,
+                                                   smv::kMedicineCatalogJson,
+                                                   smv::kPharmacistReviewJson);
+        auto& mcp = McpServer::GetInstance();
+        mcp.AddTool("self.medical.get_intake_schema",
+            "SmartMediVend: call at the start of every health intake. Use the returned "
+            "field/enum schema to ask missing safety questions. This is NOT a diagnosis "
+            "or an authorization to dispense medicine. Do not infer negative answers.",
+            PropertyList(), [](const PropertyList&) -> ReturnValue {
+                return advisor.IntakeSchema();
+            });
+        mcp.AddTool("self.medical.evaluate_symptoms",
+            "SmartMediVend: submit complete JSON snapshot of user-REPORTED facts after "
+            "each turn. Call get_intake_schema first. Ask about missing_fields and "
+            "danger signs before suggesting anything. JSON keys: session_id, turn_id, "
+            "age_years, weight_kg, pregnancy_or_breastfeeding, symptoms, duration_hours, "
+            "danger_signs, conditions, current_medicines, drug_allergies. Do not insert "
+            "unknown=false or unknown=[]. NEVER send sku, channel, relay, vend, quantity. "
+            "If status is NEED_MORE_INFO ask for missing; REFER/DENY refer to medical "
+            "professional. PROVISIONAL_OPTIONS are illustrative ONLY, stock is unverified, "
+            "no actual dispensing, diagnosis or dosing. Never invent an alternative.",
+            PropertyList({Property("payload_json", kPropertyTypeString).SetMaxLength(4096)}),
+            [](const PropertyList& properties) -> ReturnValue {
+                return advisor.Evaluate(properties["payload_json"].value<std::string>());
+            });
+    }
 
     void InitializeButton() {
         talk_button_.OnPressDown([this]() { long_pressed_.store(false); });

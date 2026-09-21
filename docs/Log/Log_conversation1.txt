@@ -1,0 +1,109 @@
+WebRtcNs_Create: self=0x3c650c94 size:23632
+I (4517) AFE: AFE Version: (1MIC_V251128)
+I (4527) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4527) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4537) AFE: AFE Version: (1MIC_V251128)
+I (4547) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4557) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4557) AfeAudioEngine: Initialized FD AFE, detector: none, NS: on, AGC: on, VAD silence: 700 ms, feed: 160, fetch: 512
+I (4567) AfeAudioEngine: After AFE create: free=161279 min=51276 largest=98304
+I (4587) AudioCodec: Set output enable to true
+I (4587) AudioService: Resampling audio from 16000 to 24000
+I (9537) StateMachine: State: idle -> connecting
+I (9537) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (9537) wifi:Set ps type: 0, coexist: 0
+
+I (9697) MQTT: Session ID: e8cff24d
+I (9697) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (9697) wifi:Set ps type: 0, coexist: 0
+
+I (9697) StateMachine: State: connecting -> listening
+I (9827) AudioCodec: Set input enable to true
+I (12347) Application: >> Xin chào
+I (12377) StateMachine: State: listening -> speaking
+I (12967) Application: << Xin chào! Dạo này thế nào rồi?
+I (15737) Application: << Có chuyện gì muốn chia sẻ với tôi không?
+I (18397) StateMachine: State: speaking -> listening
+I (18407) SMV-MIC: pcm_mean=581 pcm_peak=729 input_clip=16 slow_reads=0 errors=0 samples=41120
+I (19397) Application: Local VAD endpoint: 700 ms silence
+W (24547) Application: Local VAD stop had no server response; resuming auto listening
+I (24557) SMV-MIC: pcm_mean=180 pcm_peak=208 input_clip=1 slow_reads=0 errors=0 samples=16960
+I (27557) SystemInfo: free sram: 156587 minimal sram: 51276
+I (27567) SMV-MIC: pcm_mean=1232 pcm_peak=3466 input_clip=4 slow_reads=0 errors=0 samples=49120
+I (29957) Application: >> Tôi đang bị nhức đầu.
+I (29957) StateMachine: State: listening -> speaking
+I (30467) Application: << Ôi, nghe có vẻ mệt mỏi nè.
+I (32547) Application: << Bạn bị đau đầu bao lâu rồi vậy? Có kèm theo triệu chứng nào khác không như buồn nôn hay chóng mặt gì không?
+I (38567) StateMachine: State: speaking -> listening
+I (38577) SMV-MIC: pcm_mean=109 pcm_peak=141 input_clip=0 slow_reads=0 errors=0 samples=38560
+I (41577) SMV-MIC: pcm_mean=547 pcm_peak=1584 input_clip=11 slow_reads=0 errors=0 samples=48960
+I (44577) SMV-MIC: pcm_mean=64 pcm_peak=94 input_clip=30 slow_reads=0 errors=0 samples=48000
+I (45167) Application: Local VAD endpoint: 700 ms silence
+I (45477) Application: >> Tôi đau đầu trong một ngày rồi, không có buồn đâu.
+I (45477) StateMachine: State: listening -> speaking
+I (46017) Application: << Đau đầu một ngày rồi à, hiểu rồi.
+I (48597) Application: << Bạn có dùng thuốc gì chưa? Hay có tiền sử bệnh gì không nhỉ?
+I (52437) StateMachine: State: speaking -> listening
+I (52447) SMV-MIC: pcm_mean=30 pcm_peak=63 input_clip=0 slow_reads=0 errors=0 samples=9760
+I (55457) SMV-MIC: pcm_mean=59 pcm_peak=142 input_clip=8 slow_reads=0 errors=0 samples=49120
+I (56867) Application: Local VAD endpoint: 700 ms silence
+I (57217) Application: >> Tôi vẫn chưa dùng thuốc nào và cũng không có tiền sử.
+I (57217) StateMachine: State: listening -> speaking
+I (57957) Application: << OK rồi, để tôi hỏi thêm một chút nhé.
+I (60607) Application: << Bạn bao nhiêu tuổi vậy? Cân nặng của bạn là bao nhiêu?
+I (64217) StateMachine: State: speaking -> listening
+I (64227) SMV-MIC: pcm_mean=142 pcm_peak=187 input_clip=4 slow_reads=0 errors=0 samples=22880
+I (67227) SMV-MIC: pcm_mean=215 pcm_peak=584 input_clip=3 slow_reads=0 errors=0 samples=48960
+I (70107) Application: Local VAD endpoint: 700 ms silence
+I (70617) Application: >> Tôi 21 tuổi và cân nặng là 68 kg.
+I (70617) StateMachine: State: listening -> speaking
+I (71207) Application: << 21 tuổi, 68 kg,
+I (74627) Application: << tôi đã ghi lại rồi. Bạn có đang mang thai hoặc cho con bú không?
+I (78767) StateMachine: State: speaking -> listening
+I (78777) SMV-MIC: pcm_mean=14 pcm_peak=53 input_clip=1 slow_reads=0 errors=0 samples=46560
+I (80397) Application: Local VAD endpoint: 700 ms silence
+W (85547) Application: Local VAD stop had no server response; resuming auto listening
+I (85557) SMV-MIC: pcm_mean=250 pcm_peak=298 input_clip=3 slow_reads=0 errors=0 samples=27200
+I (88487) Application: >> Không có.
+I (88487) StateMachine: State: listening -> speaking
+I (88957) Application: << OK rồi. Bạn có bị dị ứng với thuốc nào không?
+I (92057) Application: << Hoặc đang dùng thuốc gì khác không?
+I (94097) StateMachine: State: speaking -> listening
+I (94107) SMV-MIC: pcm_mean=66 pcm_peak=104 input_clip=0 slow_reads=0 errors=0 samples=48160
+I (96357) Application: Local VAD endpoint: 700 ms silence
+I (96707) Application: >> Không có.
+I (96707) StateMachine: State: listening -> speaking
+I (96987) Application: << % self.medical.get_intake_schema...
+I (97897) Application: << Tôi hiểu rồi.
+I (99037) Application: << Bạn có cảm thấy đau đầu dữ dội đột ngột, cứng cổ, hoặc có dấu hiệu nguy hiểm nào khác như khó thở,
+I (105237) Application: << đau ngực, hay lú lẫn không?
+I (106557) SystemInfo: free sram: 156931 minimal sram: 39812
+I (107337) StateMachine: State: speaking -> listening
+I (107347) SMV-MIC: pcm_mean=235 pcm_peak=284 input_clip=6 slow_reads=0 errors=0 samples=37440
+I (108377) Application: Local VAD endpoint: 700 ms silence
+W (113547) Application: Local VAD stop had no server response; resuming auto listening
+I (113557) SMV-MIC: pcm_mean=82 pcm_peak=113 input_clip=1 slow_reads=0 errors=0 samples=17760
+I (116557) SystemInfo: free sram: 156607 minimal sram: 39812
+I (116567) SMV-MIC: pcm_mean=11 pcm_peak=42 input_clip=9 slow_reads=0 errors=0 samples=49120
+I (117547) Application: >> cứng cổ và cũng không có nguy hiểm nào khác
+I (117547) StateMachine: State: listening -> speaking
+I (118797) Application: << % self.medical.evaluate_symptoms...
+I (119437) Application: << Dựa trên thông tin bạn chia sẻ,
+I (121317) Application: << có một lựa chọn tạm thời là Paracetamol 500mg. Nhưng bạn lưu ý nhé, đây chỉ là thông tin tham khảo,
+I (126557) SystemInfo: free sram: 155775 minimal sram: 39812
+I (128237) Application: << cần dược sĩ xem xét và kiểm tra kho trước. Bạn có muốn tôi tìm thêm thông tin gì không?
+I (132827) AudioCodec: Set input enable to false
+I (133617) StateMachine: State: speaking -> listening
+I (133747) AudioCodec: Set input enable to true
+I (133757) SMV-MIC: pcm_mean=61 pcm_peak=1018 input_clip=0 slow_reads=0 errors=0 samples=16000
+I (134587) Application: Local VAD endpoint: 700 ms silence
+W (140547) Application: Local VAD stop had no server response; resuming auto listening
+I (140557) SMV-MIC: pcm_mean=215 pcm_peak=246 input_clip=0 slow_reads=0 errors=0 samples=13440
+I (143557) SystemInfo: free sram: 156095 minimal sram: 39812
+I (143557) SMV-MIC: pcm_mean=106 pcm_peak=211 input_clip=7 slow_reads=0 errors=0 samples=48960
+I (145127) Application: >> Không có
+I (145127) StateMachine: State: listening -> speaking
+I (145637) Application: << OK rồi! Bạn nhớ nghỉ ngơi nhiều nhé, uống đủ nước.
+I (149177) Application: << Nếu đau đầu kéo dài hoặc nặng hơn thì nên đi khám bác sĩ nè. Có gì cần tôi giúp cứ nói nhé!
+I (154557) SystemInfo: free sram: 155339 minimal sram: 39812
+I (154857) StateMachine: State: speaking -> listening

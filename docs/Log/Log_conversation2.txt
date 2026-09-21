@@ -1,0 +1,111 @@
+I (234747) StateMachine: State: idle -> connecting
+I (234757) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (234757) wifi:Set ps type: 0, coexist: 0
+
+I (234907) MQTT: Session ID: e587e004
+I (234907) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (234907) wifi:Set ps type: 0, coexist: 0
+
+I (234907) StateMachine: State: connecting -> listening
+I (235037) AudioCodec: Set input enable to true
+I (235047) SMV-MIC: pcm_mean=66 pcm_peak=1136 input_clip=217 slow_reads=0 errors=0 samples=48000
+I (237077) Application: Local VAD endpoint: 700 ms silence
+I (237447) Application: >> Xin chào.
+I (237467) StateMachine: State: listening -> speaking
+I (238047) Application: << Xin chào! Dạo này thế nào rồi?
+I (240637) Application: << Có chuyện gì muốn chia sẻ không?
+I (242797) StateMachine: State: speaking -> listening
+I (242807) SMV-MIC: pcm_mean=165 pcm_peak=194 input_clip=0 slow_reads=0 errors=0 samples=32640
+I (245177) Application: Local VAD endpoint: 700 ms silence
+I (245377) Application: >> Tôi bị đau bụng.
+I (245387) StateMachine: State: listening -> speaking
+I (245967) Application: << Ôi, đau bụng hả?
+I (247517) Application: << Bạn có thể nói rõ hơn không, đau ở đâu, đau kiểu gì, đã bao lâu rồi?
+I (253217) Application: << Có kèm theo triệu chứng nào khác không như buồn nôn, sốt hay tiêu chảy?
+I (254557) SystemInfo: free sram: 154667 minimal sram: 39812
+I (257777) StateMachine: State: speaking -> listening
+I (257777) SMV-MIC: pcm_mean=10 pcm_peak=32 input_clip=3 slow_reads=0 errors=0 samples=39040
+I (258837) Application: Local VAD endpoint: 700 ms silence
+W (264547) Application: Local VAD stop had no server response; resuming auto listening
+I (264557) SMV-MIC: pcm_mean=170 pcm_peak=208 input_clip=11 slow_reads=0 errors=0 samples=18240
+I (267557) SystemInfo: free sram: 156091 minimal sram: 39812
+I (267557) SMV-MIC: pcm_mean=200 pcm_peak=247 input_clip=9 slow_reads=0 errors=0 samples=48960
+I (270567) SMV-MIC: pcm_mean=32 pcm_peak=106 input_clip=47 slow_reads=0 errors=0 samples=48160
+I (273037) AudioCodec: Set output enable to false
+I (273087) Application: >> Cô đao ở bên trái và đã 2 ngàn rồi.
+I (273087) StateMachine: State: listening -> speaking
+I (273627) Application: << Đau ở bên trái và đã 2 ngày rồi à.
+I (273637) AudioCodec: Set output enable to true
+I (276147) Application: << Bạn có thấy đau quặn từng cơn hay đau âm ỉ liên tục không? Có kèm theo buồn nôn,
+I (281487) Application: << sốt hay tiêu chảy không?
+I (282557) SystemInfo: free sram: 154399 minimal sram: 39812
+I (283347) StateMachine: State: speaking -> listening
+I (283397) SMV-MIC: pcm_mean=204 pcm_peak=238 input_clip=7 slow_reads=0 errors=0 samples=40480
+I (284367) Application: Local VAD endpoint: 700 ms silence
+W (289547) Application: Local VAD stop had no server response; resuming auto listening
+I (289557) SMV-MIC: pcm_mean=36 pcm_peak=80 input_clip=1 slow_reads=0 errors=0 samples=16800
+I (292557) SystemInfo: free sram: 156091 minimal sram: 39812
+I (292557) SMV-MIC: pcm_mean=222 pcm_peak=257 input_clip=1 slow_reads=0 errors=0 samples=48960
+I (295557) SMV-MIC: pcm_mean=127 pcm_peak=300 input_clip=20 slow_reads=0 errors=0 samples=48160
+I (297337) Application: >> Tôi không có đau âm ỉ và bồn thông.
+I (297337) StateMachine: State: listening -> speaking
+I (297857) Application: << Vậy là đau quặn từng cơn và có buồn nôn.
+I (300297) Application: << Bạn có bị sốt không? Có thấy đi ngoài phân lỏng hay không?
+I (303957) StateMachine: State: speaking -> listening
+I (303977) SMV-MIC: pcm_mean=189 pcm_peak=232 input_clip=5 slow_reads=0 errors=0 samples=28640
+I (306987) SMV-MIC: pcm_mean=10 pcm_peak=45 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (307187) Application: Local VAD endpoint: 700 ms silence
+I (307817) Application: >> Không có.
+I (307827) StateMachine: State: listening -> speaking
+I (308347) Application: << Hiểu rồi, đau quặn từng cơn ở bụng trái,
+I (311167) Application: << có buồn nôn, không sốt, không tiêu chảy, đã 2 ngày rồi. Bạn có đang dùng thuốc gì khác không?
+I (317527) Application: << Có bị dị ứng thuốc nào không?
+I (317557) SystemInfo: free sram: 155391 minimal sram: 39812
+I (319627) StateMachine: State: speaking -> listening
+I (319637) SMV-MIC: pcm_mean=11 pcm_peak=49 input_clip=0 slow_reads=0 errors=0 samples=3520
+I (321207) Application: Local VAD endpoint: 700 ms silence
+I (321747) Application: >> Cảm ơn
+I (321747) StateMachine: State: listening -> speaking
+I (322207) Application: << Không có gì đâu! Nhưng để tôi có thể tư vấn tốt hơn,
+I (325877) Application: << bạn có thể cho tôi biết thêm một chút thông tin không? Bạn bao nhiêu tuổi, nặng khoảng bao nhiêu kg?
+I (331557) SystemInfo: free sram: 155779 minimal sram: 39812
+I (332077) Application: << Có đang mang thai hay cho con bú không?
+I (334377) StateMachine: State: speaking -> listening
+I (334387) SMV-MIC: pcm_mean=94 pcm_peak=133 input_clip=0 slow_reads=0 errors=0 samples=26400
+I (337397) SMV-MIC: pcm_mean=13 pcm_peak=40 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (338587) Application: >> Tôi 17 tuổi.
+I (338587) StateMachine: State: listening -> speaking
+I (339127) Application: << 17 tuổi rồi à. Bạn nặng khoảng bao nhiêu kg?
+I (342847) Application: << Có đang mang thai hay cho con bú không?
+I (345187) StateMachine: State: speaking -> listening
+I (345207) SMV-MIC: pcm_mean=10131 pcm_peak=32768 input_clip=76 slow_reads=0 errors=0 samples=19360
+I (348207) SMV-MIC: pcm_mean=2151 pcm_peak=32768 input_clip=657 slow_reads=0 errors=0 samples=48960
+I (351177) Application: Local VAD endpoint: 700 ms silence
+I (351587) Application: >> và không có mang thai
+I (351587) StateMachine: State: listening -> speaking
+I (352137) Application: << Vậy bạn không mang thai.
+I (353627) Application: << Bạn nặng khoảng bao nhiêu kg?
+I (355807) StateMachine: State: speaking -> listening
+I (355817) SMV-MIC: pcm_mean=58 pcm_peak=89 input_clip=58 slow_reads=0 errors=0 samples=47840
+I (357167) Application: Local VAD endpoint: 700 ms silence
+I (357367) Application: >> 57
+I (357367) StateMachine: State: listening -> speaking
+I (357857) Application: << 57 kg. Bạn có đang dùng thuốc gì khác không?
+I (361907) Application: << Có bị dị ứng thuốc nào không?
+I (364067) StateMachine: State: speaking -> listening
+I (364077) SMV-MIC: pcm_mean=9 pcm_peak=35 input_clip=0 slow_reads=0 errors=0 samples=22720
+I (365997) Application: Local VAD endpoint: 700 ms silence
+I (366197) Application: >> Không có.
+I (366197) StateMachine: State: listening -> speaking
+I (366657) Application: << Tôi đã hiểu đủ thông tin rồi.
+I (368457) Application: << Để tôi kiểm tra xem có thể tư vấn gì cho bạn nhé.
+I (371607) Application: << % self.medical.get_intake_schema...
+I (373617) Application: << % self.medical.evaluate_symptoms...
+I (374207) Application: << Cảm ơn bạn đã chia sẻ thông tin. Sau khi xem xét,
+I (375557) SystemInfo: free sram: 154327 minimal sram: 39812
+I (377597) Application: << tôi thấy triệu chứng đau bụng quặn từng cơn ở bên trái kéo dài 2 ngày kèm buồn nôn cần được bác sĩ chuyên khoa thăm khám trực tiếp để xác định nguyên nhân chính xác.
+I (381637) AudioCodec: Set input enable to false
+I (385407) Application: << Bạn nên đến bệnh viện hoặc phòng khám càng sớm càng tốt nhé,
+I (385557) SystemInfo: free sram: 155411 minimal sram: 39812
+I (388857) Application: << đặc biệt nếu cơn đau tăng lên hoặc xuất hiện thêm triệu chứng mới. Chúc bạn sớm bình phục!
+I (394057) StateMachine: State: speaking -> listening
