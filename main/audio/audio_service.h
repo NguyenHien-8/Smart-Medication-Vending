@@ -37,7 +37,14 @@
  *
  */
 
+// SmartMediVend uses shorter, protocol-advertised Opus frames to reduce the
+// capture/packetization part of latency. Other Xiaozhi boards keep 60 ms.
+// Revert this board-specific value to 60 if the deployed cloud rejects 20 ms.
+#if defined(CONFIG_BOARD_TYPE_SMARTMEDIVEND_S3) && CONFIG_BOARD_TYPE_SMARTMEDIVEND_S3
+#define OPUS_FRAME_DURATION_MS 20
+#else
 #define OPUS_FRAME_DURATION_MS 60
+#endif
 #define MAX_ENCODE_TASKS_IN_QUEUE 2
 #define MAX_PLAYBACK_TASKS_IN_QUEUE 2
 #define MAX_DECODE_PACKETS_IN_QUEUE (1200 / OPUS_FRAME_DURATION_MS)

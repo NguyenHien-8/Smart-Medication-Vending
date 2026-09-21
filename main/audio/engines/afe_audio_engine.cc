@@ -10,6 +10,7 @@
 #include <esp_timer.h>
 #include <esp_vadn_models.h>
 
+#include "audio_frontend_policy.h"
 #include "audio_service.h"
 #include "wake_words/custom_wake_word.h"
 
@@ -150,10 +151,12 @@ bool AfeAudioEngine::Initialize(AudioCodec* codec, int frame_duration_ms,
     afe_config->aec_init = codec_->input_reference();
     afe_config->aec_mode = AEC_MODE_FD_LOW_COST;
     afe_config->aec_nlp_level = AEC_NLP_LEVEL_VERYAGGR;
-    afe_config->ns_init = false;
+    constexpr auto frontend_policy = GetAudioFrontendPolicy();
+    afe_config->ns_init = frontend_policy.noise_suppression_enabled;
+    afe_config->afe_ns_mode = AFE_NS_MODE_WEBRTC;
     afe_config->vad_init = kUseAfeForVoiceProcessing;
     afe_config->vad_mode = VAD_MODE_0;
-    afe_config->vad_min_noise_ms = 100;
+    afe_config->vad_min_noise_ms = frontend_policy.vad_silence_ms;
     if (vad_model_name != nullptr) {
         afe_config->vad_model_name = vad_model_name;
     }
@@ -175,7 +178,10 @@ bool AfeAudioEngine::Initialize(AudioCodec* codec, int frame_duration_ms,
             afe_config->wakenet_model_name_2 = wakenet_models[1];
         }
     }
-    afe_config->agc_init = false;
+    afe_config->agc_init = frontend_policy.automatic_gain_control_enabled;
+    afe_config->agc_mode = AFE_AGC_MODE_WEBRTC;
+    afe_config->agc_compression_gain_db = frontend_policy.agc_compression_gain_db;
+    afe_config->agc_target_level_dbfs = frontend_policy.agc_target_level_dbfs;
     afe_config->memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM;
 
     ESP_LOGI(TAG, "Before AFE create: free=%u min=%u largest=%u",
@@ -240,8 +246,13 @@ bool AfeAudioEngine::Initialize(AudioCodec* codec, int frame_duration_ms,
     const char* detector = wake_detector_ == WakeDetector::kWakeNet
                                ? "WakeNet"
                                : (wake_detector_ == WakeDetector::kMultiNet ? "MultiNet" : "none");
-    ESP_LOGI(TAG, "Initialized FD AFE, detector: %s, NS: off, feed: %d, fetch: %d", detector,
-             afe_iface_->get_feed_chunksize(afe_data_), afe_iface_->get_fetch_chunksize(afe_data_));
+    ESP_LOGI(TAG,
+             "Initialized FD AFE, detector: %s, NS: %s, AGC: %s, VAD silence: %d ms, feed: "
+             "%d, fetch: %d",
+             detector, frontend_policy.noise_suppression_enabled ? "on" : "off",
+             frontend_policy.automatic_gain_control_enabled ? "on" : "off",
+             frontend_policy.vad_silence_ms, afe_iface_->get_feed_chunksize(afe_data_),
+             afe_iface_->get_fetch_chunksize(afe_data_));
     ESP_LOGI(TAG, "After AFE create: free=%u min=%u largest=%u",
              heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
              heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL),

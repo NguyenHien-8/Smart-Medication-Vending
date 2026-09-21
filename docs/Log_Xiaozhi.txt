@@ -9,7 +9,7 @@ load:0x403c8700,len:0xd14
 load:0x403cb700,len:0x2eb4
 entry 0x403c88f4
 --- 0x403c88f4: call_start_cpu0 at C:/esp/v6.1/esp-idf/components/bootloader/subproject/main/bootloader_start.c:27
-I (33) octal_psram: vendor id    : 0x0d (AP)
+I (34) octal_psram: vendor id    : 0x0d (AP)
 I (34) octal_psram: dev id       : 0x02 (generation 3)
 I (34) octal_psram: density      : 0x03 (64 Mbit)
 I (36) octal_psram: good-die     : 0x01 (Pass)
@@ -30,15 +30,15 @@ I (96) cpu_start: cpu freq: 240000000 Hz
 I (98) app_init: Application information:
 I (102) app_init: Project name:     xiaozhi
 I (106) app_init: App version:      2.5.0
-I (109) app_init: Compile time:     Sep 21 2026 19:08:17
-I (114) app_init: ELF file SHA256:  bc58159a5...
+I (109) app_init: Compile time:     Sep 21 2026 23:40:17
+I (115) app_init: ELF file SHA256:  2a5699ad5...
 I (119) app_init: ESP-IDF:          v6.1
 I (122) efuse_init: Min chip rev:     v0.0
 I (126) efuse_init: Max chip rev:     v0.99
 I (130) efuse_init: Chip rev:         v0.2
 I (134) heap_init: Initializing. RAM available for dynamic allocation:
-I (140) heap_init: At 3FCAB030 len 0003E6E0 (249 KiB): RAM
-I (145) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (140) heap_init: At 3FCAC7F0 len 0003CF20 (243 KiB): RAM
+I (146) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
 I (151) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
 I (156) heap_init: At 600FE000 len 00001FD8 (7 KiB): RTCRAM
 I (161) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
@@ -65,13 +65,13 @@ I (477) StateMachine: State: unknown -> starting
 I (547) NoAudioCodec: Simplex channels created
 I (547) AudioCodec: Audio codec started
 I (547) Application: After board/audio init
-I (547) SystemInfo: free sram: 217863 minimal sram: 116336
+I (547) SystemInfo: free sram: 211695 minimal sram: 110168
 I (547) MCP: Add tool: self.get_device_status
 I (557) MCP: Add tool: self.audio_speaker.set_volume
 I (557) MCP: Add tool: self.screen.set_brightness
 I (567) MCP: Add tool: self.screen.set_theme
 I (567) MCP: Add tool: self.get_system_info [user]
-I (567) MCP: Add tool: self.reboot [user]
+I (577) MCP: Add tool: self.reboot [user]
 I (577) MCP: Add tool: self.upgrade_firmware [user]
 I (577) MCP: Add tool: self.screen.get_info [user]
 I (587) MCP: Add tool: self.screen.snapshot [user]
@@ -80,12 +80,12 @@ I (597) MCP: Add tool: self.assets.set_download_url [user]
 I (597) WifiManager: Initializing...
 I (607) pp: pp rom version: e7ae62f
 I (607) net80211: net80211 rom version: e7ae62f
-I (617) wifi:wifi driver task: 3fcdc5d8, prio:23, stack:6656, core=0
+I (617) wifi:wifi driver task: 3fcdddf0, prio:23, stack:6656, core=0
 I (617) wifi:wifi firmware version: e12a754
 I (617) wifi:wifi certification version: v7.0
 I (627) wifi:config NVS flash: disabled
 I (627) wifi:config nano formatting: disabled
-I (627) wifi:Init data frame dynamic rx buffer num: 6
+I (637) wifi:Init data frame dynamic rx buffer num: 6
 I (637) wifi:Init dynamic rx mgmt buffer num: 5
 I (637) wifi:Init management short buffer num: 32
 I (647) wifi:Init dynamic tx buffer num: 32
@@ -99,7 +99,7 @@ I (667) wifi_init: tcpip mbox: 16
 I (677) wifi_init: udp mbox: 6
 I (677) wifi_init: tcp mbox: 6
 I (677) wifi_init: tcp tx win: 5760
-I (677) wifi_init: tcp rx win: 5760
+I (687) wifi_init: tcp rx win: 5760
 I (687) wifi_init: tcp mss: 1440
 I (687) WifiManager: Initialized
 I (697) WifiBoard: Starting WiFi connection attempt
@@ -110,63 +110,223 @@ I (747) wifi:mode : sta (3c:dc:75:63:e3:30)
 I (747) wifi:enable tsf
 I (747) WifiStation: Scanning saved channel 4
 I (747) WifiBoard: WiFi scanning
-I (867) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -53, Channel: 4, Authmode: 3
+I (867) WifiStation: Found AP: TINIHI, BSSID: 24:43:e2:f1:c7:08, RSSI: -52, Channel: 4, Authmode: 3
 I (867) WifiBoard: WiFi connecting to TINIHI
 W (867) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
 I (937) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1, snd_ch_cfg:0x0
 I (937) wifi:state: init -> auth (0xb0)
 I (937) wifi:state: auth -> assoc (0x0)
 I (947) wifi:state: assoc -> run (0x10)
-I (1037) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:1(originator)
-I (1047) wifi:[ADDBA]RX DELBA, reason:39, delete tid:0, initiator:0(recipient)
-I (1047) wifi:[ADDBA]RX DELBA, reason:39, delete tid:7, initiator:1(originator)
-I (1057) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
-I (1057) wifi:security: WPA2-PSK, phy: bgn, rssi: -54, cipher(pairwise:0x3, group:0x3), pmf:0
-I (1067) wifi:pm start, type: 1
+I (1047) wifi:connected with TINIHI, aid = 3, channel 4, BW20, bssid = 24:43:e2:f1:c7:08
+I (1047) wifi:security: WPA2-PSK, phy: bgn, rssi: -51, cipher(pairwise:0x3, group:0x3), pmf:0
+I (1057) wifi:pm start, type: 1
 
-I (1067) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
-I (1077) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
-I (1127) wifi:AP's beacon interval = 102400 us, DTIM period = 1
-I (1157) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
-I (2337) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
-I (2337) WifiStation: Got IP: 192.168.1.18
-I (2337) WifiBoard: Connected to WiFi: TINIHI
-I (2337) Application: Network connected
-I (2337) StateMachine: State: starting -> activating
-I (2347) Assets: The storage free size is 22016 KB
-I (2347) Assets: The assets map size is 960 KB (partition 8192 KB)
-I (2407) Assets: The checksum calculation time is 53 ms
-I (2417) Assets: Refreshing display theme...
-I (2417) Ota: Current version: 2.5.0
-I (2437) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:1, winSize:64
-I (2487) wifi:<ba-del>idx:1, tid:5
-I (2487) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
-I (3117) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=690
-I (3487) HttpClient: HTTP connection closed
-I (3487) Ota: Current is the latest version
-I (3487) Ota: Running partition: ota_0
-I (3497) MQTT: Connecting to endpoint api.tenclass.net:8883
-I (3497) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
-I (4217) MQTT: Connected to endpoint
-I (4217) Application: Activation done
-I (4217) SystemInfo: free sram: 163263 minimal sram: 59632
-I (4217) StateMachine: State: activating -> idle
-I (4217) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
-I (4227) wifi:Set ps type: 2, coexist: 0
+I (1057) wifi:dp: 1, bi: 102400, li: 10, scale listen interval from 1024000 us to 1024000 us
+I (1067) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000
+I (1097) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (1117) wifi:<ba-add>idx:0 (ifx:0, 24:43:e2:f1:c7:08), tid:7, ssn:3, winSize:64
+I (2307) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1
+I (2307) WifiStation: Got IP: 192.168.1.18
+I (2307) WifiBoard: Connected to WiFi: TINIHI
+I (2307) Application: Network connected
+I (2307) StateMachine: State: starting -> activating
+I (2317) Assets: The storage free size is 21824 KB
+I (2317) Assets: The assets map size is 960 KB (partition 8192 KB)
+I (2377) Assets: The checksum calculation time is 53 ms
+I (2387) Assets: Refreshing display theme...
+I (2387) Ota: Current version: 2.5.0
+I (2747) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:5, ssn:0, winSize:64
+I (2797) wifi:<ba-del>idx:1, tid:5
+I (2797) wifi:<ba-add>idx:1 (ifx:0, 24:43:e2:f1:c7:08), tid:0, ssn:1, winSize:64
+I (3507) HttpClient: Established new connection to api.tenclass.net:443 protocol=https cost=1120
+I (3677) HttpClient: HTTP connection closed
+I (3687) Ota: Current is the latest version
+I (3687) Ota: Running partition: ota_0
+I (3687) MQTT: Connecting to endpoint api.tenclass.net:8883
+I (3687) MQTT: Resolved MQTT host api.tenclass.net -> 47.76.65.170
+I (4477) MQTT: Connected to endpoint
+I (4477) Application: Activation done
+I (4477) SystemInfo: free sram: 156487 minimal sram: 53472
+I (4477) StateMachine: State: activating -> idle
+I (4477) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (4487) wifi:Set ps type: 2, coexist: 0
 
-E (4227) MODEL_LOADER: Can not find model in partition table
-W (4237) AFE_CONFIG: wakenet model not found. please load wakenet model...
-I (4237) AfeAudioEngine: Before AFE create: free=171683 min=59516 largest=98304
-I (4247) AFE: AFE Version: (1MIC_V251128)
-I (4247) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (4257) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
-I (4267) AFE: AFE Version: (1MIC_V251128)
-I (4267) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
-I (4277) AFE: AFE Pipeline: [input] -> |VAD(WebRTC)| -> [output]
-I (4287) AfeAudioEngine: Initialized FD AFE, detector: none, NS: off, feed: 512, fetch: 512
-I (4287) AfeAudioEngine: After AFE create: free=170023 min=59516 largest=98304
-I (4307) AudioCodec: Set output enable to true
-I (4307) AudioService: Resampling audio from 16000 to 24000
-I (13547) SystemInfo: free sram: 169623 minimal sram: 59516
-I (21307) AudioCodec: Set output enable to false
-I (23547) SystemInfo: free sram: 169659 minimal sram: 59516
+E (4487) MODEL_LOADER: Can not find model in partition table
+W (4497) AFE_CONFIG: wakenet model not found. please load wakenet model...
+I (4497) AfeAudioEngine: Before AFE create: free=164839 min=52540 largest=98304
+W (4507) AFE_CONFIG: Noise Supression may reduce the accuracy of speech recognition. It is not recommended to turn it on.
+WebRtcNs_Create: self=0x3c64e804 size:23632
+I (4527) AFE: AFE Version: (1MIC_V251128)
+I (4527) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4537) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4547) AFE: AFE Version: (1MIC_V251128)
+I (4547) AFE: Input PCM Config: total 1 channels(1 microphone, 0 playback), sample rate:16000
+I (4557) AFE: AFE Pipeline: [input] -> |NS(WebRTC)| -> |AGC(WebRTC)| -> |VAD(WebRTC)| -> [output]
+I (4567) AfeAudioEngine: Initialized FD AFE, detector: none, NS: on, AGC: on, VAD silence: 700 ms, feed: 160, fetch: 512
+I (4577) AfeAudioEngine: After AFE create: free=162911 min=52540 largest=98304
+I (4587) AudioCodec: Set output enable to true
+I (4587) AudioService: Resampling audio from 16000 to 24000
+I (8427) StateMachine: State: idle -> connecting
+I (8427) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (8427) wifi:Set ps type: 0, coexist: 0
+
+I (8577) MQTT: Session ID: 67f8953b
+I (8577) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (8577) wifi:Set ps type: 0, coexist: 0
+
+I (8577) StateMachine: State: connecting -> listening
+I (8707) AudioCodec: Set input enable to true
+I (11017) Application: Local VAD endpoint: 700 ms silence
+I (11207) Application: >> Xin chào.
+I (11227) StateMachine: State: listening -> speaking
+I (11947) Application: << Xin chào! Dạo này thế nào rồi?
+I (14497) Application: << Có chuyện gì muốn chia sẻ không?
+I (16657) StateMachine: State: speaking -> listening
+I (16667) SMV-MIC: pcm_mean=30 pcm_peak=67 input_clip=0 slow_reads=0 errors=0 samples=37280
+I (19457) Application: Local VAD endpoint: 700 ms silence
+I (19657) Application: >> Giờ này tôi bị cảm.
+I (19657) StateMachine: State: listening -> speaking
+I (20247) Application: << Ôi không, cảm hả? Có sốt không,
+I (22887) Application: << hay chỉ là ho và sổ mũi? Cần tôi giúp gì không?
+I (26557) StateMachine: State: speaking -> listening
+I (26567) SMV-MIC: pcm_mean=13 pcm_peak=44 input_clip=0 slow_reads=0 errors=0 samples=45920
+I (29587) SMV-MIC: pcm_mean=11 pcm_peak=38 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (30067) Application: Local VAD endpoint: 700 ms silence
+I (30277) Application: >> Cả 3 luôn vừa sốt, vừa ho, vừa xỉ nổi
+I (30277) StateMachine: State: listening -> speaking
+I (31067) Application: << Ôi nghe nặng thế! Em đoán chắc là "
+I (33757) Application: << xổ mũi" chứ phải không? Chị có đo nhiệt độ chưa, hay uống thuốc gì chưa?
+I (38897) Application: << Cần em tìm hiểu xem giờ này có chỗ nào mở không hay chị cần gì khác?
+I (39547) SystemInfo: free sram: 157895 minimal sram: 52540
+I (42857) StateMachine: State: speaking -> listening
+I (42867) SMV-MIC: pcm_mean=9 pcm_peak=35 input_clip=0 slow_reads=0 errors=0 samples=8000
+I (45877) SMV-MIC: pcm_mean=34 pcm_peak=211 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (48887) SMV-MIC: pcm_mean=22 pcm_peak=50 input_clip=0 slow_reads=0 errors=0 samples=48160
+I (49457) Application: >> Bạn hãy cho tôi hỏi, khi bị suy nổi,
+I (49457) StateMachine: State: listening -> speaking
+I (49997) Application: << Em đoán chắc là "sổ mũi"
+I (51547) Application: << chứ phải không? Khi bị sổ mũi thì nên uống nhiều nước ấm, nghỉ ngơi nhiều,
+I (56727) Application: << có thể dùng thuốc giảm đau hạ sốt nếu cần.
+I (58557) SystemInfo: free sram: 156447 minimal sram: 52540
+I (59307) Application: << Chị đang muốn hỏi gì cụ thể hơn không?
+I (61827) StateMachine: State: speaking -> listening
+I (61837) SMV-MIC: pcm_mean=10 pcm_peak=42 input_clip=0 slow_reads=0 errors=0 samples=9280
+I (61957) Application: Local VAD endpoint: 700 ms silence
+I (71547) SystemInfo: free sram: 157911 minimal sram: 52540
+I (77707) AudioCodec: Set output enable to false
+I (77707) AudioCodec: Set input enable to false
+I (81547) SystemInfo: free sram: 157911 minimal sram: 52540
+I (91547) SystemInfo: free sram: 157911 minimal sram: 52540
+I (101547) SystemInfo: free sram: 157911 minimal sram: 52540
+I (111547) SystemInfo: free sram: 157911 minimal sram: 52540
+I (121547) SystemInfo: free sram: 157931 minimal sram: 52540
+I (121777) MQTT: Received goodbye message, session_id: 67f8953b
+I (121777) MQTT: Closing audio channel, send_goodbye: 0
+I (121777) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (121777) wifi:Set ps type: 2, coexist: 0
+
+I (121787) StateMachine: State: listening -> idle
+I (131557) SystemInfo: free sram: 161531 minimal sram: 52540
+I (141557) SystemInfo: free sram: 161531 minimal sram: 52540
+I (144287) StateMachine: State: idle -> connecting
+I (144287) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (144287) wifi:Set ps type: 0, coexist: 0
+
+I (144437) MQTT: Session ID: a42bf05e
+I (144437) WifiStation: Setting WiFi power save level: PERFORMANCE (NONE)
+I (144437) wifi:Set ps type: 0, coexist: 0
+
+I (144437) StateMachine: State: connecting -> listening
+I (144567) AudioCodec: Set input enable to true
+I (144577) SMV-MIC: pcm_mean=26 pcm_peak=484 input_clip=0 slow_reads=0 errors=0 samples=3200
+I (147577) SMV-MIC: pcm_mean=7177 pcm_peak=32768 input_clip=125 slow_reads=0 errors=0 samples=48000
+I (147697) Application: >> Hãy đăng ký kênh để nhận thêm nhiều video mới nhé.
+I (147737) StateMachine: State: listening -> speaking
+I (148417) Application: << Cảm ơn bạn đã ghé thăm nhé!
+I (148437) AudioCodec: Set output enable to true
+I (150027) Application: << Tôi là trợ lý ảo, không có kênh YouTube hay mạng xã hội đâu.
+I (153627) Application: << Nhưng tôi luôn ở đây để trò chuyện và giúp đỡ bạn bất cứ lúc nào! Có chuyện gì muốn chia sẻ không?
+I (157547) SystemInfo: free sram: 155559 minimal sram: 51356
+I (159347) StateMachine: State: speaking -> listening
+I (159417) SMV-MIC: pcm_mean=20470 pcm_peak=27463 input_clip=309 slow_reads=0 errors=0 samples=2720
+I (161217) Application: Local VAD endpoint: 700 ms silence
+I (162277) Application: >> Cá.
+I (162277) StateMachine: State: listening -> speaking
+I (162877) Application: << Cá á?
+I (163807) Application: << Bạn thích ăn cá hay đang định nấu món gì với cá vậy? Kể tôi nghe thêm đi!
+I (168767) StateMachine: State: speaking -> listening
+I (168777) SMV-MIC: pcm_mean=38 pcm_peak=70 input_clip=0 slow_reads=0 errors=0 samples=29920
+I (171787) SMV-MIC: pcm_mean=21 pcm_peak=57 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (171817) Application: Local VAD endpoint: 700 ms silence
+I (172907) Application: >> Giờ này tôi bị bệnh.
+I (172907) StateMachine: State: listening -> speaking
+I (173477) Application: << Ôi không, bạn bị bệnh sao?
+I (175417) Application: << Có chỗ nào đau hay khó chịu không? Cần tôi giúp gì không?
+I (179597) StateMachine: State: speaking -> listening
+I (179607) SMV-MIC: pcm_mean=47 pcm_peak=97 input_clip=0 slow_reads=0 errors=0 samples=800
+I (181377) Application: Local VAD endpoint: 700 ms silence
+I (182787) Application: >> Tôi bị nhức đào.
+I (182797) StateMachine: State: listening -> speaking
+I (183417) Application: << Ôi, nhức đầu hả?
+I (184917) Application: << Bạn có uống thuốc chưa hay muốn tôi giúp gì không? Cố nghỉ ngơi một chút nhé!
+I (189357) StateMachine: State: speaking -> listening
+I (189367) SMV-MIC: pcm_mean=32 pcm_peak=72 input_clip=0 slow_reads=0 errors=0 samples=29600
+I (192367) SMV-MIC: pcm_mean=15 pcm_peak=53 input_clip=0 slow_reads=0 errors=0 samples=48960
+I (192547) Application: Local VAD endpoint: 700 ms silence
+I (196677) Application: >> Hiện tại chờ tối rồi, không có...
+I (196677) StateMachine: State: listening -> speaking
+I (197207) Application: << Hiểu rồi, giờ tối rồi không có thuốc phải không?
+I (199917) Application: << Bạn thử nằm nghỉ một chút, uống chút nước ấm xem có đỡ hơn không nhé. Cần tôi giúp gì nữa không?
+I (206047) StateMachine: State: speaking -> listening
+I (206067) SMV-MIC: pcm_mean=65 pcm_peak=107 input_clip=0 slow_reads=0 errors=0 samples=3040
+I (209077) SMV-MIC: pcm_mean=20 pcm_peak=46 input_clip=262 slow_reads=0 errors=0 samples=49120
+I (211867) Application: Local VAD endpoint: 700 ms silence
+I (214817) Application: >> Ngoài bị sốt ra thì tôi còn bị...
+I (214827) StateMachine: State: listening -> speaking
+I (215387) Application: << Sốt nữa hả?
+I (216427) Application: << Bạn còn bị thêm triệu chứng nào nữa không? Kể tôi nghe để tôi biết nhé!
+I (220767) StateMachine: State: speaking -> listening
+I (220787) SMV-MIC: pcm_mean=11 pcm_peak=47 input_clip=0 slow_reads=0 errors=0 samples=44960
+I (223797) SMV-MIC: pcm_mean=65 pcm_peak=101 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (224347) Application: Local VAD endpoint: 700 ms silence
+I (227597) Application: >> bị sốt và đau bụng
+I (227597) StateMachine: State: listening -> speaking
+I (228147) Application: << Ôi không,
+I (228907) Application: << vừa sốt vừa đau bụng thế này thì mệt mỏi lắm rồi! Bạn có uống nước nhiều không?
+I (234387) Application: << Cần tôi giúp gì không, ví dụ tìm thông tin bệnh viện gần đó hay gì đó?
+I (237547) SystemInfo: free sram: 157595 minimal sram: 51356
+I (239207) StateMachine: State: speaking -> listening
+I (239217) SMV-MIC: pcm_mean=32 pcm_peak=66 input_clip=0 slow_reads=0 errors=0 samples=9120
+I (242227) SMV-MIC: pcm_mean=51 pcm_peak=184 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (244617) Application: Local VAD endpoint: 700 ms silence
+I (246397) Application: >> Có, tôi có uống nước rất nhiều nhưng mà vẫn không hạ sốt.
+I (246397) StateMachine: State: listening -> speaking
+I (246907) Application: << Uống nhiều nước mà vẫn không hạ sốt thế này thì nên đi khám bác sĩ sớm nhé!
+I (251037) Application: << Bạn có muốn tôi tìm thông tin bệnh viện gần khu vực của bạn không?
+I (254797) StateMachine: State: speaking -> listening
+I (254807) SMV-MIC: pcm_mean=13 pcm_peak=36 input_clip=0 slow_reads=0 errors=0 samples=38560
+I (257817) SMV-MIC: pcm_mean=49 pcm_peak=149 input_clip=0 slow_reads=0 errors=0 samples=49120
+I (259177) Application: Local VAD endpoint: 700 ms silence
+I (260277) Application: >> Trời tối rồi, không có bệnh viện nào mở hết.
+I (260277) StateMachine: State: listening -> speaking
+I (260807) Application: << Hiểu rồi, giờ tối rồi nhiều nơi đóng cửa rồi.
+I (263767) Application: << Bạn có ai ở nhà có thể giúp không? Hoặc thử chườm ấm xem có đỡ hơn không?
+I (268367) Application: << Cần tôi hỗ trợ gì nữa không?
+I (269547) SystemInfo: free sram: 157595 minimal sram: 51356
+I (270407) StateMachine: State: speaking -> listening
+I (270407) SMV-MIC: pcm_mean=30 pcm_peak=64 input_clip=0 slow_reads=0 errors=0 samples=22080
+I (273327) Application: Local VAD endpoint: 700 ms silence
+I (279547) SystemInfo: free sram: 158563 minimal sram: 51356
+I (285437) AudioCodec: Set output enable to false
+I (288437) AudioCodec: Set input enable to false
+I (289547) SystemInfo: free sram: 158563 minimal sram: 51356
+I (299547) SystemInfo: free sram: 158563 minimal sram: 51356
+I (309547) SystemInfo: free sram: 158563 minimal sram: 51356
+I (319547) SystemInfo: free sram: 158563 minimal sram: 51356
+I (329547) SystemInfo: free sram: 158563 minimal sram: 51356
+I (333117) MQTT: Received goodbye message, session_id: a42bf05e
+I (333127) MQTT: Closing audio channel, send_goodbye: 0
+I (333127) WifiStation: Setting WiFi power save level: LOW_POWER (MAX_MODEM)
+I (333127) wifi:Set ps type: 2, coexist: 0
+
+I (333137) StateMachine: State: listening -> idle

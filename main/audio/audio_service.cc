@@ -1,6 +1,7 @@
 #include "audio_service.h"
 #include <esp_log.h>
 #include <cstring>
+#include "audio_frontend_policy.h"
 
 #define RATE_CVT_CFG(_src_rate, _dest_rate, _channel)                                        \
     (esp_ae_rate_cvt_cfg_t) {                                                                \
@@ -714,7 +715,7 @@ void AudioService::EnableVoiceProcessing(bool enable) {
             return;
         }
         ResetDecoder();
-        audio_input_need_warmup_ = true;
+        audio_input_need_warmup_ = NeedsAudioInputWarmup(codec_->input_enabled());
         {
             std::lock_guard<std::mutex> lock(input_resampler_mutex_);
             if (input_resampler_ != nullptr) {

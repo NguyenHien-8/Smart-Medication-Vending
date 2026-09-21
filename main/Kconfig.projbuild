@@ -957,9 +957,52 @@ config USE_AUDIO_PROCESSOR
     default y
     depends on (IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4 || IDF_TARGET_ESP32S31) && SPIRAM
     help
-        Enable the shared AFE uplink path with AEC and VAD. Noise suppression
-        is not enabled because this project does not provide an NSNet model.
+        Enable the shared AFE uplink path with AEC and VAD.
         Requires ESP32-S3, ESP32-P4, or ESP32-S31 with PSRAM.
+
+config USE_AUDIO_NOISE_SUPPRESSION
+    bool "Enable WebRTC Noise Suppression"
+    default y if BOARD_TYPE_SMARTMEDIVEND_S3
+    default n
+    depends on USE_AUDIO_PROCESSOR
+    help
+        Enable the model-free WebRTC noise suppressor in ESP-SR AFE. This does
+        not require an NSNet model partition.
+
+config USE_AUDIO_AGC
+    bool "Enable WebRTC Automatic Gain Control"
+    default y if BOARD_TYPE_SMARTMEDIVEND_S3
+    default n
+    depends on USE_AUDIO_PROCESSOR
+    help
+        Normalize microphone speech in ESP-SR AFE after noise suppression.
+
+config AUDIO_AGC_COMPRESSION_GAIN_DB
+    int "WebRTC AGC compression gain (dB)"
+    default 9
+    range 0 30
+    depends on USE_AUDIO_AGC
+
+config AUDIO_AGC_TARGET_LEVEL_DBFS
+    int "WebRTC AGC target level (-dBFS)"
+    default 9
+    range 0 31
+    depends on USE_AUDIO_AGC
+
+config USE_LOCAL_VAD_ENDPOINT
+    bool "End utterances using device VAD"
+    default y if BOARD_TYPE_SMARTMEDIVEND_S3
+    default n
+    depends on USE_AUDIO_PROCESSOR
+    help
+        Send listen/stop after local VAD has observed speech followed by the
+        configured silence interval. The server still handles ASR and TTS.
+
+config LOCAL_VAD_SILENCE_MS
+    int "Silence before ending an utterance (ms)"
+    default 700
+    range 100 2000
+    depends on USE_LOCAL_VAD_ENDPOINT
 
 config USE_DEVICE_AEC
     bool "Enable Device-Side AEC"

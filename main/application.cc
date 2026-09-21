@@ -83,7 +83,7 @@ void Application::Initialize() {
         xEventGroupSetBits(event_group_, MAIN_EVENT_WAKE_WORD_DETECTED);
     };
     callbacks.on_vad_change = [this](bool speaking) {
-        xEventGroupSetBits(event_group_, MAIN_EVENT_VAD_CHANGE);
+        Schedule([this, speaking]() { HandleVadChange(speaking); });
     };
     callbacks.on_playback_drained = [this]() {
         xEventGroupSetBits(event_group_, MAIN_EVENT_PLAYBACK_DRAINED);
@@ -179,10 +179,10 @@ void Application::Run() {
 
     const EventBits_t ALL_EVENTS =
         MAIN_EVENT_SCHEDULE | MAIN_EVENT_SEND_AUDIO | MAIN_EVENT_WAKE_WORD_DETECTED |
-        MAIN_EVENT_VAD_CHANGE | MAIN_EVENT_CLOCK_TICK | MAIN_EVENT_ERROR |
-        MAIN_EVENT_NETWORK_CONNECTED | MAIN_EVENT_NETWORK_DISCONNECTED | MAIN_EVENT_TOGGLE_CHAT |
-        MAIN_EVENT_START_LISTENING | MAIN_EVENT_STOP_LISTENING | MAIN_EVENT_ACTIVATION_DONE |
-        MAIN_EVENT_STATE_CHANGED | MAIN_EVENT_PLAYBACK_DRAINED;
+        MAIN_EVENT_CLOCK_TICK | MAIN_EVENT_ERROR | MAIN_EVENT_NETWORK_CONNECTED |
+        MAIN_EVENT_NETWORK_DISCONNECTED | MAIN_EVENT_TOGGLE_CHAT | MAIN_EVENT_START_LISTENING |
+        MAIN_EVENT_STOP_LISTENING | MAIN_EVENT_ACTIVATION_DONE | MAIN_EVENT_STATE_CHANGED |
+        MAIN_EVENT_PLAYBACK_DRAINED;
 
     while (true) {
         auto bits = xEventGroupWaitBits(event_group_, ALL_EVENTS, pdTRUE, pdFALSE, portMAX_DELAY);
@@ -255,13 +255,6 @@ void Application::Run() {
             HandleWakeWordDetectedEvent();
         }
 
-        if (bits & MAIN_EVENT_VAD_CHANGE) {
-            if (GetDeviceState() == kDeviceStateListening) {
-                auto led = Board::GetInstance().GetLed();
-                led->OnStateChanged();
-            }
-        }
-
         if (bits & MAIN_EVENT_SCHEDULE) {
             std::unique_lock<std::mutex> lock(mutex_);
             auto tasks = std::move(main_tasks_);
@@ -284,6 +277,25 @@ void Application::Run() {
             }
         }
     }
+}
+
+void Application::HandleVadChange(bool speaking) {
+    if (GetDeviceState() != kDeviceStateListening) {
+        return;
+    }
+
+    auto led = Board::GetInstance().GetLed();
+    led->OnStateChanged();
+
+#if defined(CONFIG_USE_LOCAL_VAD_ENDPOINT) && CONFIG_USE_LOCAL_VAD_ENDPOINT
+    if (listening_mode_ == kListeningModeAutoStop && vad_endpoint_.OnVadState(speaking)) {
+        ESP_LOGI(TAG, "Local VAD endpoint: %d ms silence", CONFIG_LOCAL_VAD_SILENCE_MS);
+        if (protocol_ && protocol_->IsAudioChannelOpened()) {
+            protocol_->SendStopListening();
+            audio_service_.EnableVoiceProcessing(false);
+        }
+    }
+#endif
 }
 
 void Application::HandleNetworkConnectedEvent() {
@@ -1027,6 +1039,9 @@ void Application::HandleStateChangedEvent() {
         case kDeviceStateListening:
             display->SetStatus(Lang::Strings::LISTENING);
             display->SetEmotion("neutral");
+#if defined(CONFIG_USE_LOCAL_VAD_ENDPOINT) && CONFIG_USE_LOCAL_VAD_ENDPOINT
+            vad_endpoint_.Reset();
+#endif
 
             // Make sure the audio processor is running
             if (play_popup_on_listening_ || !audio_service_.IsAudioProcessorRunning()) {

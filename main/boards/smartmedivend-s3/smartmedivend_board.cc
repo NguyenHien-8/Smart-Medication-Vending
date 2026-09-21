@@ -4,6 +4,7 @@
 #include "application.h"
 #include "button.h"
 #include "config.h"
+#include "smartmedivend_mic_processor.h"
 
 #include <driver/gpio.h>
 #include <driver/spi_common.h>
@@ -12,6 +13,8 @@
 #include <esp_lcd_panel_vendor.h>
 #include <esp_log.h>
 #include <atomic>
+#include <vector>
+#include <esp_timer.h>
 
 namespace {
 // Audio pin plan: 2 independent I2S controllers, no I2S clock shared with the TFT.
@@ -38,6 +41,76 @@ static_assert(PinsAreSafe(), "BoardPins.h contains duplicate or reserved ESP32-S
 constexpr char kTag[] = "SmartMediVend";
 }
 
+// Board-specific capture path: avoid allocating the 32-bit I2S scratch buffer
+// every 10 ms (NoAudioCodec::Read does that), and report levels without
+// recording or printing private speech. Only SmartMediVend uses this codec.
+class SmartMediVendAudioCodec final : public NoAudioCodecSimplex {
+public:
+    using NoAudioCodecSimplex::NoAudioCodecSimplex;
+
+protected:
+    int Read(int16_t* dest, int samples) override {
+        if (dest == nullptr || samples <= 0 || rx_handle_ == nullptr)
+            return 0;
+        const size_t wanted = static_cast<size_t>(samples);
+        if (scratch_.size() < wanted)
+            scratch_.resize(wanted);
+        size_t bytes_read = 0;
+        const int64_t start_us = esp_timer_get_time();
+        const esp_err_t err = i2s_channel_read(rx_handle_, scratch_.data(),
+                                               wanted * sizeof(int32_t), &bytes_read, 200);
+        const int64_t elapsed_us = esp_timer_get_time() - start_us;
+        if (err != ESP_OK || bytes_read == 0) {
+            ++read_errors_;
+            return 0;
+        }
+        const size_t received = bytes_read / sizeof(int32_t);
+        if (received == 0)
+            return 0;
+        const auto stats = processor_.Process(scratch_.data(), dest, received);
+        total_samples_ += received;
+        total_input_clip_ += stats.clipped_input;
+        last_input_level_ = stats.mean_abs_before;
+        last_peak_ = stats.peak_before;
+        if (elapsed_us > 30000)
+            ++slow_reads_;
+
+        // One short diagnostic line every 3 s; no raw audio, no per-frame UART.
+        const int64_t now_us = esp_timer_get_time();
+        if (last_report_us_ == 0)
+            last_report_us_ = now_us;
+        if (now_us - last_report_us_ >= 3000000) {
+            ESP_LOGI(
+                "SMV-MIC",
+                "pcm_mean=%lu pcm_peak=%lu input_clip=%lu slow_reads=%lu errors=%lu samples=%lu",
+                (unsigned long)last_input_level_, (unsigned long)last_peak_,
+                (unsigned long)total_input_clip_, (unsigned long)slow_reads_,
+                (unsigned long)read_errors_, (unsigned long)total_samples_);
+            last_report_us_ = now_us;
+            total_samples_ = 0;
+            total_input_clip_ = slow_reads_ = read_errors_ = 0;
+        }
+        return static_cast<int>(received);
+    }
+
+    void EnableInput(bool enable) override {
+        if (enable && !input_enabled_)
+            processor_.Reset();
+        NoAudioCodecSimplex::EnableInput(enable);
+    }
+
+private:
+    smv::MicProcessor processor_;
+    std::vector<int32_t> scratch_;
+    int64_t last_report_us_ = 0;
+    uint32_t total_samples_ = 0;
+    uint32_t total_input_clip_ = 0;
+    uint32_t slow_reads_ = 0;
+    uint32_t read_errors_ = 0;
+    uint32_t last_input_level_ = 0;
+    uint32_t last_peak_ = 0;
+};
+
 class SmartMediVendBoard final : public WifiBoard {
 public:
     SmartMediVendBoard() : talk_button_(BOOT_BUTTON_GPIO, true, 2000, 35) {
@@ -57,7 +130,7 @@ public:
     }
 
     AudioCodec* GetAudioCodec() override {
-        static NoAudioCodecSimplex codec(
+        static SmartMediVendAudioCodec codec(
             AUDIO_INPUT_SAMPLE_RATE, AUDIO_OUTPUT_SAMPLE_RATE,
             AUDIO_I2S_SPK_GPIO_BCLK, AUDIO_I2S_SPK_GPIO_LRCK, AUDIO_I2S_SPK_GPIO_DOUT,
             AUDIO_I2S_MIC_GPIO_SCK, AUDIO_I2S_MIC_GPIO_WS, AUDIO_I2S_MIC_GPIO_DIN);

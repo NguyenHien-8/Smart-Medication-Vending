@@ -17,6 +17,7 @@
 #include "protocol.h"
 #include "ota.h"
 #include "audio_service.h"
+#include "vad_endpoint.h"
 #include "device_state.h"
 #include "device_state_machine.h"
 #include "notify/notify_player.h"
@@ -25,7 +26,6 @@
 #define MAIN_EVENT_SCHEDULE             (1 << 0)
 #define MAIN_EVENT_SEND_AUDIO           (1 << 1)
 #define MAIN_EVENT_WAKE_WORD_DETECTED   (1 << 2)
-#define MAIN_EVENT_VAD_CHANGE           (1 << 3)
 #define MAIN_EVENT_ERROR                (1 << 4)
 #define MAIN_EVENT_ACTIVATION_DONE      (1 << 5)
 #define MAIN_EVENT_CLOCK_TICK           (1 << 6)
@@ -140,6 +140,7 @@ private:
     AecMode aec_mode_ = kAecOff;
     std::string last_error_message_;
     AudioService audio_service_;
+    VadEndpoint vad_endpoint_;
     NotifyPlayer notify_player_;
     uint32_t notification_playback_id_ = 0;
     std::unique_ptr<Ota> ota_;
@@ -164,6 +165,7 @@ private:
     void HandleNetworkDisconnectedEvent();
     void HandleActivationDoneEvent();
     void HandleWakeWordDetectedEvent();
+    void HandleVadChange(bool speaking);
     void ContinueOpenAudioChannel(ListeningMode mode);
     void BeginWakeWordInvoke(const std::string& wake_word);
     void ContinueWakeWordInvoke(const std::string& wake_word);
