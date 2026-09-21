@@ -173,9 +173,6 @@ choice BOARD_TYPE
     config BOARD_TYPE_BREAD_COMPACT_WIFI
         bool "Bread Compact Wi-Fi (面包板)"
         depends on IDF_TARGET_ESP32S3
-    config BOARD_TYPE_SMARTMEDIVEND_S3
-        bool "SmartMediVend ESP32-S3 N16R8 (voice-only pilot)"
-        depends on IDF_TARGET_ESP32S3
     config BOARD_TYPE_BREAD_COMPACT_WIFI_LCD
         bool "Bread Compact Wi-Fi + LCD (面包板)"
         depends on IDF_TARGET_ESP32S3
@@ -424,6 +421,9 @@ choice BOARD_TYPE
         depends on IDF_TARGET_ESP32S3
     config BOARD_TYPE_SEEED_STUDIO_SENSECAP_WATCHER
         bool "Seeed Studio SenseCAP Watcher"
+        depends on IDF_TARGET_ESP32S3
+    config BOARD_TYPE_SMARTMEDIVEND_S3
+        bool "SmartMediVend ESP32-S3 N16R8 (voice-only pilot)"
         depends on IDF_TARGET_ESP32S3
     config BOARD_TYPE_SPOTPEAR_ESP32_S3_1_28_BOX
         bool "Spotpear ESP32-S3 1.28 Box"
