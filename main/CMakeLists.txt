@@ -1093,12 +1093,21 @@ if(CONFIG_BOARD_TYPE_ESP32_P4_FUNCTION_EV_BOARD)
         sdmmc
     )
 endif()
-# SmartMediVend advisory stage: compile only for this board, with JSON read from
-# the project data/ directory at CMake configure time (not a stale hard-coded copy).
+# SmartMediVend medical and fail-closed vending path. Core vending sources are
+# compiled only for this board; board GPIO sources are selected by BOARD_SOURCES.
 if(CONFIG_BOARD_TYPE_SMARTMEDIVEND_S3)
     list(APPEND SOURCES
         "medical/medical_advisor.cc"
         "medical/pharmacist_review_verifier.cc"
+        "vending/catalog_router.cc"
+        "vending/vend_guard.cc"
+        "vending/vending_coordinator.cc"
+        "inventory/inventory_store.cc"
+        "inventory/nvs_inventory_backend.cc"
+    )
+    list(APPEND MAIN_PRIV_REQUIRES_EXTRA
+        nvs_flash
+        esp_timer
     )
     set(SMV_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/smv_medical_generated")
     file(MAKE_DIRECTORY "${SMV_GENERATED_DIR}")

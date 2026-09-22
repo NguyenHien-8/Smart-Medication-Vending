@@ -1042,6 +1042,7 @@ void Application::HandleStateChangedEvent() {
     pending_listening_start_ = false;
 
     auto& board = Board::GetInstance();
+    board.OnDeviceStateChanged(new_state);
     auto display = board.GetDisplay();
     auto led = board.GetLed();
     led->OnStateChanged();

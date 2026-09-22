@@ -423,7 +423,7 @@ choice BOARD_TYPE
         bool "Seeed Studio SenseCAP Watcher"
         depends on IDF_TARGET_ESP32S3
     config BOARD_TYPE_SMARTMEDIVEND_S3
-        bool "SmartMediVend ESP32-S3 N16R8 (voice-only pilot)"
+        bool "SmartMediVend ESP32-S3 N16R8"
         depends on IDF_TARGET_ESP32S3
     config BOARD_TYPE_SPOTPEAR_ESP32_S3_1_28_BOX
         bool "Spotpear ESP32-S3 1.28 Box"
@@ -633,6 +633,15 @@ choice BOARD_TYPE
         bool "Zhengchen AI Camera Wi-Fi (征辰科技)"
         depends on IDF_TARGET_ESP32S3
 endchoice
+
+config SMARTMEDIVEND_PRODUCTION_VENDING
+    bool "Enable pharmacist-approved SmartMediVend relay vending"
+    default n
+    depends on BOARD_TYPE_SMARTMEDIVEND_S3
+    help
+        Enables only the compile-time half of the vending gate. Runtime still
+        requires exact pharmacist approval, valid NVS inventory, local policy,
+        physical confirmation, and an idle fail-safe relay driver.
 
 choice XIAOZHI_NETWORK_TYPE
     prompt "Network Type"
