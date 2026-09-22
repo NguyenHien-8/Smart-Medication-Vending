@@ -1,99 +1,62 @@
-# Stage 1 – AI symptom intake and non-dispensing local advisor
+# SmartMediVend — fail-closed local vending integration
 
 ## Scope
 
-This patch does not modify Xiaozhi audio, VAD, network, UI, Wi-Fi, button handling,
-or any relay GPIO. It adds two **read-only** MCP tools for the SmartMediVend-S3
-board. No MCP tool for vend/relay/inventory writes is added. `vend_allowed` is
-hardcoded false for every tool result. Existing board constructor continues
-to hold the active-low relay signal HIGH.
+The SmartMediVend-S3 build now combines the local medical interview, pharmacist-artifact verification, local catalog routing, dual-slot NVS inventory, physical confirmation, and a non-blocking relay state machine. The cloud can submit patient facts and receive `ASK`, `REFER`, `BLOCK`, or `OFFER`; it cannot select a SKU/channel, confirm a transaction, write stock, or operate a relay.
 
-### Source-of-truth and versioning
+This is a fail-closed command path, not a closed-loop dispensing system. There is no package-drop or current sensor, so a completed pulse is recorded as `COMMAND_SENT_UNVERIFIED`, never as proof that medicine was dispensed.
 
-`data/medical_rules.json`, `data/medicines.json`, `data/pharmacist_review.json`
-are read at CMake *configure* time and placed into a generated header under
-`build/`; they are not duplicated manually in C++ source. Editing any of the
-three causes CMake reconfiguration on the next `idf.py build`. No `data/` file
-is replaced by this patch. `pharmacist_review.json` is currently `approved=false`;
-this stage remains non-dispensing even if that file is changed.
+## Decision and actuation boundary
 
-### Cloud setup required
+1. `MedicalAdvisor` validates the explicitly reported patient snapshot and returns one structured local canonical item only when the approved rules reach an offer.
+2. `VendingCoordinator` checks the compile gate, exact pharmacist review, catalog validity and live NVS snapshot.
+3. `CatalogRouter` chooses the primary channel, or an exact-identity backup only when primary stock is zero. The cloud never sees the SKU or channel.
+4. A candidate expires after 30,000 ms. Speech cannot confirm it. A short physical-button click on the application task revalidates state, route, stock revision and relay state.
+5. `InventoryStore` durably reserves one unit before the relay starts. A reboot with a pending reservation locks vending and never replays the pulse.
+6. The board holds GPIO17 HIGH, selects GPIO39–42, waits 10 ms, arms the 500 ms shutoff timer, then drives GPIO17 LOW. It returns HIGH before the 100 ms guard interval.
 
-Paste/adapt `docs/smartmedivend/XIAOZHI_CLOUD_ROLE_STAGE1.md` into the official
-Xiaozhi cloud role/system-prompt UI that serves this device. The repository's
-role `.md` file is **not automatically transmitted to cloud** by the embedded
-firmware. Tool calls depend on the service's MCP support and role configuration;
-a successful firmware build is not proof the cloud followed the workflow.
+Button behavior is board-local: a short click confirms a live candidate or keeps the existing chat-toggle behavior when no candidate exists; a long press cancels and forces the relay inactive before Wi-Fi configuration; double click keeps the status-page behavior. Unsafe device-state changes cancel the candidate and relay operation.
 
-### MCP contract
+## Source of truth and build identity
 
-- `self.medical.get_intake_schema`: no arguments; returns required keys, supported
-  symptom/flag enums and the semantics of empty arrays and missing keys.
-- `self.medical.evaluate_symptoms`: `payload_json` string, at most 4096 bytes;
-  complete snapshot of explicitly reported facts per turn. Schema:
-  `session_id` (non-personal 1–64 char string), `turn_id` (integer 1–1,000,000),
-  `age_years` (integer 0–120), `weight_kg` (positive number at most 300),
-  `pregnancy_or_breastfeeding` (boolean), `symptoms` (enum array), `duration_hours`
-  (number), `danger_signs` (enum array), `conditions` (enum array),
-  `current_medicines` (enum array), `drug_allergies` (enum array),
-  `screening_answers` (object question_id -> explicitly answered boolean).
+`data/medical_rules.json`, `data/medicines.json`, and `data/pharmacist_review.json` are read at CMake configure time. CMake calculates SHA-256 for the rules and catalog and writes the embedded values to:
 
-Before any provisional option, `interview.global_checks` and the symptom-specific
-`interview.symptom_checks` require explicitly answered yes/no questions.
-The device returns ONE short `next_question_vi` and `next_question_id` on each
-`NEED_MORE_INFO`; resend the same snapshot without an answer and it repeats the
-same question. A positive warning sign stops with `REFER`; conflicting symptom
-classification returns `NEED_MORE_INFO` rather than guessing a SKU.
-The cloud role at `XIAOZHI_CLOUD_ROLE_STAGE1.md` must be updated MANUALLY.
-Unknown keys, duplicate keys, oversized/malformed inputs fail closed. Reported
-red flags and unsupported age/pregnancy are handled before missing-field checks.
-Unknown illness/medication flags and *any* reported drug allergy are referred for
-human review rather than silently assumed safe. An empty array signifies an
-explicit negative answer, not a missing/unknown answer. The device cannot prove
-that AI truthfully extracted a user's spoken response; this is why no result
-can authorize dispensing.
+`build/esp-idf/main/smv_medical_generated/medical_data_generated.h`
 
-`PROVISIONAL_OPTIONS` returns at most **one** local-catalog display option and
-no `sku` or `channel` to the cloud. The device resolves the matching main/backup
-catalogue slot using **initial_stock only**, which is *not live inventory*.
-This is useful for a non-dispensing UI prototype but must not be presented as
-currently available stock. An independently verified and persisted inventory
-manager, broader contraindication/interaction review, local user confirmation,
-pharmacist review and VendGuard are required before any future physical vending.
+The build-generated header is evidence for the exact firmware build; do not edit it. A review is valid only when its versions and lowercase SHA-256 values exactly match those embedded values.
 
-### Example MCP `payload_json` (TEST DATA ONLY: negative answers require separate explicit user confirmation)
+The compile gate `CONFIG_SMARTMEDIVEND_PRODUCTION_VENDING` is available only for `BOARD_TYPE_SMARTMEDIVEND_S3` and defaults to `n`. Enabling it satisfies only one gate; all runtime checks remain mandatory.
 
-```json
-{"session_id":"demo-1","turn_id":1,"age_years":30,"weight_kg":65,"pregnancy_or_breastfeeding":false,"symptoms":["mild_headache"],"duration_hours":3,"danger_signs":[],"conditions":[],"current_medicines":[],"drug_allergies":[],"screening_answers":{"redflag_breathing":false,"redflag_neurologic":false,"redflag_weakness":false,"redflag_bleeding":false,"redflag_black_stool":false,"redflag_other":false,"headache_sudden":false,"headache_vomit":false,"headache_stiff":false}}
+## Current repository remains locked
+
+The repository data intentionally cannot vend:
+
+- the production Kconfig gate defaults off;
+- `data/pharmacist_review.json` is structurally incomplete and contains an unrecognized `notice` field, so exact pharmacist verification fails;
+- channel 15 declares an antacid backup whose `strength` differs from channel 7, so the entire catalog is rejected with `BACKUP_IDENTITY_MISMATCH`;
+- a new device has no valid NVS inventory snapshot until a technician provisions it.
+
+Changing only one of these conditions must not enable vending. Pharmacist review and hardware inventory provisioning are separate controlled actions.
+
+## MCP contract
+
+- `self.medical.get_intake_schema`: returns supported fields and enum semantics.
+- `self.medical.get_symptom_guide`: returns a short guide for exactly one reported symptom enum.
+- `self.medical.evaluate_symptoms`: accepts a `payload_json` string up to 4096 bytes and returns one of `ASK`, `REFER`, `BLOCK`, or `OFFER`.
+
+For `ASK`, the cloud reads only `next_question_vi`. `REFER` stops the offer flow. `BLOCK` reports a local fail-closed reason. `OFFER` returns bounded display information plus `confirmation=PRESS_PHYSICAL_BUTTON`, while `vend_allowed` remains false because cloud speech is not authorization. Responses contain no SKU or channel.
+
+Unknown or duplicate keys, malformed/oversized JSON, stale/decreasing turns, unsupported clinical situations and forbidden control fields fail closed. Missing arrays are unknown; an empty array is an explicit negative answer and may be sent only after the user clearly confirms it.
+
+## Build and automated checks
+
+Use ESP-IDF 6.1 (minimum 6.0.1):
+
+```powershell
+. C:\esp\v6.1\esp-idf\export.ps1
+python scripts/build.py smartmedivend-s3 --name smartmedivend-s3
+powershell -ExecutionPolicy Bypass -File scripts/tests/run_smartmedivend_host_tests.ps1
+powershell -ExecutionPolicy Bypass -File main/vending/tests/run_host_tests.ps1
 ```
 
-### Tests and deployment
-
-On a Linux host with `g++` and system `libcjson.so.1`:
-
-```bash
-g++ -std=c++23 -O2 -Wall -Wextra -Werror \
- -Imain/medical/tests/host_include -Imain/medical \
- main/medical/medical_advisor.cc main/medical/tests/test_medical_advisor.cc \
- -Wl,-l:libcjson.so.1 -o /tmp/medical_test
-/tmp/medical_test data/medical_rules.json data/medicines.json data/pharmacist_review.json
-python3 -m unittest discover -s scripts/tests -v
-```
-
-`main/medical/tests/host_include/cJSON.h` is a **host-test-only ABI shim** for
-systems with the runtime library but without development headers. It must never
-be added to the firmware include path; ESP-IDF uses its own `cJSON.h`.
-
-On the user's ESP-IDF 6.1 setup (correct SmartMediVend-S3 board selected):
-
-```bash
-idf.py build
-idf.py -p COMx flash monitor
-```
-
-Check serial for `MCP: Add tool: self.medical.get_intake_schema` and
-`MCP: Add tool: self.medical.evaluate_symptoms`; then verify the service
-actually calls them and that the JSON response is seen by the cloud. Test
-missing data, dangerous symptoms, ages under 16, pregnancy/breastfeeding,
-allergy, contraindications, and 30+ consecutive normal multi-turn sessions.
-No physical dispensing or medication trials are authorized by this patch.
+The build must show `# CONFIG_SMARTMEDIVEND_PRODUCTION_VENDING is not set` for the default release. A successful build validates compilation, not GPIO timing, reset behavior, pharmacist approval, actual stock, or package delivery. Perform the controlled procedure in `FAIL_CLOSED_VENDING_TEST.md` before attaching medicine channels.

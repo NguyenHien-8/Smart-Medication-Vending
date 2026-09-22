@@ -1,10 +1,12 @@
 # SmartMediVend — kiểm tra sàng lọc và định tuyến kênh (chỉ mô phỏng)
 
+> **TÀI LIỆU LỊCH SỬ:** đây là trạng thái bench trước khi tích hợp NVS, xác nhận vật lý và relay fail-closed. Không dùng làm hướng dẫn vận hành firmware hiện tại. Xem `STAGE1_INTEGRATION_AND_TEST.md` và `FAIL_CLOSED_VENDING_TEST.md`.
+
 ## Đọc hiện trạng
 
 - `main/boards/smartmedivend-s3/smartmedivend_board.cc` đăng ký 3 công cụ MCP cho hội thoại; không có công cụ cấp thuốc, không có GPIO kích relay. Không thay đổi phần I2S/TFT/Xiaozhi đang hoạt động.
 - `main/medical/medical_advisor.cc` xác nhận các trường hồ sơ và câu trả lời cho từng câu hỏi trong `data/medical_rules.json`. AI có thể cung cấp dữ liệu không chính xác; sàng lọc từ JSON **không xác thực** việc người dùng thực sự đã trả lời.
-- `data/pharmacist_review.json`: `approved=false`. `initial_stock` trong `data/medicines.json` là số liệu ban đầu, **không phải tồn kho được cảm biến/nhân viên xác minh**. Không bật khả năng bán thuốc từ dữ liệu này.
+- Ở thời điểm bản bench này được tạo, phê duyệt dược sĩ đang ở trạng thái false. `initial_stock` trong `data/medicines.json` là số liệu ban đầu, **không phải tồn kho được cảm biến/nhân viên xác minh**. Không bật khả năng bán thuốc từ dữ liệu này.
 - `BoardPins.h`: `MUX_S0..S3 = 39..42`, `MUX_SIG=17`; danh mục gán 16 kênh 0..15. Kênh 13 là dự phòng kênh 0; 14 dự phòng 3; 15 dự phòng 7. Không có dữ liệu xác thực thực tế về đấu dây, kiểu mạch MUX, relay, tính toàn vẹn của vỉ thuốc, cảm biến rơi hàng và tình trạng an toàn điện.
 
 ## Phần thay đổi

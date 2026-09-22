@@ -1,5 +1,7 @@
 # Bản vá MCP gọn & phỏng vấn có kiểm soát — SmartMediVend (10)
 
+> **TÀI LIỆU LỊCH SỬ:** tài liệu này chỉ ghi lại một bản vá MCP/audio cũ; các tuyên bố về relay và trạng thái phê duyệt không mô tả firmware hiện tại. Xem `STAGE1_INTEGRATION_AND_TEST.md` và `FAIL_CLOSED_VENDING_TEST.md`.
+
 ## Dấu vết từ log mới
 
 - Ở lượt người dùng nói về thời gian đau đầu, STT xuất ra `Thu nhất đội trong một ngày.` (không thể kết luận chắc thời gian từ bản chép này). AI vẫn nói đã bắt đầu tư vấn.
@@ -28,4 +30,4 @@ Giải nén patch vào gốc source bản (10), giữ nguyên cấu trúc, ghi �
 
 ## Giới hạn an toàn
 
-`pharmacist_review.json` không thay đổi (`approved=false`). Thuốc trong danh mục chỉ phục vụ phân loại tham khảo chưa xác minh độc lập; không có cấp thuốc thật. Việc AI tuân thủ 100% một-câu-hỏi/lượt không thể ép chỉ bằng firmware khi câu nói được sinh trên máy chủ Xiaozhi; cần kiểm thử prompt hoặc một cơ chế kiểm soát lời thoại phía máy chủ. Gói này không thay đổi âm thanh, phiên MQTT/UDP chung, VAD, màn hình, GPIO hay relay.
+Trong bản lịch sử này, `pharmacist_review.json` vẫn ở trạng thái chưa phê duyệt. Thuốc trong danh mục chỉ phục vụ phân loại tham khảo chưa xác minh độc lập; không có cấp thuốc thật. Việc AI tuân thủ 100% một-câu-hỏi/lượt không thể ép chỉ bằng firmware khi câu nói được sinh trên máy chủ Xiaozhi; cần kiểm thử prompt hoặc một cơ chế kiểm soát lời thoại phía máy chủ. Gói này không thay đổi âm thanh, phiên MQTT/UDP chung, VAD, màn hình, GPIO hay relay.
