@@ -164,24 +164,26 @@ InventoryResult InventoryStore::Load() {
     const bool present_b = backend_.ReadBlob(kSnapshotB, bytes_b);
     if (!present_a && !present_b)
         return Fail(InventoryResult::kUnavailable);
+    if (!present_a || !present_b)
+        return Fail(InventoryResult::kCorrupt);
 
     State state_a;
     State state_b;
     const DecodeResult result_a = present_a ? Decode(bytes_a, state_a) : DecodeResult::kCorrupt;
     const DecodeResult result_b = present_b ? Decode(bytes_b, state_b) : DecodeResult::kCorrupt;
-    if ((present_a && result_a == DecodeResult::kRevisionExhausted) ||
-        (present_b && result_b == DecodeResult::kRevisionExhausted)) {
+    if (result_a == DecodeResult::kRevisionExhausted ||
+        result_b == DecodeResult::kRevisionExhausted) {
         return Fail(InventoryResult::kRevisionExhausted);
     }
 
-    const bool valid_a = present_a && result_a == DecodeResult::kValid;
-    const bool valid_b = present_b && result_b == DecodeResult::kValid;
-    if (!valid_a && !valid_b)
+    const bool valid_a = result_a == DecodeResult::kValid;
+    const bool valid_b = result_b == DecodeResult::kValid;
+    if (!valid_a || !valid_b)
         return Fail(InventoryResult::kCorrupt);
-    if (valid_a && valid_b && state_a.revision == state_b.revision && bytes_a != bytes_b)
+    if (state_a.revision == state_b.revision && bytes_a != bytes_b)
         return Fail(InventoryResult::kAmbiguousRevision);
 
-    if (valid_a && (!valid_b || state_a.revision >= state_b.revision)) {
+    if (state_a.revision >= state_b.revision) {
         state_ = state_a;
         active_slot_ = 'a';
     } else {
@@ -193,16 +195,20 @@ InventoryResult InventoryStore::Load() {
     return last_result_;
 }
 
+bool InventoryStore::WriteVerified(std::string_view key, const State& next, State& decoded) {
+    const std::vector<uint8_t> encoded = Encode(next);
+    if (!backend_.WriteBlob(key, encoded))
+        return false;
+    std::vector<uint8_t> verified;
+    return backend_.ReadBlob(key, verified) && verified == encoded &&
+           Decode(verified, decoded) == DecodeResult::kValid;
+}
+
 InventoryResult InventoryStore::Commit(const State& next) {
     const std::string_view key = active_slot_ == 'a' ? kSnapshotB : kSnapshotA;
     const char slot = active_slot_ == 'a' ? 'b' : 'a';
-    const std::vector<uint8_t> encoded = Encode(next);
-    if (!backend_.WriteBlob(key, encoded))
-        return Fail(InventoryResult::kWriteFailed);
-    std::vector<uint8_t> verified;
     State decoded;
-    if (!backend_.ReadBlob(key, verified) || verified != encoded ||
-        Decode(verified, decoded) != DecodeResult::kValid) {
+    if (!WriteVerified(key, next, decoded)) {
         return Fail(InventoryResult::kWriteFailed);
     }
     state_ = decoded;
@@ -227,6 +233,19 @@ InventoryResult InventoryStore::Provision(const std::array<uint32_t, kVendingCha
     next.revision = snapshot_.available ? state_.revision + 1 : 1;
     next.counts = counts;
     next.valid_mask = valid_mask;
+    if (!snapshot_.available) {
+        State decoded_a;
+        State decoded_b;
+        if (!WriteVerified(kSnapshotA, next, decoded_a) ||
+            !WriteVerified(kSnapshotB, next, decoded_b)) {
+            return Fail(InventoryResult::kWriteFailed);
+        }
+        state_ = decoded_b;
+        active_slot_ = 'b';
+        Publish();
+        last_result_ = InventoryResult::kOk;
+        return last_result_;
+    }
     return Commit(next);
 }
 

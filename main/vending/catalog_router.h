@@ -10,7 +10,7 @@
 namespace smv {
 class CatalogRouter {
 public:
-    explicit CatalogRouter(std::string_view catalog_json);
+    CatalogRouter(std::string_view catalog_json, std::string_view rules_json);
 
     bool valid() const { return valid_; }
     const std::string& validation_reason() const { return validation_reason_; }
@@ -27,7 +27,7 @@ private:
         std::optional<uint8_t> backup_of_channel;
     };
 
-    bool Parse(std::string_view catalog_json);
+    bool Parse(std::string_view catalog_json, std::string_view rules_json);
     bool Fail(const char* reason);
 
     bool valid_ = false;

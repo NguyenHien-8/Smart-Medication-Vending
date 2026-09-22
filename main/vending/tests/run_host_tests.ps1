@@ -42,7 +42,7 @@ try {
     & $compiler @routerArgs
     if ($LASTEXITCODE -ne 0) { throw "catalog test compilation failed: $LASTEXITCODE" }
 
-    & $routerExe data/medicines.json
+    & $routerExe data/medicines.json data/medical_rules.json
     if ($LASTEXITCODE -ne 0) { throw "catalog tests failed: $LASTEXITCODE" }
 
     $inventoryArgs = @(

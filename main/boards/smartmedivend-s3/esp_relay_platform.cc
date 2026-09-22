@@ -17,13 +17,15 @@ constexpr std::array<gpio_num_t, 4> kSelectPins = {
 };
 }  // namespace
 
+EspRelayPlatform::EspRelayPlatform()
+    : settle_timer_(RelayTimerPhase::kSettle, "smv_settle"),
+      pulse_timer_(RelayTimerPhase::kPulse, "smv_pulse"),
+      guard_timer_(RelayTimerPhase::kGuard, "smv_guard") {}
+
 EspRelayPlatform::~EspRelayPlatform() {
     SetSignalHigh();
-    if (timer_ != nullptr) {
-        if (esp_timer_is_active(timer_))
-            esp_timer_stop(timer_);
-        esp_timer_delete(timer_);
-    }
+    CancelTimer();
+    DeleteTimers();
 }
 
 bool EspRelayPlatform::InitializeInactive() {
@@ -43,21 +45,37 @@ bool EspRelayPlatform::InitializeInactive() {
     SetSignalHigh();
     if (!SelectChannel(0))
         return false;
-    if (timer_ != nullptr)
+    if (settle_timer_.handle != nullptr && pulse_timer_.handle != nullptr &&
+        guard_timer_.handle != nullptr) {
         return true;
+    }
 
-    esp_timer_create_args_t timer_args{};
-    timer_args.callback = &TimerThunk;
-    timer_args.arg = this;
-    timer_args.dispatch_method = ESP_TIMER_TASK;
-    timer_args.name = "smv_relay";
-    timer_args.skip_unhandled_events = true;
-    if (esp_timer_create(&timer_args, &timer_) != ESP_OK) {
+    DeleteTimers();
+    if (!CreateTimer(settle_timer_) || !CreateTimer(pulse_timer_) || !CreateTimer(guard_timer_)) {
         SetSignalHigh();
-        timer_ = nullptr;
+        DeleteTimers();
         return false;
     }
     return true;
+}
+
+bool EspRelayPlatform::CreateTimer(TimerSlot& slot) {
+    esp_timer_create_args_t timer_args{};
+    timer_args.callback = &TimerThunk;
+    timer_args.arg = &slot;
+    timer_args.dispatch_method = ESP_TIMER_TASK;
+    timer_args.name = slot.name;
+    timer_args.skip_unhandled_events = true;
+    return esp_timer_create(&timer_args, &slot.handle) == ESP_OK;
+}
+
+void EspRelayPlatform::DeleteTimers() {
+    for (TimerSlot* slot : {&settle_timer_, &pulse_timer_, &guard_timer_}) {
+        if (slot->handle == nullptr)
+            continue;
+        esp_timer_delete(slot->handle);
+        slot->handle = nullptr;
+    }
 }
 
 void EspRelayPlatform::SetSignalHigh() { gpio_set_level(kSignalPin, 1); }
@@ -76,35 +94,43 @@ bool EspRelayPlatform::SelectChannel(uint8_t channel) {
 
 bool EspRelayPlatform::ArmOneShot(uint32_t delay_ms, uint32_t generation, RelayTimerPhase phase,
                                   TimerCallback callback, void* context) {
-    if (timer_ == nullptr || delay_ms == 0 || callback == nullptr)
+    TimerSlot& slot = SlotFor(phase);
+    if (slot.handle == nullptr || delay_ms == 0 || callback == nullptr)
         return false;
-    if (esp_timer_is_active(timer_) && esp_timer_stop(timer_) != ESP_OK)
+    if (esp_timer_is_active(slot.handle))
         return false;
-    timer_generation_.store(generation, std::memory_order_release);
-    timer_phase_.store(phase, std::memory_order_release);
-    timer_callback_ = callback;
-    timer_context_ = context;
-    return esp_timer_start_once(timer_, static_cast<uint64_t>(delay_ms) * 1000ULL) == ESP_OK;
+    slot.generation.store(generation, std::memory_order_release);
+    slot.callback = callback;
+    slot.callback_context = context;
+    return esp_timer_start_once(slot.handle, static_cast<uint64_t>(delay_ms) * 1000ULL) == ESP_OK;
 }
 
 void EspRelayPlatform::CancelTimer() {
-    if (timer_ != nullptr && esp_timer_is_active(timer_))
-        esp_timer_stop(timer_);
+    for (TimerSlot* slot : {&settle_timer_, &pulse_timer_, &guard_timer_}) {
+        if (slot->handle != nullptr && esp_timer_is_active(slot->handle))
+            esp_timer_stop(slot->handle);
+    }
 }
 
 void EspRelayPlatform::EnterCritical() { portENTER_CRITICAL(&critical_mux_); }
 
 void EspRelayPlatform::ExitCritical() { portEXIT_CRITICAL(&critical_mux_); }
 
-void EspRelayPlatform::TimerThunk(void* context) {
-    static_cast<EspRelayPlatform*>(context)->OnTimer();
+void EspRelayPlatform::TimerThunk(void* context) { OnTimer(*static_cast<TimerSlot*>(context)); }
+
+void EspRelayPlatform::OnTimer(TimerSlot& slot) {
+    TimerCallback callback = slot.callback;
+    if (callback != nullptr) {
+        callback(slot.callback_context, slot.generation.load(std::memory_order_acquire),
+                 slot.phase);
+    }
 }
 
-void EspRelayPlatform::OnTimer() {
-    TimerCallback callback = timer_callback_;
-    if (callback != nullptr) {
-        callback(timer_context_, timer_generation_.load(std::memory_order_acquire),
-                 timer_phase_.load(std::memory_order_acquire));
-    }
+EspRelayPlatform::TimerSlot& EspRelayPlatform::SlotFor(RelayTimerPhase phase) {
+    if (phase == RelayTimerPhase::kSettle)
+        return settle_timer_;
+    if (phase == RelayTimerPhase::kPulse)
+        return pulse_timer_;
+    return guard_timer_;
 }
 }  // namespace smv

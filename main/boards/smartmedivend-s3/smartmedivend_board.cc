@@ -180,7 +180,8 @@ private:
 
         advisor_ = std::make_unique<smv::MedicalAdvisor>(
             smv::kMedicalRulesJson, smv::kMedicineCatalogJson, smv::kPharmacistReviewJson);
-        catalog_router_ = std::make_unique<smv::CatalogRouter>(smv::kMedicineCatalogJson);
+        catalog_router_ =
+            std::make_unique<smv::CatalogRouter>(smv::kMedicineCatalogJson, smv::kMedicalRulesJson);
         inventory_backend_ = std::make_unique<smv::NvsInventoryBackend>("smv_inventory");
         inventory_ = std::make_unique<smv::InventoryStore>(*inventory_backend_);
         const smv::InventoryResult inventory_result = inventory_->Load();
@@ -321,6 +322,13 @@ private:
             default:
                 break;
         }
+    }
+
+    void OnNetworkDisconnected() override {
+        if (coordinator_)
+            coordinator_->OnDisconnected(MonotonicMs());
+        if (relay_driver_)
+            relay_driver_->Cancel();
     }
 
     void InitializeSpiAndPanel() {

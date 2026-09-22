@@ -129,7 +129,7 @@ struct Fixture {
                       : Read(catalog_path)),
           review_json(Read(review_path)),
           advisor(rules.c_str(), catalog.c_str(), review_json.c_str()),
-          router(catalog),
+          router(catalog, rules),
           inventory(backend) {
         if (provision) {
             std::array<uint32_t, smv::kVendingChannelCount> counts{};
@@ -272,6 +272,15 @@ int main(int argc, char** argv) {
             Check(fixture.coordinator->Confirm(1001, true) == smv::ConfirmResult::kBlocked &&
                       fixture.relay.start_calls == 0,
                   "busy relay accepted confirmation");
+            ++count;
+        }
+        {
+            Fixture fixture(argv[1], argv[2], argv[3]);
+            fixture.coordinator->EvaluateAndStage(Snapshot(), 1000);
+            fixture.coordinator->OnDisconnected(1001);
+            Check(fixture.coordinator->Confirm(1002, true) == smv::ConfirmResult::kNoCandidate &&
+                      fixture.relay.start_calls == 0,
+                  "disconnect did not invalidate staged candidate");
             ++count;
         }
         {

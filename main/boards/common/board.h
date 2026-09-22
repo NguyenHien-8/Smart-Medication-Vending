@@ -84,6 +84,7 @@ public:
     virtual std::string GetBoardJson() = 0;
     virtual std::string GetDeviceStatusJson() = 0;
     virtual void OnDeviceStateChanged(DeviceState state) { (void)state; }
+    virtual void OnNetworkDisconnected() {}
 };
 
 #define DECLARE_BOARD(BOARD_CLASS_NAME) \

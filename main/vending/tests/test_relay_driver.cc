@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -42,7 +43,13 @@ public:
         return true;
     }
     void CancelTimer() override { events.emplace_back("CANCEL_TIMER"); }
-    void EnterCritical() override {}
+    void EnterCritical() override {
+        if (before_next_critical) {
+            auto hook = std::move(before_next_critical);
+            before_next_critical = {};
+            hook();
+        }
+    }
     void ExitCritical() override {}
 
     void Fire(size_t index) {
@@ -55,6 +62,7 @@ public:
     smv::RelayTimerPhase fail_phase = static_cast<smv::RelayTimerPhase>(0xff);
     std::vector<std::string> events;
     std::vector<TimerRecord> timers;
+    std::function<void()> before_next_critical;
 };
 
 smv::ReservationToken Token(uint64_t id = 7, uint8_t channel = 5) {
@@ -90,6 +98,23 @@ int main() {
                   "pulse expiry did not raise signal first and complete once");
             platform.Fire(2);
             Check(driver.IsIdle(), "guard expiry did not return to idle");
+            ++count;
+        }
+        {
+            FakePlatform platform;
+            smv::RelayDriver driver(platform);
+            driver.Initialize();
+            std::vector<smv::RelayOutcome> outcomes;
+            driver.Start(Token(),
+                         [&](uint64_t, smv::RelayOutcome outcome) { outcomes.push_back(outcome); });
+            platform.before_next_critical = [&platform]() { platform.Fire(0); };
+            driver.Cancel();
+            Check(outcomes == std::vector<smv::RelayOutcome>{smv::RelayOutcome::kUncertain} &&
+                      driver.state() == smv::RelayState::kGuardGap &&
+                      platform.events[platform.events.size() - 3] == "SIG_HIGH" &&
+                      platform.events[platform.events.size() - 2] == "CANCEL_TIMER" &&
+                      platform.events.back() == "ARM_100MS",
+                  "cancel racing settle expiry left relay energized");
             ++count;
         }
         {

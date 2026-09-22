@@ -64,6 +64,7 @@ private:
 
     static std::vector<uint8_t> Encode(const State& state);
     static DecodeResult Decode(std::span<const uint8_t> bytes, State& state);
+    bool WriteVerified(std::string_view key, const State& next, State& decoded);
     InventoryResult Commit(const State& next);
     InventoryResult Fail(InventoryResult result);
     void Publish();

@@ -147,13 +147,9 @@ void RelayDriver::Dispatch(RelayOutcome outcome) {
 }
 
 void RelayDriver::Cancel() {
+    platform_.EnterCritical();
     const RelayState current = state_.load(std::memory_order_acquire);
     if (current == RelayState::kSettling) {
-        platform_.EnterCritical();
-        if (state_.load(std::memory_order_acquire) != RelayState::kSettling) {
-            platform_.ExitCritical();
-            return;
-        }
         platform_.SetSignalHigh();
         state_.store(RelayState::kIdle, std::memory_order_release);
         platform_.ExitCritical();
@@ -162,17 +158,13 @@ void RelayDriver::Cancel() {
         return;
     }
     if (current == RelayState::kPulsing) {
-        platform_.EnterCritical();
-        if (state_.load(std::memory_order_acquire) != RelayState::kPulsing) {
-            platform_.ExitCritical();
-            return;
-        }
         platform_.SetSignalHigh();
         state_.store(RelayState::kGuardGap, std::memory_order_release);
+        const uint32_t generation = generation_.load(std::memory_order_acquire);
         platform_.ExitCritical();
         platform_.CancelTimer();
-        if (!platform_.ArmOneShot(kGuardMs, generation_.load(std::memory_order_acquire),
-                                  RelayTimerPhase::kGuard, &TimerThunk, this)) {
+        if (!platform_.ArmOneShot(kGuardMs, generation, RelayTimerPhase::kGuard, &TimerThunk,
+                                  this)) {
             platform_.SetSignalHigh();
             state_.store(RelayState::kFault, std::memory_order_release);
         }
@@ -180,5 +172,6 @@ void RelayDriver::Cancel() {
         return;
     }
     platform_.SetSignalHigh();
+    platform_.ExitCritical();
 }
 }  // namespace smv

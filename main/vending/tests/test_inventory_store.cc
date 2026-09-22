@@ -81,6 +81,11 @@ int main() {
                   provisioned.Snapshot().counts[0] == 2,
               "valid provisioning failed");
         ++count;
+        smv::InventoryStore first_provision_reboot(provision_backend);
+        Check(first_provision_reboot.Load() == smv::InventoryResult::kOk &&
+                  first_provision_reboot.Snapshot().counts[0] == 2,
+              "first technician provisioning did not survive reboot");
+        ++count;
         Check(provisioned.Provision(Counts(3)) == smv::InventoryResult::kOk,
               "second provisioning failed");
         smv::InventoryStore newest(provision_backend);
@@ -92,9 +97,8 @@ int main() {
         MemoryInventoryBackend fallback_backend = provision_backend;
         fallback_backend.blobs["snapshot_b"].back() ^= 1;
         smv::InventoryStore fallback(fallback_backend);
-        Check(fallback.Load() == smv::InventoryResult::kOk && fallback.Snapshot().revision == 1 &&
-                  fallback.Snapshot().counts[0] == 2,
-              "one corrupt slot did not fall back to the valid slot");
+        Check(fallback.Load() == smv::InventoryResult::kCorrupt && !fallback.Snapshot().available,
+              "one corrupt slot rolled inventory back instead of locking");
         ++count;
 
         MemoryInventoryBackend ambiguous_backend = provision_backend;
@@ -190,6 +194,14 @@ int main() {
         Check(uncertain_token.has_value() &&
                   uncertain_reboot.Load() == smv::InventoryResult::kPendingTransaction,
               "uncertain relay outcome was auto-cleared");
+        ++count;
+
+        MemoryInventoryBackend corrupt_pending_backend = uncertain_backend;
+        corrupt_pending_backend.blobs["snapshot_b"].back() ^= 1;
+        smv::InventoryStore corrupt_pending_reboot(corrupt_pending_backend);
+        Check(corrupt_pending_reboot.Load() == smv::InventoryResult::kCorrupt &&
+                  !corrupt_pending_reboot.Snapshot().available,
+              "corrupt newest pending snapshot rolled back to pre-reservation stock");
         ++count;
 
         std::cout << "HOST_INVENTORY_STORE_TESTS_PASS=" << count << "\n";
