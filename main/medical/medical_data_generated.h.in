@@ -5,4 +5,8 @@ namespace smv {
 inline constexpr char kMedicalRulesJson[] = R"SMVMED(@SMV_RULES_JSON@)SMVMED";
 inline constexpr char kMedicineCatalogJson[] = R"SMVMED(@SMV_CATALOG_JSON@)SMVMED";
 inline constexpr char kPharmacistReviewJson[] = R"SMVMED(@SMV_REVIEW_JSON@)SMVMED";
+inline constexpr char kMedicalRulesSha256[] = "@SMV_RULES_SHA256@";
+inline constexpr char kMedicineCatalogSha256[] = "@SMV_CATALOG_SHA256@";
+inline constexpr char kMedicalRulesVersion[] = "@SMV_RULES_VERSION@";
+inline constexpr char kMedicineCatalogVersion[] = "@SMV_CATALOG_VERSION@";
 }

@@ -12,3 +12,7 @@ trap 'rm -rf "$TMP_DIR"' EXIT
   -o "$TMP_DIR/medical_advisor_test"
 "$TMP_DIR/medical_advisor_test" data/medical_rules.json data/medicines.json \
   data/pharmacist_review.json
+"$CXX" "${FLAGS[@]}" main/medical/pharmacist_review_verifier.cc \
+  main/medical/tests/test_pharmacist_review_verifier.cc -Wl,-l:libcjson.so.1 \
+  -o "$TMP_DIR/pharmacist_review_test"
+"$TMP_DIR/pharmacist_review_test" data/pharmacist_review.json

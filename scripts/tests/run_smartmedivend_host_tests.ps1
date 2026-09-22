@@ -20,6 +20,7 @@ $compiler = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\T
 $cjsonDir = "C:\Espressif\frameworks\esp-idf-v5.5.5\components\json\cJSON"
 $cjsonObject = Join-Path $buildDir "cjson.obj"
 $medicalExe = Join-Path $buildDir "medical_advisor_test.exe"
+$reviewExe = Join-Path $buildDir "pharmacist_review_test.exe"
 
 Push-Location $repo
 try {
@@ -34,13 +35,26 @@ try {
         "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
         "/Imain", "/Imain/medical", "/I$cjsonDir",
         "main/medical/medical_advisor.cc", "main/medical/tests/test_medical_advisor.cc",
-        $cjsonObject, "/Fe:$medicalExe"
+        $cjsonObject, "/Fo$buildDir\", "/Fe:$medicalExe"
     )
     & $compiler @medicalArgs
     if ($LASTEXITCODE -ne 0) { throw "medical test compilation failed: $LASTEXITCODE" }
 
     & $medicalExe data/medical_rules.json data/medicines.json data/pharmacist_review.json
     if ($LASTEXITCODE -ne 0) { throw "medical tests failed: $LASTEXITCODE" }
+
+    $reviewArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/medical", "/I$cjsonDir",
+        "main/medical/pharmacist_review_verifier.cc",
+        "main/medical/tests/test_pharmacist_review_verifier.cc",
+        $cjsonObject, "/Fo$buildDir\", "/Fe:$reviewExe"
+    )
+    & $compiler @reviewArgs
+    if ($LASTEXITCODE -ne 0) { throw "review test compilation failed: $LASTEXITCODE" }
+
+    & $reviewExe data/pharmacist_review.json
+    if ($LASTEXITCODE -ne 0) { throw "review tests failed: $LASTEXITCODE" }
 } finally {
     Pop-Location
 }
