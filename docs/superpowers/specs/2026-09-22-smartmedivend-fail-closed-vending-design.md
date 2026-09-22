@@ -149,7 +149,7 @@ Initialization raises `GPIO17` HIGH before enabling it as an output, then config
 1. Verify the persisted reservation token, idle state, and transaction generation, then drive the signal HIGH.
 2. Set S0-S3 to the selected channel.
 3. Start a one-shot 10 ms settle timer and return immediately.
-4. On expiry, revalidate the driver's transaction generation, drive `GPIO17` LOW, and start a one-shot 500 ms timer.
+4. On expiry, revalidate the driver's transaction generation and arm the one-shot 500 ms shutoff timer. Only after the shutoff timer is confirmed armed may the driver pull `GPIO17` LOW. If arming fails, the signal stays HIGH and the transaction is reported not started.
 5. On expiry, drive `GPIO17` HIGH as the first callback action, mark the command `COMMAND_SENT_UNVERIFIED`, and schedule completion work on the application task.
 6. Start a one-shot 100 ms all-off guard timer before accepting another transaction.
 
