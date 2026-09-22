@@ -37,6 +37,7 @@ int cJSON_IsArray(const cJSON*);
 int cJSON_IsObject(const cJSON*);
 int cJSON_IsNumber(const cJSON*);
 int cJSON_IsBool(const cJSON*);
+int cJSON_IsNull(const cJSON*);
 int cJSON_IsTrue(const cJSON*);
 #define cJSON_ArrayForEach(element,array) for ((element) = ((array) != NULL ? (array)->child : NULL); (element) != NULL; (element) = (element)->next)
 #ifdef __cplusplus

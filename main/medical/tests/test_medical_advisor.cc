@@ -79,6 +79,17 @@ int main(int argc, char** argv) {
             s.replace(pos, from.size(), to);
             return s;
         };
+        // Synthetic expected=true verifies the global mismatch policy (test-only).
+        {
+            std::string changed_rules = rules;
+            const auto key = changed_rules.find("\"id\": \"redflag_breathing\"");
+            if (key == std::string::npos) throw std::runtime_error("missing first global check");
+            const auto expected = changed_rules.find("\"expected\": false", key);
+            if (expected == std::string::npos) throw std::runtime_error("missing expected=false");
+            changed_rules.replace(expected, std::strlen("\"expected\": false"), "\"expected\": true");
+            smv::MedicalAdvisor changed(changed_rules.c_str(), catalog.c_str(), review.c_str());
+            Expect(changed, Snapshot(""), "REFER", "GLOBAL_SAFETY_CHECK_MISMATCH"); ++n;
+        }
         test(ReplaceOnce(Snapshot(""), "\"headache_sudden\":false", "\"headache_sudden\":true"), "REFER", "INTERVIEW_DANGER_OR_CONTRAINDICATION");
         test(ReplaceOnce(Snapshot(""), "\"headache_vomit\":false", "\"headache_vomit\":true"), "REFER", "INTERVIEW_DANGER_OR_CONTRAINDICATION");
         test(ReplaceOnce(Snapshot(""), "\"headache_vomit\":false", "\"headache_vomit\":null"), "DENY", "INVALID_SCREENING_ANSWERS");
@@ -163,7 +174,13 @@ int main(int argc, char** argv) {
                 cJSON_AddBoolToObject(answers,id->valuestring,cJSON_IsTrue(expected));
             }
             std::unique_ptr<char, decltype(&cJSON_free)> complete(cJSON_PrintUnformatted(doc.get()), &cJSON_free);
-            Expect(a, complete.get(), "PROVISIONAL_OPTIONS", "PHARMACIST_REVIEW_AND_STOCK_VERIFICATION_REQUIRED");
+            if (std::strcmp(profile->string, "acute_watery_diarrhoea") == 0) {
+                // The catalog has TWO eligible medicines for this same symptom;
+                // do not choose the first rule just because it appears first.
+                Expect(a, complete.get(), "REFER", "MULTIPLE_OPTIONS_REQUIRE_HUMAN_REVIEW");
+            } else {
+                Expect(a, complete.get(), "PROVISIONAL_OPTIONS", "PHARMACIST_REVIEW_AND_STOCK_VERIFICATION_REQUIRED");
+            }
             ++n; ++profile_count;
         }
         if (profile_count!=15) throw std::runtime_error("missing symptom interview profiles");

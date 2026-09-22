@@ -352,9 +352,26 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
         const char* id = Str(Get(check, "id"));
         if (!id || !Str(Get(check, "question_vi")) || !cJSON_IsBool(Get(check, "expected")))
             return Error("DENY", "INVALID_INTERVIEW_CONFIG");
-        if (!Get(answers, id)) {
+        const cJSON* answer = Get(answers, id);
+        if (!answer) {
             Put(out.get(), "reason", "UNANSWERED_SAFETY_QUESTION");
             NextQuestion(out.get(), check);
+            return Serialize(out.get());
+        }
+        // Check the entire configured global screening contract, not just
+        // positive red flags. Do not silently accept contradictory answers.
+        if (cJSON_IsTrue(answer) != cJSON_IsTrue(Get(check, "expected"))) {
+            const char* mismatch = Str(Get(check, "on_mismatch"));
+            if (!mismatch || (std::strcmp(mismatch, "REFER") != 0 &&
+                              std::strcmp(mismatch, "CLARIFY") != 0))
+                return Error("DENY", "INVALID_INTERVIEW_CONFIG");
+            if (std::strcmp(mismatch, "REFER") == 0) {
+                Put(out.get(), "status", "REFER");
+                Put(out.get(), "reason", "GLOBAL_SAFETY_CHECK_MISMATCH");
+            } else {
+                Put(out.get(), "reason", "GLOBAL_CHECK_NEEDS_CLARIFICATION");
+                NextQuestion(out.get(), check);
+            }
             return Serialize(out.get());
         }
     }
@@ -427,6 +444,7 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
     // No pharmacist sign-off and no independent inventory reconciliation: advisory only.
     cJSON* options = cJSON_AddArrayToObject(out.get(), "provisional_options");
     int count = 0;
+    int eligible_count = 0;
     bool referred = false;
     const cJSON* rule = nullptr;
     cJSON_ArrayForEach(rule, Get(rules.get(), "medicine_rules")) {
@@ -453,13 +471,18 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
         // initial_stock is a catalogue snapshot, NOT measured real stock.
         const auto* initial = Get(main, "initial_stock");
         if (!cJSON_IsNumber(initial) || initial->valueint <= 0) selected = backup;
+        if (!selected) continue;
         initial = Get(selected, "initial_stock");
-        if (!selected || !cJSON_IsNumber(initial) || initial->valueint <= 0) continue;
+        if (!cJSON_IsNumber(initial) || initial->valueint <= 0) continue;
         const char* name = Str(Get(selected, "name"));
         const char* strength = Str(Get(selected, "strength"));
         const char* ingredient = Str(Get(selected, "active_ingredient"));
         if (!name || !strength || !ingredient) return Error("DENY", "INVALID_CATALOG_ITEM");
-        if (count >= 1 || count >= max_meds->valueint) continue; // one-at-a-time: no interaction matrix certified
+        // More than one possible medicine must NOT silently default to the
+        // first rule in file order. Collect at most one *provisional* option,
+        // then fail closed if a second distinct candidate is encountered.
+        ++eligible_count;
+        if (count >= 1 || count >= max_meds->valueint) continue;
         auto* option = cJSON_CreateObject();
         Put(option, "canonical_id", canonical);
         Put(option, "name", name);
@@ -471,7 +494,11 @@ std::string MedicalAdvisor::Evaluate(const std::string& untrusted_json) const {
         cJSON_AddItemToArray(options, option);
         ++count;
     }
-    if (count > 0) {
+    if (eligible_count > 1) {
+        cJSON_DeleteItemFromObjectCaseSensitive(out.get(), "provisional_options");
+        Put(out.get(), "status", "REFER");
+        Put(out.get(), "reason", "MULTIPLE_OPTIONS_REQUIRE_HUMAN_REVIEW");
+    } else if (count > 0) {
         Put(out.get(), "status", "PROVISIONAL_OPTIONS");
         Put(out.get(), "reason", "PHARMACIST_REVIEW_AND_STOCK_VERIFICATION_REQUIRED");
     } else {
