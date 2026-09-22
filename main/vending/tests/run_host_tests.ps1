@@ -21,6 +21,7 @@ $cjsonDir = "C:\Espressif\frameworks\esp-idf-v5.5.5\components\json\cJSON"
 $cjsonObject = Join-Path $buildDir "cjson.obj"
 $routerExe = Join-Path $buildDir "catalog_router_test.exe"
 $inventoryExe = Join-Path $buildDir "inventory_store_test.exe"
+$coordinatorExe = Join-Path $buildDir "vending_coordinator_test.exe"
 
 Push-Location $repo
 try {
@@ -54,6 +55,21 @@ try {
 
     & $inventoryExe
     if ($LASTEXITCODE -ne 0) { throw "inventory tests failed: $LASTEXITCODE" }
+
+    $coordinatorArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/medical", "/Imain/vending", "/Imain/inventory", "/I$cjsonDir",
+        "main/medical/medical_advisor.cc", "main/medical/pharmacist_review_verifier.cc",
+        "main/vending/catalog_router.cc", "main/inventory/inventory_store.cc",
+        "main/vending/vend_guard.cc", "main/vending/vending_coordinator.cc",
+        "main/vending/tests/test_vending_coordinator.cc", $cjsonObject,
+        "/Fo$buildDir\", "/Fe:$coordinatorExe"
+    )
+    & $compiler @coordinatorArgs
+    if ($LASTEXITCODE -ne 0) { throw "coordinator test compilation failed: $LASTEXITCODE" }
+
+    & $coordinatorExe data/medical_rules.json data/medicines.json data/pharmacist_review.json
+    if ($LASTEXITCODE -ne 0) { throw "coordinator tests failed: $LASTEXITCODE" }
 } finally {
     Pop-Location
 }

@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <string>
 
 namespace smv {
@@ -42,5 +43,17 @@ struct ReservationToken {
     uint64_t transaction_id = 0;
     uint32_t reserved_revision = 0;
     uint8_t channel = kInvalidVendingChannel;
+};
+
+enum class RelayOutcome { kNotStartedCertain, kCommandSentUnverified, kUncertain };
+
+class RelayActuator {
+public:
+    using Completion = std::function<void(uint64_t, RelayOutcome)>;
+
+    virtual ~RelayActuator() = default;
+    virtual bool IsIdle() const = 0;
+    virtual bool Start(const ReservationToken& token, Completion completion) = 0;
+    virtual void Cancel() = 0;
 };
 }  // namespace smv
