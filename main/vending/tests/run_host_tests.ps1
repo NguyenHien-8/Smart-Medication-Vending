@@ -22,6 +22,7 @@ $cjsonObject = Join-Path $buildDir "cjson.obj"
 $routerExe = Join-Path $buildDir "catalog_router_test.exe"
 $inventoryExe = Join-Path $buildDir "inventory_store_test.exe"
 $coordinatorExe = Join-Path $buildDir "vending_coordinator_test.exe"
+$relayExe = Join-Path $buildDir "relay_driver_test.exe"
 
 Push-Location $repo
 try {
@@ -70,6 +71,18 @@ try {
 
     & $coordinatorExe data/medical_rules.json data/medicines.json data/pharmacist_review.json
     if ($LASTEXITCODE -ne 0) { throw "coordinator tests failed: $LASTEXITCODE" }
+
+    $relayArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/vending", "/Imain/boards/smartmedivend-s3",
+        "main/boards/smartmedivend-s3/relay_driver.cc", "main/vending/tests/test_relay_driver.cc",
+        "/Fo$buildDir\", "/Fe:$relayExe"
+    )
+    & $compiler @relayArgs
+    if ($LASTEXITCODE -ne 0) { throw "relay test compilation failed: $LASTEXITCODE" }
+
+    & $relayExe
+    if ($LASTEXITCODE -ne 0) { throw "relay tests failed: $LASTEXITCODE" }
 } finally {
     Pop-Location
 }

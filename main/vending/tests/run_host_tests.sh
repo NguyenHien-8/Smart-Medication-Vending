@@ -22,3 +22,6 @@ trap 'rm -rf "$TMP_DIR"' EXIT
   -Wl,-l:libcjson.so.1 -o "$TMP_DIR/vending_coordinator_test"
 "$TMP_DIR/vending_coordinator_test" data/medical_rules.json data/medicines.json \
   data/pharmacist_review.json
+"$CXX" "${FLAGS[@]}" main/boards/smartmedivend-s3/relay_driver.cc \
+  main/vending/tests/test_relay_driver.cc -o "$TMP_DIR/relay_driver_test"
+"$TMP_DIR/relay_driver_test"
