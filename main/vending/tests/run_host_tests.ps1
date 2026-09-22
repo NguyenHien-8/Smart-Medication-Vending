@@ -20,6 +20,7 @@ $compiler = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\T
 $cjsonDir = "C:\Espressif\frameworks\esp-idf-v5.5.5\components\json\cJSON"
 $cjsonObject = Join-Path $buildDir "cjson.obj"
 $routerExe = Join-Path $buildDir "catalog_router_test.exe"
+$inventoryExe = Join-Path $buildDir "inventory_store_test.exe"
 
 Push-Location $repo
 try {
@@ -41,6 +42,18 @@ try {
 
     & $routerExe data/medicines.json
     if ($LASTEXITCODE -ne 0) { throw "catalog tests failed: $LASTEXITCODE" }
+
+    $inventoryArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/vending", "/Imain/inventory",
+        "main/inventory/inventory_store.cc", "main/vending/tests/test_inventory_store.cc",
+        "/Fo$buildDir\", "/Fe:$inventoryExe"
+    )
+    & $compiler @inventoryArgs
+    if ($LASTEXITCODE -ne 0) { throw "inventory test compilation failed: $LASTEXITCODE" }
+
+    & $inventoryExe
+    if ($LASTEXITCODE -ne 0) { throw "inventory tests failed: $LASTEXITCODE" }
 } finally {
     Pop-Location
 }
