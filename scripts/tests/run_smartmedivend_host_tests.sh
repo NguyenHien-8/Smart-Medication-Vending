@@ -11,6 +11,10 @@ trap 'rm -rf "$TMP_DIR"' EXIT
   main/medical/tests/test_medical_policy_cache.cc -Wl,-l:libcjson.so.1 \
   -o "$TMP_DIR/medical_policy_cache_test"
 "$TMP_DIR/medical_policy_cache_test" data/medical_rules.json data/medicines.json
+"$CXX" "${FLAGS[@]}" main/medical/medical_policy_cache.cc \
+  main/medical/medical_intake_session.cc main/medical/tests/test_medical_intake_session.cc \
+  -Wl,-l:libcjson.so.1 -o "$TMP_DIR/medical_intake_session_test"
+"$TMP_DIR/medical_intake_session_test" data/medical_rules.json data/medicines.json
 "$CXX" "${FLAGS[@]}" main/medical/medical_advisor.cc \
   main/medical/tests/test_medical_advisor.cc -Wl,-l:libcjson.so.1 \
   -o "$TMP_DIR/medical_advisor_test"

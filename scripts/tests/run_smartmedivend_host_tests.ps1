@@ -22,6 +22,7 @@ $cjsonObject = Join-Path $buildDir "cjson.obj"
 $medicalExe = Join-Path $buildDir "medical_advisor_test.exe"
 $reviewExe = Join-Path $buildDir "pharmacist_review_test.exe"
 $policyExe = Join-Path $buildDir "medical_policy_cache_test.exe"
+$sessionExe = Join-Path $buildDir "medical_intake_session_test.exe"
 
 Push-Location $repo
 try {
@@ -43,6 +44,19 @@ try {
 
     & $policyExe data/medical_rules.json data/medicines.json
     if ($LASTEXITCODE -ne 0) { throw "medical policy cache tests failed: $LASTEXITCODE" }
+
+    $sessionArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/medical", "/I$cjsonDir",
+        "main/medical/medical_policy_cache.cc", "main/medical/medical_intake_session.cc",
+        "main/medical/tests/test_medical_intake_session.cc",
+        $cjsonObject, "/Fo$buildDir\", "/Fe:$sessionExe"
+    )
+    & $compiler @sessionArgs
+    if ($LASTEXITCODE -ne 0) { throw "medical intake session test compilation failed: $LASTEXITCODE" }
+
+    & $sessionExe data/medical_rules.json data/medicines.json
+    if ($LASTEXITCODE -ne 0) { throw "medical intake session tests failed: $LASTEXITCODE" }
 
     $medicalArgs = @(
         "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",

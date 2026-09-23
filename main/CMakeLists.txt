@@ -1098,6 +1098,7 @@ endif()
 if(CONFIG_BOARD_TYPE_SMARTMEDIVEND_S3)
     list(APPEND SOURCES
         "medical/medical_policy_cache.cc"
+        "medical/medical_intake_session.cc"
         "medical/medical_advisor.cc"
         "medical/pharmacist_review_verifier.cc"
         "vending/catalog_router.cc"
