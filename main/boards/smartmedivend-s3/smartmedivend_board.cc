@@ -256,6 +256,9 @@ private:
             "relay command, stock value, or dose.",
             PropertyList({Property("payload_json", kPropertyTypeString).SetMaxLength(4096)}),
             [this](const PropertyList& properties) -> ReturnValue {
+                if (!Application::GetInstance().IsTransportOperational())
+                    return std::string(
+                        R"({"status":"BLOCK","reason":"TRANSPORT_DISCONNECTED","vend_allowed":false})");
                 return coordinator_->EvaluateAndStage(
                     properties["payload_json"].value<std::string>(), MonotonicMs());
             });
@@ -282,7 +285,8 @@ private:
                     return;
                 }
                 const smv::ConfirmResult result =
-                    coordinator_->Confirm(now_ms, app.GetDeviceState() == kDeviceStateIdle);
+                    coordinator_->Confirm(now_ms, app.GetDeviceState() == kDeviceStateIdle &&
+                                                      app.IsTransportOperational());
                 if (display_ == nullptr)
                     return;
                 if (result == smv::ConfirmResult::kStarted) {

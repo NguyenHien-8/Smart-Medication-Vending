@@ -94,21 +94,41 @@ bool EspRelayPlatform::SelectChannel(uint8_t channel) {
 
 bool EspRelayPlatform::ArmOneShot(uint32_t delay_ms, uint32_t generation, RelayTimerPhase phase,
                                   TimerCallback callback, void* context) {
+    std::lock_guard<std::mutex> lock(timer_control_mutex_);
     TimerSlot& slot = SlotFor(phase);
     if (slot.handle == nullptr || delay_ms == 0 || callback == nullptr)
         return false;
-    if (esp_timer_is_active(slot.handle))
+    uint8_t idle = 0;
+    // Do not overwrite generation/callback data while an expired timer is
+    // queued or while the previous callback is still running.
+    if (!slot.lifecycle.compare_exchange_strong(idle, 1, std::memory_order_acq_rel))
         return false;
-    slot.generation.store(generation, std::memory_order_release);
+    if (esp_timer_is_active(slot.handle)) {
+        slot.lifecycle.store(3, std::memory_order_release);  // Inconsistent state: fail closed.
+        return false;
+    }
+    slot.generation.store(generation, std::memory_order_relaxed);
     slot.callback = callback;
     slot.callback_context = context;
-    return esp_timer_start_once(slot.handle, static_cast<uint64_t>(delay_ms) * 1000ULL) == ESP_OK;
+    if (esp_timer_start_once(slot.handle, static_cast<uint64_t>(delay_ms) * 1000ULL) != ESP_OK) {
+        slot.lifecycle.store(3, std::memory_order_release);  // No unsafe retry.
+        return false;
+    }
+    return true;
 }
 
 void EspRelayPlatform::CancelTimer() {
+    std::lock_guard<std::mutex> lock(timer_control_mutex_);
     for (TimerSlot* slot : {&settle_timer_, &pulse_timer_, &guard_timer_}) {
-        if (slot->handle != nullptr && esp_timer_is_active(slot->handle))
-            esp_timer_stop(slot->handle);
+        if (slot->handle == nullptr || slot->lifecycle.load(std::memory_order_acquire) != 1)
+            continue;
+        // Successful stop of an active timer guarantees it will not be queued
+        // later. An already-expired timer is inactive, but its old callback may
+        // still be queued: leave the lease held until TimerThunk exits.
+        if (esp_timer_stop(slot->handle) == ESP_OK) {
+            uint8_t armed = 1;
+            slot->lifecycle.compare_exchange_strong(armed, 0, std::memory_order_acq_rel);
+        }
     }
 }
 
@@ -119,11 +139,17 @@ void EspRelayPlatform::ExitCritical() { portEXIT_CRITICAL(&critical_mux_); }
 void EspRelayPlatform::TimerThunk(void* context) { OnTimer(*static_cast<TimerSlot*>(context)); }
 
 void EspRelayPlatform::OnTimer(TimerSlot& slot) {
-    TimerCallback callback = slot.callback;
-    if (callback != nullptr) {
-        callback(slot.callback_context, slot.generation.load(std::memory_order_acquire),
-                 slot.phase);
-    }
+    uint8_t armed = 1;
+    if (!slot.lifecycle.compare_exchange_strong(armed, 2, std::memory_order_acq_rel))
+        return;  // Stopped timer or permanently faulted slot.
+    const TimerCallback callback = slot.callback;
+    void* const context = slot.callback_context;
+    const uint32_t generation = slot.generation.load(std::memory_order_relaxed);
+    if (callback != nullptr)
+        callback(context, generation, slot.phase);
+    // Last operation: a new timer of this phase cannot acquire the lease
+    // until the previous callback has completely returned to this thunk.
+    slot.lifecycle.store(0, std::memory_order_release);
 }
 
 EspRelayPlatform::TimerSlot& EspRelayPlatform::SlotFor(RelayTimerPhase phase) {

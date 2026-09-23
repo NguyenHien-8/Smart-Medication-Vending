@@ -14,7 +14,7 @@ foreach ($line in $environment) {
     }
 }
 
-$buildDir = Join-Path $repo ".superpowers/sdd/2026-09-22-smartmedivend-fail-closed-vending/vending-host-tests"
+$buildDir = Join-Path $repo ".superpowers/sdd/2026-09-23-smartmedivend-two-stage-medical-flow/vending-host-tests"
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 $compiler = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe"
 $cjsonDir = "C:\Espressif\frameworks\esp-idf-v5.5.5\components\json\cJSON"
@@ -23,6 +23,8 @@ $routerExe = Join-Path $buildDir "catalog_router_test.exe"
 $inventoryExe = Join-Path $buildDir "inventory_store_test.exe"
 $coordinatorExe = Join-Path $buildDir "vending_coordinator_test.exe"
 $relayExe = Join-Path $buildDir "relay_driver_test.exe"
+$espRelayExe = Join-Path $buildDir "esp_relay_platform_test.exe"
+$transportExe = Join-Path $buildDir "transport_health_gate_test.exe"
 
 Push-Location $repo
 try {
@@ -83,6 +85,32 @@ try {
 
     & $relayExe
     if ($LASTEXITCODE -ne 0) { throw "relay tests failed: $LASTEXITCODE" }
+
+    $espRelayArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/vending", "/Imain/boards/smartmedivend-s3",
+        "/Imain/vending/tests/esp_host_include",
+        "main/boards/smartmedivend-s3/esp_relay_platform.cc",
+        "main/vending/tests/test_esp_relay_platform.cc",
+        "/Fo$buildDir\", "/Fe:$espRelayExe"
+    )
+    & $compiler @espRelayArgs
+    if ($LASTEXITCODE -ne 0) { throw "ESP relay platform test compilation failed: $LASTEXITCODE" }
+
+    & $espRelayExe
+    if ($LASTEXITCODE -ne 0) { throw "ESP relay platform tests failed: $LASTEXITCODE" }
+
+    $transportArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/vending",
+        "main/vending/tests/test_transport_health_gate.cc",
+        "/Fo$buildDir\", "/Fe:$transportExe"
+    )
+    & $compiler @transportArgs
+    if ($LASTEXITCODE -ne 0) { throw "transport health gate test compilation failed: $LASTEXITCODE" }
+
+    & $transportExe
+    if ($LASTEXITCODE -ne 0) { throw "transport health gate tests failed: $LASTEXITCODE" }
 } finally {
     Pop-Location
 }

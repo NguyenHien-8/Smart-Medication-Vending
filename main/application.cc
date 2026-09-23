@@ -115,6 +115,7 @@ void Application::Initialize() {
 
         switch (event) {
             case NetworkEvent::Scanning:
+                ReportTransportLoss();
                 display->ShowNotification(Lang::Strings::SCANNING_WIFI, 30000);
                 xEventGroupSetBits(event_group_, MAIN_EVENT_NETWORK_DISCONNECTED);
                 break;
@@ -139,6 +140,7 @@ void Application::Initialize() {
                 break;
             }
             case NetworkEvent::Disconnected:
+                ReportTransportLoss();
                 xEventGroupSetBits(event_group_, MAIN_EVENT_NETWORK_DISCONNECTED);
                 break;
             case NetworkEvent::WifiConfigModeEnter:
@@ -185,7 +187,7 @@ void Application::Run() {
         MAIN_EVENT_CLOCK_TICK | MAIN_EVENT_ERROR | MAIN_EVENT_NETWORK_CONNECTED |
         MAIN_EVENT_NETWORK_DISCONNECTED | MAIN_EVENT_TOGGLE_CHAT | MAIN_EVENT_START_LISTENING |
         MAIN_EVENT_STOP_LISTENING | MAIN_EVENT_ACTIVATION_DONE | MAIN_EVENT_STATE_CHANGED |
-        MAIN_EVENT_PLAYBACK_DRAINED;
+        MAIN_EVENT_PLAYBACK_DRAINED | MAIN_EVENT_TRANSPORT_DISCONNECTED;
 
     while (true) {
         auto bits = xEventGroupWaitBits(event_group_, ALL_EVENTS, pdTRUE, pdFALSE, portMAX_DELAY);
@@ -205,6 +207,13 @@ void Application::Run() {
 
         if (bits & MAIN_EVENT_NETWORK_DISCONNECTED) {
             HandleNetworkDisconnectedEvent();
+        }
+
+        if (bits & MAIN_EVENT_TRANSPORT_DISCONNECTED) {
+            // This event precedes scheduled button/MCP callbacks in the main task.
+            // Do not call protocol_->CloseAudioChannel(): MQTT broker reconnects
+            // without a Wi-Fi event and a premature Close can race reconnection.
+            Board::GetInstance().OnNetworkDisconnected();
         }
 
         if (bits & MAIN_EVENT_ACTIVATION_DONE) {
@@ -300,8 +309,7 @@ void Application::Run() {
 
 void Application::HandleVadChange(bool speaking, uint32_t generation) {
     if (generation != listening_generation_.load(std::memory_order_relaxed) ||
-        GetDeviceState() != kDeviceStateListening ||
-        !audio_service_.IsAudioProcessorRunning()) {
+        GetDeviceState() != kDeviceStateListening || !audio_service_.IsAudioProcessorRunning()) {
         return;
     }
 
@@ -309,8 +317,7 @@ void Application::HandleVadChange(bool speaking, uint32_t generation) {
     led->OnStateChanged();
 
 #if defined(CONFIG_USE_LOCAL_VAD_ENDPOINT) && CONFIG_USE_LOCAL_VAD_ENDPOINT
-    if (listening_mode_ == kListeningModeAutoStop &&
-        local_endpoint_recovery_.CanSendLocalStop() &&
+    if (listening_mode_ == kListeningModeAutoStop && local_endpoint_recovery_.CanSendLocalStop() &&
         vad_endpoint_.OnVadState(speaking)) {
         if (protocol_ && protocol_->IsAudioChannelOpened()) {
             ESP_LOGI(TAG, "Local VAD endpoint: %d ms silence", CONFIG_LOCAL_VAD_SILENCE_MS);
@@ -320,6 +327,28 @@ void Application::HandleVadChange(bool speaking, uint32_t generation) {
         }
     }
 #endif
+}
+
+void Application::ReportTransportLoss() {
+    // The atomic gate closes immediately on the transport callback's task.
+    // Relay/coordinator cancellation is marshalled to the application task.
+    transport_health_.MarkLost();
+    xEventGroupSetBits(event_group_, MAIN_EVENT_TRANSPORT_DISCONNECTED);
+}
+
+void Application::ScheduleTransportReady(bool require_audio_channel) {
+    const uint32_t observed = transport_health_.Snapshot();
+    Schedule([this, observed, require_audio_channel]() {
+        // A queued server-hello callback must not reopen the gate after a
+        // WebSocket disconnect without a newer, live audio-channel handshake.
+        if (require_audio_channel && (!protocol_ || !protocol_->IsAudioChannelOpened()))
+            return;
+        // Cancel any stale candidate before reopening. A newer loss increments
+        // the epoch and makes this recovery callback a no-op.
+        if ((observed & 1u) != 0 && observed == transport_health_.Snapshot())
+            Board::GetInstance().OnNetworkDisconnected();
+        transport_health_.RestoreIfUnchanged(observed);
+    });
 }
 
 void Application::HandleNetworkConnectedEvent() {
@@ -582,9 +611,15 @@ void Application::InitializeProtocol() {
         protocol_ = std::make_unique<MqttProtocol>();
     }
 
-    protocol_->OnConnected([this]() { DismissAlert(); });
+    protocol_->OnConnected([this]() {
+        ScheduleTransportReady(false);
+        Schedule([this]() { DismissAlert(); });
+    });
+
+    protocol_->OnDisconnected([this]() { ReportTransportLoss(); });
 
     protocol_->OnNetworkError([this](const std::string& message) {
+        ReportTransportLoss();
         last_error_message_ = message;
         xEventGroupSetBits(event_group_, MAIN_EVENT_ERROR);
     });
@@ -596,6 +631,9 @@ void Application::InitializeProtocol() {
     });
 
     protocol_->OnAudioChannelOpened([this, codec, &board]() {
+        // WebSocket connects lazily per conversation; an established server
+        // hello is the recovery point. Cancel the old candidate first.
+        ScheduleTransportReady(true);
         board.SetPowerSaveLevel(PowerSaveLevel::PERFORMANCE);
         if (protocol_->server_sample_rate() != codec->output_sample_rate()) {
             ESP_LOGW(TAG,
@@ -748,10 +786,9 @@ void Application::InitializeProtocol() {
             if (cJSON_IsObject(payload)) {
                 CJsonStringUniquePtr payload_json(cJSON_PrintUnformatted(payload));
                 if (payload_json) {
-                    Schedule(
-                        [this, display, payload_str = std::string(payload_json.get())]() {
-                            display->SetChatMessage("system", payload_str.c_str());
-                        });
+                    Schedule([this, display, payload_str = std::string(payload_json.get())]() {
+                        display->SetChatMessage("system", payload_str.c_str());
+                    });
                 }
             } else {
                 ESP_LOGW(TAG, "Invalid custom message format: missing payload");

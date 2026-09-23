@@ -73,7 +73,9 @@ bool WebsocketProtocol::IsAudioChannelOpened() const {
 
 void WebsocketProtocol::CloseAudioChannel(bool send_goodbye) {
     (void)send_goodbye;  // Websocket doesn't need to send goodbye message
+    intentional_close_.store(true, std::memory_order_release);
     websocket_.reset();
+    intentional_close_.store(false, std::memory_order_release);
 }
 
 bool WebsocketProtocol::OpenAudioChannel() {
@@ -160,6 +162,10 @@ bool WebsocketProtocol::OpenAudioChannel() {
 
     websocket_->OnDisconnected([this]() {
         ESP_LOGI(TAG, "Websocket disconnected");
+        // Physical network may still be connected: notify the application about
+        // the transport loss, not just the conversation state transition.
+        if (!intentional_close_.load(std::memory_order_acquire) && on_disconnected_ != nullptr)
+            on_disconnected_();
         if (on_audio_channel_closed_ != nullptr) {
             on_audio_channel_closed_();
         }

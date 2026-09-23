@@ -58,6 +58,125 @@ bool HasOnlyFields(const cJSON* object, std::initializer_list<std::string_view> 
     return true;
 }
 
+// Reject malformed/empty safety predicates rather than accepting an ID-only rule.
+// This checks the wire schema; it does not replace the pharmacist's content review.
+bool SafetyEnums(const cJSON* array, std::set<std::string>& values, bool required) {
+    if (array == nullptr)
+        return !required;
+    if (!cJSON_IsArray(array) || cJSON_GetArraySize(array) < 1 || cJSON_GetArraySize(array) > 64)
+        return false;
+    const cJSON* entry = nullptr;
+    cJSON_ArrayForEach (entry, array) {
+        if (!cJSON_IsString(entry) || entry->valuestring == nullptr)
+            return false;
+        const std::string_view name(entry->valuestring);
+        if (name.empty() || name.size() > 64 ||
+            !std::all_of(name.begin(), name.end(),
+                         [](char c) {
+                             return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
+                         }) ||
+            !values.insert(std::string(name)).second)
+            return false;
+    }
+    return true;
+}
+
+bool ValidateRule(const cJSON* rule) {
+    if (!cJSON_IsObject(rule) || !HasOnlyFields(rule, {"canonical_id", "symptoms", "refer_if",
+                                                       "exclude_if", "minimum_age_years"}))
+        return false;
+    std::set<std::string> symptoms, referral, exclusions;
+    if (!SafetyEnums(Get(rule, "symptoms"), symptoms, true) ||
+        !SafetyEnums(Get(rule, "refer_if"), referral, false) ||
+        !SafetyEnums(Get(rule, "exclude_if"), exclusions, false) ||
+        (referral.empty() && exclusions.empty()))
+        return false;
+    for (const auto& flag : referral)
+        if (exclusions.count(flag))
+            return false;
+    if (const cJSON* age = Get(rule, "minimum_age_years")) {
+        int minimum_age = 0;
+        if (!ExactInteger(age, 16, 120, minimum_age))
+            return false;
+    }
+    return true;
+}
+
+bool ValidateRulesEnvelope(const cJSON* root) {
+    if (!HasOnlyFields(
+            root, {"schema_version", "rules_version", "status", "scope", "global_required_fields",
+                   "global_danger_signs", "medicine_rules", "sources", "interview"}))
+        return false;
+    const cJSON* scope = Get(root, "scope");
+    if (!cJSON_IsObject(scope) ||
+        !HasOnlyFields(scope, {"minimum_age_years", "pregnancy_or_breastfeeding_supported",
+                               "missing_data_policy", "maximum_medicines_per_transaction",
+                               "maximum_blisters_per_medicine", "diagnosis_claims_allowed"}))
+        return false;
+    int age = 0, max_meds = 0, max_blisters = 0;
+    if (!ExactInteger(Get(scope, "minimum_age_years"), 16, 120, age) ||
+        !ExactInteger(Get(scope, "maximum_medicines_per_transaction"), 1, 3, max_meds) ||
+        !ExactInteger(Get(scope, "maximum_blisters_per_medicine"), 1, 1, max_blisters) ||
+        (!cJSON_IsBool(Get(scope, "pregnancy_or_breastfeeding_supported")) ||
+         cJSON_IsTrue(Get(scope, "pregnancy_or_breastfeeding_supported"))) ||
+        (!cJSON_IsBool(Get(scope, "diagnosis_claims_allowed")) ||
+         cJSON_IsTrue(Get(scope, "diagnosis_claims_allowed"))) ||
+        !cJSON_IsString(Get(scope, "missing_data_policy")) ||
+        std::strcmp(Get(scope, "missing_data_policy")->valuestring,
+                    "NEED_MORE_INFO_THEN_NO_VEND") != 0)
+        return false;
+    std::set<std::string> required, danger;
+    if (!SafetyEnums(Get(root, "global_required_fields"), required, true) ||
+        required != std::set<std::string>{"age_years", "weight_kg", "pregnancy_or_breastfeeding",
+                                          "symptoms", "duration_hours", "danger_signs",
+                                          "conditions", "current_medicines", "drug_allergies"} ||
+        !SafetyEnums(Get(root, "global_danger_signs"), danger, true))
+        return false;
+    // The interview engine dereferences these fields; malformed question structures
+    // must not be interpreted as an empty/fulfilled safety interview.
+    const cJSON* interview = Get(root, "interview");
+    const cJSON* global_checks = Get(interview, "global_checks");
+    const cJSON* symptom_checks = Get(interview, "symptom_checks");
+    int interview_version = 0;
+    if (!cJSON_IsObject(interview) ||
+        !HasOnlyFields(interview, {"version", "global_checks", "symptom_checks", "protocol"}) ||
+        !ExactInteger(Get(interview, "version"), 1, 1, interview_version) ||
+        !NonEmptyText(Get(interview, "protocol"), 2048) || !cJSON_IsArray(global_checks) ||
+        cJSON_GetArraySize(global_checks) < 1 || !cJSON_IsObject(symptom_checks))
+        return false;
+    std::set<std::string> check_ids;
+    const auto validate_checks = [&check_ids](const cJSON* checks) {
+        if (!cJSON_IsArray(checks) || cJSON_GetArraySize(checks) < 1 ||
+            cJSON_GetArraySize(checks) > 64)
+            return false;
+        const cJSON* check = nullptr;
+        cJSON_ArrayForEach (check, checks) {
+            std::string id;
+            const cJSON* expected = Get(check, "expected");
+            const cJSON* mismatch = Get(check, "on_mismatch");
+            if (!cJSON_IsObject(check) ||
+                !HasOnlyFields(check, {"id", "question_vi", "expected", "on_mismatch"}) ||
+                !BoundedText(Get(check, "id"), id) || !check_ids.insert(id).second ||
+                !NonEmptyText(Get(check, "question_vi"), 1024) || !cJSON_IsBool(expected) ||
+                !cJSON_IsString(mismatch) ||
+                (std::strcmp(mismatch->valuestring, "REFER") != 0 &&
+                 std::strcmp(mismatch->valuestring, "CLARIFY") != 0))
+                return false;
+        }
+        return true;
+    };
+    if (!validate_checks(global_checks))
+        return false;
+    const cJSON* profile = nullptr;
+    std::set<std::string> profile_symptoms;
+    cJSON_ArrayForEach (profile, symptom_checks) {
+        if (!profile->string || !profile_symptoms.insert(profile->string).second ||
+            !validate_checks(profile))
+            return false;
+    }
+    return !profile_symptoms.empty();
+}
+
 bool HasUnsafeControlField(const cJSON* object) {
     return Get(object, "enabled") != nullptr || Get(object, "approved") != nullptr ||
            Get(object, "expires_at") != nullptr || Get(object, "expiry") != nullptr;
@@ -191,7 +310,7 @@ bool CatalogRouter::Parse(std::string_view catalog_json, std::string_view rules_
         cJSON_ParseWithLengthOpts(rules_text.c_str(), rules_text.size() + 1, nullptr, true),
         &cJSON_Delete);
     if (!rules_root || !cJSON_IsObject(rules_root.get()) ||
-        HasUnsafeControlField(rules_root.get())) {
+        HasUnsafeControlField(rules_root.get()) || !ValidateRulesEnvelope(rules_root.get())) {
         return Fail("INVALID_RULES_SCHEMA");
     }
     int rules_schema_version = 0;
@@ -209,10 +328,19 @@ bool CatalogRouter::Parse(std::string_view catalog_json, std::string_view rules_
     const cJSON* rule = nullptr;
     cJSON_ArrayForEach (rule, medicine_rules) {
         std::string canonical_id;
-        if (!cJSON_IsObject(rule) || HasUnsafeControlField(rule) ||
+        if (!ValidateRule(rule) || HasUnsafeControlField(rule) ||
             !BoundedText(Get(rule, "canonical_id"), canonical_id) ||
             !rule_identities.insert(canonical_id).second) {
             return Fail("INVALID_RULES_SCHEMA");
+        }
+    }
+    // A rule must not introduce a symptom without its mandatory interview.
+    const cJSON* profiles = Get(Get(rules_root.get(), "interview"), "symptom_checks");
+    cJSON_ArrayForEach (rule, medicine_rules) {
+        const cJSON* symptom = nullptr;
+        cJSON_ArrayForEach (symptom, Get(rule, "symptoms")) {
+            if (!Get(profiles, symptom->valuestring))
+                return Fail("MISSING_SYMPTOM_INTERVIEW");
         }
     }
     if (rule_identities != identities)

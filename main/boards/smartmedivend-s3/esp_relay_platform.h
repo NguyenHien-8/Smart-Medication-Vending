@@ -6,6 +6,7 @@
 #include <freertos/FreeRTOS.h>
 
 #include <atomic>
+#include <mutex>
 
 namespace smv {
 class EspRelayPlatform final : public RelayPlatform {
@@ -31,6 +32,9 @@ private:
         RelayTimerPhase phase;
         const char* name;
         esp_timer_handle_t handle = nullptr;
+        // 0=idle, 1=armed/queued, 2=inside callback, 3=faulted.
+        // An expired esp_timer may be inactive while its callback is queued.
+        std::atomic<uint8_t> lifecycle{0};
         std::atomic<uint32_t> generation{0};
         TimerCallback callback = nullptr;
         void* callback_context = nullptr;
@@ -45,6 +49,9 @@ private:
     TimerSlot settle_timer_;
     TimerSlot pulse_timer_;
     TimerSlot guard_timer_;
+    // Serialize start/stop calls across the main task and esp_timer task.
+    // Never held while executing the user callback.
+    std::mutex timer_control_mutex_;
     portMUX_TYPE critical_mux_ = portMUX_INITIALIZER_UNLOCKED;
 };
 }  // namespace smv

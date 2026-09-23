@@ -53,19 +53,36 @@ std::string Catalog(const std::string& slots) {
 std::string Rules(const std::string& canonical_ids) {
     std::istringstream input(canonical_ids);
     std::ostringstream rules;
-    rules << "{\"schema_version\":1,\"rules_version\":\"rules-test\","
-             "\"status\":\"PHARMACIST_REVIEW_REQUIRED\",\"medicine_rules\":[";
+    rules << R"({"schema_version":1,"rules_version":"rules-test",
+"status":"PHARMACIST_REVIEW_REQUIRED",
+"scope":{"minimum_age_years":16,"pregnancy_or_breastfeeding_supported":false,
+"missing_data_policy":"NEED_MORE_INFO_THEN_NO_VEND",
+"maximum_medicines_per_transaction":3,"maximum_blisters_per_medicine":1,
+"diagnosis_claims_allowed":false},
+"global_required_fields":["age_years","weight_kg","pregnancy_or_breastfeeding",
+"symptoms","duration_hours","danger_signs","conditions","current_medicines",
+"drug_allergies"],
+"global_danger_signs":["difficulty_breathing"],
+"interview":{"version":1,"protocol":"Ask questions",
+"global_checks":[{"id":"danger_check","question_vi":"Question?",
+"expected":false,"on_mismatch":"REFER"}],
+"symptom_checks":{"test_symptom":[{"id":"test_check","question_vi":"Question?",
+"expected":true,"on_mismatch":"CLARIFY"}]}},
+"medicine_rules":[)";
     std::string canonical_id;
     bool first = true;
     while (std::getline(input, canonical_id, ',')) {
         if (!first)
             rules << ',';
-        rules << "{\"canonical_id\":\"" << canonical_id << "\"}";
+        rules << "{\"canonical_id\":\"" << canonical_id
+              << "\",\"symptoms\":[\"test_symptom\"],"
+                 "\"exclude_if\":[\"test_exclusion\"]}";
         first = false;
     }
     rules << "]}";
     return rules.str();
 }
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -162,6 +179,63 @@ int main(int argc, char** argv) {
         Check(!repository_catalog.valid() &&
                   repository_catalog.validation_reason() == "BACKUP_IDENTITY_MISMATCH",
               "repository antacid mismatch was not locked");
+        ++count;
+
+        // The source rules are structurally sound independently of the
+        // deliberately mismatched backup strength in the repository catalog.
+        const std::string reviewed_fixture_catalog =
+            ReplaceOnce(Read(argv[1]), "cùng SKU channel 7", "ví dụ 200 mg + 200 mg");
+        const std::string repository_rules = Read(argv[2]);
+        const smv::CatalogRouter validated_repo(reviewed_fixture_catalog, repository_rules);
+        Check(validated_repo.valid(), "repository rules rejected after in-memory identity fix");
+        ++count;
+
+        const auto reject_rules = [&](const std::string& changed, const char* message) {
+            const smv::CatalogRouter invalid(Catalog(primary), changed);
+            Check(!invalid.valid() && invalid.validation_reason() == "INVALID_RULES_SCHEMA",
+                  message);
+            ++count;
+        };
+        reject_rules(
+            ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]", "\"exclude_if\":null"),
+            "null contraindications accepted");
+        reject_rules(ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]", "\"exclude_if\":[]"),
+                     "empty contraindications accepted");
+        reject_rules(
+            ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]", "\"exclude_if\":[123]"),
+            "non-string contraindication accepted");
+        reject_rules(ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]",
+                                 "\"exclude_if\":[\"test_exclusion\",\"test_exclusion\"]"),
+                     "duplicate contraindication accepted");
+        reject_rules(ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]",
+                                 "\"exclude_if\":[\"unsafe flag\"]"),
+                     "malformed contraindication identifier accepted");
+        reject_rules(ReplaceOnce(rules, "\"symptoms\":[\"test_symptom\"]", "\"symptoms\":[]"),
+                     "missing symptoms accepted");
+        reject_rules(
+            ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]", "\"not_a_check\":[]"),
+            "unknown rules field accepted");
+        reject_rules(ReplaceOnce(rules, "\"expected\":true", "\"expected\":\"yes\""),
+                     "malformed interview check accepted");
+        reject_rules(ReplaceOnce(rules, "\"global_danger_signs\":[\"difficulty_breathing\"]",
+                                 "\"global_danger_signs\":[]"),
+                     "empty global danger signs accepted");
+        reject_rules(ReplaceOnce(rules, "\"missing_data_policy\":\"NEED_MORE_INFO_THEN_NO_VEND\"",
+                                 "\"missing_data_policy\":\"ASSUME_SAFE\""),
+                     "unsafe missing-data policy accepted");
+        reject_rules(ReplaceOnce(rules, "\"pregnancy_or_breastfeeding_supported\":false",
+                                 "\"pregnancy_or_breastfeeding_supported\":true"),
+                     "unsupported pregnancy setting accepted");
+        reject_rules(
+            ReplaceOnce(rules, "\"exclude_if\":[\"test_exclusion\"]",
+                        "\"refer_if\":[\"test_exclusion\"],\"exclude_if\":[\"test_exclusion\"]"),
+            "conflicting refer/exclude predicates accepted");
+        const smv::CatalogRouter no_symptom_interview(
+            Catalog(primary), ReplaceOnce(rules, "\"symptoms\":[\"test_symptom\"]",
+                                          "\"symptoms\":[\"uninterviewed_symptom\"]"));
+        Check(!no_symptom_interview.valid() &&
+                  no_symptom_interview.validation_reason() == "MISSING_SYMPTOM_INTERVIEW",
+              "uninterviewed symptom accepted");
         ++count;
 
         const std::string bounded_catalog = Catalog(primary) + "trailing-untrusted-bytes";
