@@ -63,6 +63,8 @@ std::string Rules(const std::string& canonical_ids) {
 "symptoms","duration_hours","danger_signs","conditions","current_medicines",
 "drug_allergies"],
 "global_danger_signs":["difficulty_breathing"],
+"recognized_non_excluding_flags":["other_condition","other_current_medicine",
+"other_drug_allergy"],
 "interview":{"version":1,"protocol":"Ask questions",
 "global_checks":[{"id":"danger_check","question_vi":"Question?",
 "expected":false,"on_mismatch":"REFER"}],
@@ -176,18 +178,17 @@ int main(int argc, char** argv) {
         }
 
         const smv::CatalogRouter repository_catalog(Read(argv[1]), Read(argv[2]));
-        Check(!repository_catalog.valid() &&
-                  repository_catalog.validation_reason() == "BACKUP_IDENTITY_MISMATCH",
-              "repository antacid mismatch was not locked");
+        Check(repository_catalog.valid(), "repository exact backup mapping was rejected");
         ++count;
 
-        // The source rules are structurally sound independently of the
-        // deliberately mismatched backup strength in the repository catalog.
-        const std::string reviewed_fixture_catalog =
-            ReplaceOnce(Read(argv[1]), "cùng SKU channel 7", "ví dụ 200 mg + 200 mg");
         const std::string repository_rules = Read(argv[2]);
-        const smv::CatalogRouter validated_repo(reviewed_fixture_catalog, repository_rules);
-        Check(validated_repo.valid(), "repository rules rejected after in-memory identity fix");
+        const std::string mismatched_repository_catalog =
+            ReplaceOnce(Read(argv[1]), "\"strength\": \"ví dụ 200 mg + 200 mg\"",
+                        "\"strength\": \"không khớp kênh 7\"");
+        const smv::CatalogRouter mismatched_repo(mismatched_repository_catalog, repository_rules);
+        Check(!mismatched_repo.valid() &&
+                  mismatched_repo.validation_reason() == "BACKUP_IDENTITY_MISMATCH",
+              "synthetic antacid backup mismatch was accepted");
         ++count;
 
         const auto reject_rules = [&](const std::string& changed, const char* message) {

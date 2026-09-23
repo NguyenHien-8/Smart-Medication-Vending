@@ -124,9 +124,9 @@ struct Fixture {
             bool correct_catalog = true)
         : rules(Read(rules_path)),
           catalog(correct_catalog
-                      ? ReplaceOnce(Read(catalog_path), "\"strength\": \"cùng SKU channel 7\"",
-                                    "\"strength\": \"ví dụ 200 mg + 200 mg\"")
-                      : Read(catalog_path)),
+                      ? Read(catalog_path)
+                      : ReplaceOnce(Read(catalog_path), "\"strength\": \"ví dụ 200 mg + 200 mg\"",
+                                    "\"strength\": \"không khớp kênh 7\"")),
           review_json(Read(review_path)),
           advisor(rules.c_str(), catalog.c_str(), review_json.c_str()),
           router(catalog, rules),

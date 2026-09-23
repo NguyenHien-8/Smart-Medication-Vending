@@ -14,13 +14,14 @@ foreach ($line in $environment) {
     }
 }
 
-$buildDir = Join-Path $repo ".superpowers/sdd/2026-09-22-smartmedivend-fail-closed-vending/host-tests"
+$buildDir = Join-Path $repo ".superpowers/sdd/2026-09-23-smartmedivend-two-stage-medical-flow/host-tests"
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 $compiler = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe"
 $cjsonDir = "C:\Espressif\frameworks\esp-idf-v5.5.5\components\json\cJSON"
 $cjsonObject = Join-Path $buildDir "cjson.obj"
 $medicalExe = Join-Path $buildDir "medical_advisor_test.exe"
 $reviewExe = Join-Path $buildDir "pharmacist_review_test.exe"
+$policyExe = Join-Path $buildDir "medical_policy_cache_test.exe"
 
 Push-Location $repo
 try {
@@ -30,6 +31,18 @@ try {
     )
     & $compiler @cjsonArgs
     if ($LASTEXITCODE -ne 0) { throw "cJSON compilation failed: $LASTEXITCODE" }
+
+    $policyArgs = @(
+        "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
+        "/Imain", "/Imain/medical", "/I$cjsonDir",
+        "main/medical/medical_policy_cache.cc", "main/medical/tests/test_medical_policy_cache.cc",
+        $cjsonObject, "/Fo$buildDir\", "/Fe:$policyExe"
+    )
+    & $compiler @policyArgs
+    if ($LASTEXITCODE -ne 0) { throw "medical policy cache test compilation failed: $LASTEXITCODE" }
+
+    & $policyExe data/medical_rules.json data/medicines.json
+    if ($LASTEXITCODE -ne 0) { throw "medical policy cache tests failed: $LASTEXITCODE" }
 
     $medicalArgs = @(
         "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",

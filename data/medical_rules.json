@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "rules_version": "rules-2026-09-22-interview-pilot-v2",
+  "rules_version": "rules-2026-09-23-two-stage-v1",
   "status": "PHARMACIST_REVIEW_REQUIRED",
   "scope": {
     "minimum_age_years": 16,
@@ -41,6 +41,11 @@
     "stridor",
     "unintentional_weight_loss",
     "rapidly_worsening"
+  ],
+  "recognized_non_excluding_flags": [
+    "other_condition",
+    "other_current_medicine",
+    "other_drug_allergy"
   ],
   "medicine_rules": [
     {

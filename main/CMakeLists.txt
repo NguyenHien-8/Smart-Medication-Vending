@@ -1097,6 +1097,7 @@ endif()
 # compiled only for this board; board GPIO sources are selected by BOARD_SOURCES.
 if(CONFIG_BOARD_TYPE_SMARTMEDIVEND_S3)
     list(APPEND SOURCES
+        "medical/medical_policy_cache.cc"
         "medical/medical_advisor.cc"
         "medical/pharmacist_review_verifier.cc"
         "vending/catalog_router.cc"

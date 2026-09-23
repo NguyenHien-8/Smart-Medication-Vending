@@ -82,8 +82,9 @@ bool SafetyEnums(const cJSON* array, std::set<std::string>& values, bool require
 }
 
 bool ValidateRule(const cJSON* rule) {
-    if (!cJSON_IsObject(rule) || !HasOnlyFields(rule, {"canonical_id", "symptoms", "refer_if",
-                                                       "exclude_if", "minimum_age_years"}))
+    if (!cJSON_IsObject(rule) ||
+        !HasOnlyFields(rule, {"canonical_id", "symptoms", "refer_if", "exclude_if",
+                              "minimum_age_years", "selection_priority"}))
         return false;
     std::set<std::string> symptoms, referral, exclusions;
     if (!SafetyEnums(Get(rule, "symptoms"), symptoms, true) ||
@@ -99,13 +100,19 @@ bool ValidateRule(const cJSON* rule) {
         if (!ExactInteger(age, 16, 120, minimum_age))
             return false;
     }
+    if (const cJSON* priority = Get(rule, "selection_priority")) {
+        int selection_priority = 0;
+        if (!ExactInteger(priority, 1, 65535, selection_priority))
+            return false;
+    }
     return true;
 }
 
 bool ValidateRulesEnvelope(const cJSON* root) {
     if (!HasOnlyFields(
             root, {"schema_version", "rules_version", "status", "scope", "global_required_fields",
-                   "global_danger_signs", "medicine_rules", "sources", "interview"}))
+                   "global_danger_signs", "recognized_non_excluding_flags", "medicine_rules",
+                   "sources", "interview"}))
         return false;
     const cJSON* scope = Get(root, "scope");
     if (!cJSON_IsObject(scope) ||
@@ -125,12 +132,16 @@ bool ValidateRulesEnvelope(const cJSON* root) {
         std::strcmp(Get(scope, "missing_data_policy")->valuestring,
                     "NEED_MORE_INFO_THEN_NO_VEND") != 0)
         return false;
-    std::set<std::string> required, danger;
+    std::set<std::string> required, danger, recognized_non_excluding;
     if (!SafetyEnums(Get(root, "global_required_fields"), required, true) ||
         required != std::set<std::string>{"age_years", "weight_kg", "pregnancy_or_breastfeeding",
                                           "symptoms", "duration_hours", "danger_signs",
                                           "conditions", "current_medicines", "drug_allergies"} ||
-        !SafetyEnums(Get(root, "global_danger_signs"), danger, true))
+        !SafetyEnums(Get(root, "global_danger_signs"), danger, true) ||
+        !SafetyEnums(Get(root, "recognized_non_excluding_flags"), recognized_non_excluding, true) ||
+        recognized_non_excluding != std::set<std::string>{"other_condition",
+                                                          "other_current_medicine",
+                                                          "other_drug_allergy"})
         return false;
     // The interview engine dereferences these fields; malformed question structures
     // must not be interpreted as an empty/fulfilled safety interview.
