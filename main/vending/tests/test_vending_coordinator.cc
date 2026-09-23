@@ -1,5 +1,6 @@
 #include "inventory/inventory_store.h"
 #include "medical/medical_advisor.h"
+#include "medical/medical_policy_cache.h"
 #include "vending/catalog_router.h"
 #include "vending/vending_coordinator.h"
 
@@ -128,7 +129,8 @@ struct Fixture {
                       : ReplaceOnce(Read(catalog_path), "\"strength\": \"ví dụ 200 mg + 200 mg\"",
                                     "\"strength\": \"không khớp kênh 7\"")),
           review_json(Read(review_path)),
-          advisor(rules.c_str(), catalog.c_str(), review_json.c_str()),
+          policy(rules, catalog),
+          advisor(policy, []() { return uint64_t{0}; }),
           router(catalog, rules),
           inventory(backend) {
         if (provision) {
@@ -150,6 +152,7 @@ struct Fixture {
     std::string rules;
     std::string catalog;
     std::string review_json;
+    smv::MedicalPolicyCache policy;
     smv::MedicalAdvisor advisor;
     smv::CatalogRouter router;
     MemoryBackend backend;
@@ -192,7 +195,7 @@ int main(int argc, char** argv) {
         {
             Fixture fixture(argv[1], argv[2], argv[3], true, true, true, false);
             Check(Field(fixture.coordinator->EvaluateAndStage(Snapshot(), 1000), "reason") ==
-                      "BACKUP_IDENTITY_MISMATCH",
+                      "INVALID_MEDICAL_POLICY",
                   "invalid catalog did not block");
             ++count;
         }

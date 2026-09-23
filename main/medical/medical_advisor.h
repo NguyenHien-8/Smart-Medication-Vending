@@ -1,11 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <string>
+#include <string_view>
 
-// Read-only, fail-closed first-stage advisor. No GPIO, inventory mutation, or vend API.
-// Inputs from AI are NEVER treated as user consent or clinical verification.
+#include "medical_intake_session.h"
+#include "medical_policy_cache.h"
+
 namespace smv {
 enum class MedicalDecision { kDeny, kAsk, kRefer, kOffer };
 
@@ -21,21 +24,44 @@ struct MedicalEvaluation {
     std::string reason = "NOT_EVALUATED";
     std::string session_id;
     uint32_t turn_id = 0;
+    uint32_t facts_revision = 0;
+    std::string next_question_id;
+    std::string next_question_vi;
+    std::string missing_field;
     std::optional<MedicalOffer> offer;
+    bool full_evaluation_ran = false;
+    uint32_t fast_screen_us = 0;
+    uint32_t full_evaluation_us = 0;
     std::string response_json;
 };
 
 class MedicalAdvisor {
 public:
-    MedicalAdvisor(const char* rules_json, const char* catalog_json, const char* review_json);
+    using ClockUs = std::function<uint64_t()>;
+
+    MedicalAdvisor(const MedicalPolicyCache& policy, ClockUs clock_us);
     std::string IntakeSchema() const;
-    std::string SymptomGuide(const std::string& symptom_enum) const;
-    MedicalEvaluation EvaluateStructured(const std::string& untrusted_json) const;
-    std::string Evaluate(const std::string& untrusted_json) const;
+    std::string SymptomGuide(std::string_view symptom_enum) const;
+    MedicalEvaluation EvaluateTurn(std::string_view delta_json, uint64_t now_ms);
+    void ResetSession();
+    uint32_t facts_revision() const { return session_.facts_revision(); }
+    uint32_t full_evaluation_count() const { return full_evaluation_count_; }
 
 private:
-    std::string rules_;
-    std::string catalog_;
-    std::string review_;
+    MedicalEvaluation AskForField(std::string_view field, std::string reason) const;
+    MedicalEvaluation AskQuestion(const PolicyQuestion& question, std::string reason) const;
+    MedicalEvaluation FullEvaluate(const MedicalFactBits& combined_facts);
+    std::string Serialize(const MedicalEvaluation& evaluation) const;
+    uint64_t NowUs() const;
+
+    const MedicalPolicyCache& policy_;
+    ClockUs clock_us_;
+    MedicalIntakeSession session_;
+    uint32_t full_evaluation_count_ = 0;
+    std::optional<MedicalEvaluation> cached_full_evaluation_;
+    std::string cached_session_id_;
+    uint32_t cached_facts_revision_ = 0;
+    std::string cached_rules_version_;
+    std::string cached_catalog_version_;
 };
 }  // namespace smv

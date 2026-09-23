@@ -15,7 +15,8 @@ trap 'rm -rf "$TMP_DIR"' EXIT
   main/vending/tests/test_inventory_store.cc \
   -o "$TMP_DIR/inventory_store_test"
 "$TMP_DIR/inventory_store_test"
-"$CXX" "${FLAGS[@]}" main/medical/medical_advisor.cc \
+"$CXX" "${FLAGS[@]}" main/medical/medical_policy_cache.cc \
+  main/medical/medical_intake_session.cc main/medical/medical_advisor.cc \
   main/medical/pharmacist_review_verifier.cc main/vending/catalog_router.cc \
   main/inventory/inventory_store.cc main/vending/vend_guard.cc \
   main/vending/vending_coordinator.cc main/vending/tests/test_vending_coordinator.cc \

@@ -67,7 +67,7 @@ std::string VendingCoordinator::Response(const char* status, const std::string& 
 std::string VendingCoordinator::EvaluateAndStage(const std::string& patient_facts_json,
                                                  uint64_t now_ms) {
     candidate_.reset();
-    const MedicalEvaluation evaluation = advisor_.EvaluateStructured(patient_facts_json);
+    const MedicalEvaluation evaluation = advisor_.EvaluateTurn(patient_facts_json, now_ms);
     if (!evaluation.session_id.empty() && evaluation.turn_id != 0) {
         if (evaluation.session_id == last_session_id_ && evaluation.turn_id <= last_turn_id_)
             return Response("BLOCK", "STALE_TURN");

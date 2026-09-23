@@ -61,13 +61,14 @@ try {
     $medicalArgs = @(
         "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
         "/Imain", "/Imain/medical", "/I$cjsonDir",
+        "main/medical/medical_policy_cache.cc", "main/medical/medical_intake_session.cc",
         "main/medical/medical_advisor.cc", "main/medical/tests/test_medical_advisor.cc",
         $cjsonObject, "/Fo$buildDir\", "/Fe:$medicalExe"
     )
     & $compiler @medicalArgs
     if ($LASTEXITCODE -ne 0) { throw "medical test compilation failed: $LASTEXITCODE" }
 
-    & $medicalExe data/medical_rules.json data/medicines.json data/pharmacist_review.json
+    & $medicalExe data/medical_rules.json data/medicines.json
     if ($LASTEXITCODE -ne 0) { throw "medical tests failed: $LASTEXITCODE" }
 
     $reviewArgs = @(

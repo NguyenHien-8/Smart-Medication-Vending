@@ -62,6 +62,7 @@ try {
     $coordinatorArgs = @(
         "/nologo", "/std:c++20", "/EHsc", "/W4", "/WX", "/D_CRT_SECURE_NO_WARNINGS",
         "/Imain", "/Imain/medical", "/Imain/vending", "/Imain/inventory", "/I$cjsonDir",
+        "main/medical/medical_policy_cache.cc", "main/medical/medical_intake_session.cc",
         "main/medical/medical_advisor.cc", "main/medical/pharmacist_review_verifier.cc",
         "main/vending/catalog_router.cc", "main/inventory/inventory_store.cc",
         "main/vending/vend_guard.cc", "main/vending/vending_coordinator.cc",

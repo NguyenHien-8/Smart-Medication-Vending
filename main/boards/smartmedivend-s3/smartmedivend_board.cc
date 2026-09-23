@@ -7,6 +7,7 @@
 #include "inventory/nvs_inventory_backend.h"
 #include "mcp_server.h"
 #include "medical/medical_advisor.h"
+#include "medical/medical_policy_cache.h"
 #include "medical/pharmacist_review_verifier.h"
 #include "medical_data_generated.h"
 #include "relay_driver.h"
@@ -156,6 +157,7 @@ private:
     SmartMediVendDisplay* display_ = nullptr;
     std::unique_ptr<smv::EspRelayPlatform> relay_platform_;
     std::unique_ptr<smv::RelayDriver> relay_driver_;
+    std::unique_ptr<smv::MedicalPolicyCache> policy_;
     std::unique_ptr<smv::MedicalAdvisor> advisor_;
     std::unique_ptr<smv::CatalogRouter> catalog_router_;
     std::unique_ptr<smv::NvsInventoryBackend> inventory_backend_;
@@ -178,8 +180,10 @@ private:
             });
         const bool relay_ready = relay_driver_->Initialize();
 
+        policy_ = std::make_unique<smv::MedicalPolicyCache>(smv::kMedicalRulesJson,
+                                                            smv::kMedicineCatalogJson);
         advisor_ = std::make_unique<smv::MedicalAdvisor>(
-            smv::kMedicalRulesJson, smv::kMedicineCatalogJson, smv::kPharmacistReviewJson);
+            *policy_, []() { return static_cast<uint64_t>(esp_timer_get_time()); });
         catalog_router_ =
             std::make_unique<smv::CatalogRouter>(smv::kMedicineCatalogJson, smv::kMedicalRulesJson);
         inventory_backend_ = std::make_unique<smv::NvsInventoryBackend>("smv_inventory");
