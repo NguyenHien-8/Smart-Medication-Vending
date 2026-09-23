@@ -1,6 +1,6 @@
 # SmartMediVend two-stage medical flow design
 
-Status: Proposed for written-spec review
+Status: Approved for implementation planning
 
 Date: 2026-09-23
 
